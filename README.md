@@ -11,13 +11,9 @@ OpenDaylight is hosting one of the biggest growing community for network program
 
 Currently Netfloc provides library support for OpenStack tenant-based network graph management and traversal. It is based on the following OpenDaylight features: mdsal, openflowplugin and ovsdb (see Architecture and Roadmap.) It also provides a support for the northbound OpenStack Neutron ML2 plugin APIs. For upcoming milestones, check the Roadmap section.
 
-# Architecture
+# Architecture Design
 
-<div align="center" >
-<a href='http://blog.zhaw.ch/icclab'>
-<img src="https://raw.githubusercontent.com/icclab/netfloc/master/docs/img/netfloc.png" title="netfloc" width=400px>
-</a>
-</div>
+[Netfloc Architecture Design](docs/architecture/README.md)
 
 
 ## Features
