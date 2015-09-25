@@ -1,0 +1,429 @@
+FORMAT: 1A
+
+# Netfloc
+
+Netfloc application API.
+
+## Network Graph [/networkGraph]
+
+### Get the Network Graph [GET]
+
++ Response 200 (application/json)
+
+        {
+            "status": "Network Graphs retrieved",
+            "data": [
+                {
+                    "linkPorts": [],
+                    "internalPorts": [],
+                    "hostPorts": []
+                }
+            ]
+        }
+
+## Tenant filtered Network Graph [/networkGraph/{tenant}]
+
++ Parameters
+    + tenant (string) - Name of the tenant
+
+### Get the tenant filtered Network Graph [GET]
+
++ Response 200 (application/json)
+
+        {
+            "status": "filtered Network Graph retrieved",
+            "data": [
+                {
+                    "externalPorts": [
+                        { "link": ??? }
+                    ],
+                    "internalPorts": [],
+                    "hostPorts": [
+                        { "tenant": tenant }
+                    ]
+                }   
+            ]
+        }
+
+## Tenants [/tenant]
+
+### Get all tenants [GET]
+
++ Response 200 (application/json)
+        
+        {
+            "status": "tenant list retrieved",
+            "data": [
+                "tenant1", "tenant2", "tenant3"
+            ]
+        }
+        
+## Host Ports [/hostPort]
+
+### Get all Host Ports [GET]
+
++ Response 200 (application/json)
+
+        {
+            "status": "all host ports retrieved",
+            "data": [
+                {
+                    "ofPort": 1,
+                    "tenant": "tenant1",
+                    "l2Address": "ff:ff:ff:ff:ff:ff",
+                    "l3Addresses": [
+                        "192.168.0.1"
+                    ]
+                }
+            ]
+        }
+        
+## Network Path [/networkPath/{src}/{dst}]
+
+### Get a Network Path between source and destination ports [GET]
+
++ Response 200 (application/json)
+
+        {   "status": "Network path retrieved",
+            "data": {
+                "flowPatterns" [],
+                "path" :[
+                    {
+                        "srcHostPort": {
+                            "ofPort": 1,
+                            "tenant": "tenant1",
+                            "l2Address": "00:00:00:00:00:01",
+                            "l3Addresses": [
+                                "192.168.0.1"
+                            ]
+                        },
+                        "nextLinkPort": {
+                            "ofPort": 3
+                        }
+                    },
+                    {
+                        "previousLinkPort": {
+                            "ofPort": 1
+                        },
+                        "nextLinkPort": {
+                            "ofPort": 3
+                        }
+                    },
+                    {
+                        "previousLinkPort": {
+                            "ofPort": 3
+                        },
+                        "dstHostPort": {
+                            "ofPort": 1,
+                            "tenant": "tenant1",
+                            "l2Address": "00:00:00:00:00:02",
+                            "l3Addresses": [
+                                "192.168.0.2"
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+
+## Flow Patterns [/flowPattern]
+
+### Get all flow patterns [GET]
+
++ Response 200 (application/json)
+
+        {
+            "status": "flow pattern retrieved",
+            "data": [
+                {
+                    "srcBridge": [
+                        {
+                            "match": {
+                                "in_port": "srcHostPort",
+                                "hw_src": "srcMAC",
+                                "hw_dst": "dstMAC"
+                            },
+                            "actions": {
+                                "output": "nextLinkPort"
+                            }
+                        }
+                    ],
+                    "linkBridge": [
+                        {
+                            "match": {
+                                "hw_dst": "dstMAC"
+                            },
+                            "actions": {
+                                "output": "nextLinkPort"
+                            }
+                        }
+                    ],
+                    "dstBridge": [
+                        {
+                            "match": {
+                                "hw_dst": "dstMAC"
+                            },
+                            "actions": {
+                                "output": "dstHostPort"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+
+### Create a new flow pattern [POST]
+
++ Request (application/json)
+
+        {
+            "srcBridge": [
+                {
+                    "match": {
+                        "in_port": "srcHostPort",
+                        "hw_src": "srcMAC",
+                        "hw_dst": "dstMAC"
+                    },
+                    "actions": {
+                        "output": "nextLinkPort"
+                    }
+                }
+            ],
+            "linkBridge": [
+                {
+                    "match": {
+                        "hw_dst": "dstMAC"
+                    },
+                    "actions": {
+                        "output": "nextLinkPort"
+                    }
+                }
+            ],
+            "dstBridge": [
+                {
+                    "match": {
+                        "hw_dst": "dstMAC"
+                    },
+                    "actions": {
+                        "output": "dstHostPort"
+                    }
+                }
+            ]
+        }
+
++ Response 201 (application/json)
+
+        {
+            "status": "flowPattern created",
+            "id": 2
+        }
+
++ Response 400 (application/json)
+
+        {
+            "status": "request malformed"
+        }
+
+## Flow Pattern [/flowPattern/{id}]
+
+### Get flow pattern by id [GET]
+
++ Response 200 (application/json)
+
+        {
+            "status": "flow pattern retrieved"
+            "data": {
+                "srcBridge": [
+                    {
+                        "match": {
+                            "in_port": "srcHostPort",
+                            "hw_src": "srcMAC",
+                            "hw_dst": "dstMAC"
+                        },
+                        "actions": {
+                            "output": "nextLinkPort"
+                        }
+                    }
+                ],
+                "linkBridge": [
+                    {
+                        "match": {
+                            "hw_dst": "dstMAC"
+                        },
+                        "actions": {
+                            "output": "nextLinkPort"
+                        }
+                    }
+                ],
+                "dstBridge": [
+                    {
+                        "match": {
+                            "hw_dst": "dstMAC"
+                        },
+                        "actions": {
+                            "output": "dstHostPort"
+                        }
+                    }
+                ]
+            }
+        }
+
++ Response 404 (application/json)
+
+        {
+            "status": "flowPattern does not exist"
+        }
+
++ Response 410 (application/json)
+
+        {
+            "status": "flowPattern is deleted permanently"
+        }
+
+### Update flow pattern by id [PUT]
+
++ Request (application/json)
+
+        {
+            "srcBridge": [
+                {
+                    "match": {
+                        "in_port": "srcHostPort",
+                        "hw_src": "srcMAC",
+                        "hw_dst": "dstMAC"
+                    },
+                    "actions": {
+                        "output": "nextLinkPort"
+                    }
+                }
+            ],
+            "linkBridge": [
+                {
+                    "match": {
+                        "hw_dst": "dstMAC"
+                    },
+                    "actions": {
+                        "output": "nextLinkPort"
+                    }
+                }
+            ],
+            "dstBridge": [
+                {
+                    "match": {
+                        "hw_dst": "dstMAC"
+                    },
+                    "actions": {
+                        "output": "dstHostPort"
+                    }
+                }
+            ]
+        }
+
++ Response 200 (application/json)
+
+        {
+            "status": "flowPattern updated"
+        }
+
++ Response 400 (application/json)
+
+        {
+            "status": "request malformed"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "status": "flowPattern does not exist"
+        }
+
++ Response 410 (application/json)
+
+        {
+            "status": "flowPattern has been deleted permanently"
+        }
+
+### Delete flow pattern by id [DELETE]
+
++ Response 200 (application/json)
+
+        {
+            "status": "flowPattern is deleted successfully"
+        }
+
++ Response 409 (application/json)
+
+        {
+            "status": "transaction condition not met, flowPattern is installed on networkPath(s)",
+            "data": {
+                "networkPaths": [
+                ]
+            }
+        }
+
++ Response 404 (application/json)
+
+        {
+            "status": "flowPattern does not exist"
+        }
+
+## Install and delete Flow Patterns on Network Paths [/flowPattern/{id}/{src}/{dst}]
+
+### Post a flow pattern onto a network path [POST]
+
++ Response 400 (application/json)
+
+        {
+            "status": "request malformed"
+        }
+            
+
++ Response 201 (application/json)
+
+        {
+            "status": "flowPattern is posted onto networkPath"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "status": "flowPattern does not exist"
+        }
+
++ Response 410 (application/json)
+
+        {
+            "status": "flowPattern has been deleted permanently"
+        }
+
++ Response 409 (application/json)
+
+        {
+            "status": "flowPattern is not allready installed"
+        }
+
+### Delete a flow pattern on a network path [DELETE]
+
++ Response 200 (application/json)
+
+        {
+            "status": "flowPattern successfully deleted from network path"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "status": "flowPattern not found on network path"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "status": "flowPattern does not exist"
+        }
+
++ Response 410 (application/json)
+
+        {
+            "status": "flowPattern allready deleted on network path"
+        }
