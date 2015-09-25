@@ -13,7 +13,7 @@ Currently Netfloc provides library support for OpenStack tenant-based network gr
 
 # Architecture Design
 
-[Netfloc Architecture Design](docs/architecture/README.md)
+[Netfloc Architecture Design](docs/architecture.md)
 
 
 ## Features
