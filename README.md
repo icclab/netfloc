@@ -83,7 +83,8 @@ Currently Netfloc defines API Specification for the following network resources:
 - All host ports
 - End-to-end network path 
 - Flow patterns on netowrk paths
-For more detailed information: [Netfloc APIs](./docs/netfloc_api_spec/netfloc.html): 
+
+For more detailed information: [Netfloc APIs](./docs/netfloc_api_spec/)
 
 
 ## Roadmap
