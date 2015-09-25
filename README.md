@@ -112,7 +112,7 @@ See the file LICENSE.
 
 <div align="center" >
 <a href='http://blog.zhaw.ch/icclab'>
-<img src="https://raw.githubusercontent.com/icclab/netfloc/master/docs/img/icclab-logo.png" title="icclab_logo" width=400px>
+<img src="https://raw.githubusercontent.com/icclab/netfloc/master/docs/img/icclab-logo.png" title="icclab_logo" width=200px>
 </a>
 </div>
 
@@ -120,7 +120,7 @@ See the file LICENSE.
 
 <div align="center" >
 <a href='https://www.fiware.org/'>
-<img src="https://raw.githubusercontent.com/icclab/hurtle/master/docs/figs/logo-FIWARE.png" title="FIWARE_logo" width=400px>
+<img src="https://raw.githubusercontent.com/icclab/netfloc/master/docs/img/Logo-FIWARE.png" title="FIWARE_logo" width=200px>
 </a>
 </div>
 
