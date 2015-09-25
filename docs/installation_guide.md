@@ -1,4 +1,4 @@
-# Netfloc Instalation guide
+# Netfloc Installation guide
 
 ## Prerequisites
 
