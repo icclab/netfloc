@@ -13,20 +13,15 @@ import org.opendaylight.netfloc.iface.INetworkOperator;
 
 import java.util.Map;
 import java.util.Set;
-// import java.util.concurrent.ExecutorService;
-// import java.util.concurrent.Executors;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-// import org.opendaylight.ovsdb.openstack.netvirt.MdsalHelper;
 
 import org.opendaylight.netfloc.impl.SouthboundConstants;
 
-// import org.opendaylight.ovsdb.openstack.netvirt.api.Action;
-// import org.opendaylight.ovsdb.openstack.netvirt.api.OvsdbInventoryListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
@@ -55,7 +50,6 @@ public class LinkDataChangeListener implements DataChangeListener, AutoCloseable
     private DataBroker dataBroker = null;
     private ListenerRegistration<DataChangeListener> registration;
     private INetworkOperator network;
-    // private final ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     public LinkDataChangeListener (DataBroker dataBroker, INetworkOperator network) {
         this.network = network;
@@ -71,14 +65,12 @@ public class LinkDataChangeListener implements DataChangeListener, AutoCloseable
                 DataChangeScope.BASE);
         LOG.info("app0 LinkDataChangeListener: dataBroker= {}, registration= {}",
                 dataBroker, registration);
-        //triggerUpdates();
         //TODO: implement trigger updates; get all nodes from southbound and handle the 'creation' of them
     }
 
     @Override
     public void close () throws Exception {
         registration.close();
-        //executorService.shutdown();
     }
 
     @Override
