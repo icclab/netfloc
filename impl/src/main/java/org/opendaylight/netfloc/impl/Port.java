@@ -99,19 +99,15 @@ public class Port implements IPortOperator {
 	}
 
 	public boolean isOvsPort(TpId tpid) {
-		// OvsdbTerminationPointAugmentation tpAugmentation = terminationPoint.getAugmentation( OvsdbTerminationPointAugmentation.class);
-  //       return tpAugmentation.getInterfaceUuid().equals(
-  //               ovsdbTerminationPointAugmentation.getInterfaceUuid());
-
 		if (tpid == null) {
 			throw new IllegalArgumentException("tpid is null");
 		}
 
-		if (this.tp == null) {
-			throw new IllegalStateException("terminationpoint is null");
-		}
+		LOG.info("compare OF TpId <{}>, to gen. <{}>", tpid.getValue(), this.getOFTpIdValue());
+		return tpid.getValue().equals(this.getOFTpIdValue());
+	}
 
-		LOG.info("comparing TpId this <{}> other <{}>", this.tp.getTpId(), tpid);
-		return tpid.equals(this.tp.getTpId());
+	private String getOFTpIdValue() {
+		return "openflow:" + Long.parseLong(this.bridge.getDatapathId().replace(":", ""), 16) + ":" + this.getOfport();
 	}
 }
