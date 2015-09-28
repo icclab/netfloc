@@ -80,61 +80,6 @@ public class ConfigActivator implements BundleActivator {
         LinkDataChangeListener linkDataChangeListener = new LinkDataChangeListener(providerContext.getSALService(DataBroker.class), network);
         registerService(context,
                 new String[] {LinkDataChangeListener.class.getName()}, null, linkDataChangeListener);
-
-		// Dictionary<String, Object> southboundHandlerProperties = new Hashtable<>();
-		// southboundHandlerProperties.put(Constants.EVENT_HANDLER_TYPE_PROPERTY, AbstractEvent.HandlerType.SOUTHBOUND);
-		// SouthboundHandler southboundHandler = new SouthboundHandler();
-		// registerService(context,
-		//         new String[]{OvsdbInventoryListener.class.getName(),
-		//                 NodeCacheListener.class.getName(),
-		//                 AbstractHandler.class.getName()},
-		//         southboundHandlerProperties, southboundHandler);
-
-		// Dictionary<String, Object> lbaasHandlerProperties = new Hashtable<>();
-		// lbaasHandlerProperties.put(Constants.EVENT_HANDLER_TYPE_PROPERTY,
-		//         AbstractEvent.HandlerType.NEUTRON_LOAD_BALANCER);
-		// final LBaaSHandler lBaaSHandler = new LBaaSHandler();
-		// registerService(context,
-		//         new String[]{INeutronLoadBalancerAware.class.getName(),
-		//                 NodeCacheListener.class.getName(), AbstractHandler.class.getName()},
-		//         lbaasHandlerProperties, lBaaSHandler);
-
-		// Dictionary<String, Object> lbaasPoolHandlerProperties = new Hashtable<>();
-		// lbaasPoolHandlerProperties.put(Constants.EVENT_HANDLER_TYPE_PROPERTY,
-		//         AbstractEvent.HandlerType.NEUTRON_LOAD_BALANCER_POOL);
-		// final LBaaSPoolHandler lBaaSPoolHandler = new LBaaSPoolHandler();
-		// registerService(context,
-		//         new String[]{INeutronLoadBalancerPoolAware.class.getName(),
-		//                 AbstractHandler.class.getName()}, lbaasPoolHandlerProperties, lBaaSPoolHandler);
-
-		// Dictionary<String, Object> lbaasPoolMemberHandlerProperties = new Hashtable<>();
-		// lbaasPoolMemberHandlerProperties.put(Constants.EVENT_HANDLER_TYPE_PROPERTY,
-		//         AbstractEvent.HandlerType.NEUTRON_LOAD_BALANCER_POOL_MEMBER);
-		// final LBaaSPoolMemberHandler lBaaSPoolMemberHandler = new LBaaSPoolMemberHandler();
-		// registerService(context,
-		//         new String[]{INeutronLoadBalancerPoolMemberAware.class.getName(),
-		//                 AbstractHandler.class.getName()}, lbaasPoolMemberHandlerProperties, lBaaSPoolMemberHandler);
-
-		// Dictionary<String, Object> portSecurityHandlerProperties = new Hashtable<>();
-		// portSecurityHandlerProperties.put(Constants.EVENT_HANDLER_TYPE_PROPERTY,
-		//         AbstractEvent.HandlerType.NEUTRON_PORT_SECURITY);
-		// PortSecurityHandler portSecurityHandler = new PortSecurityHandler();
-		// registerService(context,
-		//         new String[]{INeutronSecurityRuleAware.class.getName(),
-		//                 INeutronSecurityGroupAware.class.getName(), AbstractHandler.class.getName()},
-		//         portSecurityHandlerProperties, portSecurityHandler);
-
-		// final SecurityServicesImpl securityServices = new SecurityServicesImpl();
-		// registerService(context,
-		//         new String[]{SecurityServicesManager.class.getName()}, null, securityServices);
-
-		// Dictionary<String, Object> fWaasHandlerProperties = new Hashtable<>();
-		// fWaasHandlerProperties.put(Constants.EVENT_HANDLER_TYPE_PROPERTY, AbstractEvent.HandlerType.NEUTRON_FWAAS);
-		// FWaasHandler fWaasHandler = new FWaasHandler();
-		// registerService(context,
-		//         new String[]{INeutronFirewallAware.class.getName(),
-		//                 INeutronFirewallRuleAware.class.getName(), INeutronFirewallPolicyAware.class.getName(),
-		//                 AbstractHandler.class.getName()}, fWaasHandlerProperties, fWaasHandler);
 	}
 
 	@Override
