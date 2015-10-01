@@ -5,14 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.netfloc.impl;
+package ch.icclab.netfloc.impl;
 
 import org.opendaylight.neutron.spi.NeutronPort;
-import org.opendaylight.netfloc.iface.IBridgeOperator;
-import org.opendaylight.netfloc.iface.ILinkPort;
-import org.opendaylight.netfloc.iface.INetworkPath;
-import org.opendaylight.netfloc.iface.INodeOperator;
-import org.opendaylight.netfloc.iface.IHostPort;
+import ch.icclab.netfloc.iface.IBridgeOperator;
+import ch.icclab.netfloc.iface.ILinkPort;
+import ch.icclab.netfloc.iface.INetworkPath;
+import ch.icclab.netfloc.iface.INodeOperator;
+import ch.icclab.netfloc.iface.IHostPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
@@ -61,6 +61,7 @@ public class NetworkPathTest {
 
 		np.append(beginBridge);
 		np.append(endBridge);
+		np.close();
 
 		assertTrue("path should have length 2, has " + np.getLength(), np.getLength() == 2);
 		assertTrue("two termination ports before cleanup", np.getEnd().getHostPorts().size() == 2);

@@ -5,16 +5,16 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.netfloc.impl;
+package ch.icclab.netfloc.impl;
 
 import java.util.List;
 
-import org.opendaylight.netfloc.iface.IBridgeOperator;
-import org.opendaylight.netfloc.iface.ILinkPort;
-import org.opendaylight.netfloc.iface.IInternalPort;
-import org.opendaylight.netfloc.iface.IPortOperator;
-import org.opendaylight.netfloc.iface.ITenantBridgeOperator;
-import org.opendaylight.netfloc.iface.IHostPort;
+import ch.icclab.netfloc.iface.IBridgeOperator;
+import ch.icclab.netfloc.iface.ILinkPort;
+import ch.icclab.netfloc.iface.IInternalPort;
+import ch.icclab.netfloc.iface.IPortOperator;
+import ch.icclab.netfloc.iface.ITenantBridgeOperator;
+import ch.icclab.netfloc.iface.IHostPort;
 
 import java.util.LinkedList;
 

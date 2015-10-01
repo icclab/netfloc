@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.netfloc.impl;
+package ch.icclab.netfloc.impl;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;
@@ -22,27 +22,27 @@ import org.opendaylight.neutron.spi.NeutronSubnet;
 import org.opendaylight.neutron.spi.NeutronNetwork;
 import org.opendaylight.neutron.spi.NeutronRouter;
 import org.opendaylight.neutron.spi.NeutronFloatingIP;
-import org.opendaylight.netfloc.iface.IBridgeIterator;
-import org.opendaylight.netfloc.iface.IBridgeOperator;
-import org.opendaylight.netfloc.iface.ILinkPort;
-import org.opendaylight.netfloc.iface.INetworkOperator;
-import org.opendaylight.netfloc.iface.INetworkPath;
-import org.opendaylight.netfloc.iface.INetworkTraverser;
-import org.opendaylight.netfloc.iface.INodeOperator;
-import org.opendaylight.netfloc.iface.IPortOperator;
-import org.opendaylight.netfloc.iface.ITenantNetworkOperator;
-import org.opendaylight.netfloc.iface.IHostPort;
-import org.opendaylight.netfloc.iface.ITraversableBridge;
-import org.opendaylight.netfloc.iface.INetworkPathListener;
-import org.opendaylight.netfloc.iface.nbhandlers.INeutronPortHandler;
-import org.opendaylight.netfloc.iface.nbhandlers.INeutronSubnetHandler;
-import org.opendaylight.netfloc.iface.nbhandlers.INeutronNetworkHandler;
-import org.opendaylight.netfloc.iface.nbhandlers.INeutronRouterHandler;
-import org.opendaylight.netfloc.iface.nbhandlers.INeutronFloatingIPHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.IBridgeHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.INodeHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.IPortHandler;
-import org.opendaylight.netfloc.iface.ofhandlers.ILinkHandler;
+import ch.icclab.netfloc.iface.IBridgeIterator;
+import ch.icclab.netfloc.iface.IBridgeOperator;
+import ch.icclab.netfloc.iface.ILinkPort;
+import ch.icclab.netfloc.iface.INetworkOperator;
+import ch.icclab.netfloc.iface.INetworkPath;
+import ch.icclab.netfloc.iface.INetworkTraverser;
+import ch.icclab.netfloc.iface.INodeOperator;
+import ch.icclab.netfloc.iface.IPortOperator;
+import ch.icclab.netfloc.iface.ITenantNetworkOperator;
+import ch.icclab.netfloc.iface.IHostPort;
+import ch.icclab.netfloc.iface.ITraversableBridge;
+import ch.icclab.netfloc.iface.INetworkPathListener;
+import ch.icclab.netfloc.iface.nbhandlers.INeutronPortHandler;
+import ch.icclab.netfloc.iface.nbhandlers.INeutronSubnetHandler;
+import ch.icclab.netfloc.iface.nbhandlers.INeutronNetworkHandler;
+import ch.icclab.netfloc.iface.nbhandlers.INeutronRouterHandler;
+import ch.icclab.netfloc.iface.nbhandlers.INeutronFloatingIPHandler;
+import ch.icclab.netfloc.iface.sbhandlers.IBridgeHandler;
+import ch.icclab.netfloc.iface.sbhandlers.INodeHandler;
+import ch.icclab.netfloc.iface.sbhandlers.IPortHandler;
+import ch.icclab.netfloc.iface.ofhandlers.ILinkHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -212,7 +212,7 @@ public class NetworkGraph implements
 			}
 
 			public INetworkPath getResult() {
-				return this.shortestPath.getCleanPath();
+				return (this.shortestPath.isClosed()) ? this.shortestPath : null;
 			}
 
 			private INetworkPath getRootPath(ITraversableBridge currentBridge) {

@@ -5,15 +5,15 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.netfloc.impl;
+package ch.icclab.netfloc.impl;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 
 import org.opendaylight.neutron.spi.NeutronPort;
 import org.opendaylight.neutron.spi.Neutron_IPs;
 import org.opendaylight.neutron.spi.NeutronFloatingIP;
-import org.opendaylight.netfloc.iface.IBridgeOperator;
-import org.opendaylight.netfloc.iface.IHostPort;
+import ch.icclab.netfloc.iface.IBridgeOperator;
+import ch.icclab.netfloc.iface.IHostPort;
 
 import java.util.List;
 import java.util.LinkedList;

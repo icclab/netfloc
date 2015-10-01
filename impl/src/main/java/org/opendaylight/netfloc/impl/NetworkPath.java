@@ -5,14 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.netfloc.impl;
+package ch.icclab.netfloc.impl;
 
 import java.util.List;
 
-import org.opendaylight.netfloc.iface.IBridgeOperator;
-import org.opendaylight.netfloc.iface.ILinkPort;
-import org.opendaylight.netfloc.iface.INetworkPath;
-import org.opendaylight.netfloc.iface.IHostPort;
+import ch.icclab.netfloc.iface.IBridgeOperator;
+import ch.icclab.netfloc.iface.ILinkPort;
+import ch.icclab.netfloc.iface.INetworkPath;
+import ch.icclab.netfloc.iface.IHostPort;
 
 import java.util.LinkedList;
 
@@ -30,6 +30,10 @@ public class NetworkPath implements INetworkPath {
 
 	public void close() {
 		this.closed = true;
+	}
+
+	public boolean isClosed() {
+		return this.closed;
 	}
 
 	public int getLength() {
@@ -135,6 +139,7 @@ public class NetworkPath implements INetworkPath {
 
 		} while (!bridge.equals(this.getEnd()));
 		cleanPath.addBridges(cleanBridges);
+		cleanPath.close();
 		return cleanPath;
 	}
 

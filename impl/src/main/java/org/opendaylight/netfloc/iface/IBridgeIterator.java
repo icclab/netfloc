@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.netfloc.iface;
+package ch.icclab.netfloc.iface;
 
 // this is the interface which will be called during a tenantnetwork traversal when visiting a new bridge
 public interface IBridgeIterator<T> {

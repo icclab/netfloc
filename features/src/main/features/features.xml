@@ -19,13 +19,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <!--<repository>mvn:org.opendaylight.ovsdb/ovsdb-features/1.1.0-SNAPSHOT/xml/features</repository>-->
   <feature name='odl-netfloc-api' version='${project.version}' description='OpenDaylight :: netfloc :: api'>
     <feature version='${yangtools.feature.version}'>odl-yangtools-models</feature>
-    <bundle>mvn:org.opendaylight.netfloc/netfloc-api/${project.version}</bundle>
+    <bundle>mvn:ch.icclab.netfloc/netfloc-api/${project.version}</bundle>
   </feature>
   <feature name='odl-netfloc' version='${project.version}' description='OpenDaylight :: netfloc'>
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${project.version}'>odl-netfloc-api</feature>
-    <bundle>mvn:org.opendaylight.netfloc/netfloc-impl/${project.version}</bundle>
-    <configfile finalname="${configfile.directory}/netfloc.xml">mvn:org.opendaylight.netfloc/netfloc-impl/${project.version}/xml/config</configfile>
+    <bundle>mvn:ch.icclab.netfloc/netfloc-impl/${project.version}</bundle>
+    <configfile finalname="${configfile.directory}/netfloc.xml">mvn:ch.icclab.netfloc/netfloc-impl/${project.version}/xml/config</configfile>
     <feature version="${networkconfig.neutron.version}">odl-neutron-service</feature>
     <feature version="${ovsdb.southbound.api.version}">odl-ovsdb-southbound-api</feature>
     <feature version="${ovsdb.southbound.api.version}">odl-ovsdb-southbound-impl-ui</feature>

@@ -5,11 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.netfloc.impl;
+package ch.icclab.netfloc.impl;
 
 import java.util.List;
 
-import org.opendaylight.netfloc.iface.ITenantOwner;
+import ch.icclab.netfloc.iface.ITenantOwner;
 
 import java.util.LinkedList;
 

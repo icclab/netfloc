@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.netfloc.impl;
+package ch.icclab.netfloc.impl;
 
 import java.util.List;
 import java.util.Map;
@@ -16,13 +16,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.re
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.netfloc.iface.IBridgeOperator;
-import org.opendaylight.netfloc.iface.ILinkPort;
-import org.opendaylight.netfloc.iface.IInternalPort;
-import org.opendaylight.netfloc.iface.INodeOperator;
-import org.opendaylight.netfloc.iface.IPortOperator;
-import org.opendaylight.netfloc.iface.ITenantBridgeOperator;
-import org.opendaylight.netfloc.iface.IHostPort;
+import ch.icclab.netfloc.iface.IBridgeOperator;
+import ch.icclab.netfloc.iface.ILinkPort;
+import ch.icclab.netfloc.iface.IInternalPort;
+import ch.icclab.netfloc.iface.INodeOperator;
+import ch.icclab.netfloc.iface.IPortOperator;
+import ch.icclab.netfloc.iface.ITenantBridgeOperator;
+import ch.icclab.netfloc.iface.IHostPort;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Uuid;
 
 // idk

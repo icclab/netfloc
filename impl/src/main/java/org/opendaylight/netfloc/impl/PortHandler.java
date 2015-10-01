@@ -5,11 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.netfloc.impl;
+package ch.icclab.netfloc.impl;
 
 import org.opendaylight.neutron.spi.INeutronPortAware;
 import org.opendaylight.neutron.spi.NeutronPort;
-import org.opendaylight.netfloc.iface.nbhandlers.INeutronPortHandler;
+import ch.icclab.netfloc.iface.nbhandlers.INeutronPortHandler;
 
 import java.net.HttpURLConnection;
 

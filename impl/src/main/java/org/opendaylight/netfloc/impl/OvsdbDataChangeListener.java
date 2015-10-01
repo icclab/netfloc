@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.netfloc.impl;
+package ch.icclab.netfloc.impl;
 
 
 import java.util.Map;
@@ -16,10 +16,10 @@ import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.netfloc.iface.sbhandlers.IBridgeHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.INodeHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.IPortHandler;
-import org.opendaylight.netfloc.impl.SouthboundConstants;
+import ch.icclab.netfloc.iface.sbhandlers.IBridgeHandler;
+import ch.icclab.netfloc.iface.sbhandlers.INodeHandler;
+import ch.icclab.netfloc.iface.sbhandlers.IPortHandler;
+import ch.icclab.netfloc.impl.SouthboundConstants;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;

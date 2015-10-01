@@ -5,11 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.netfloc.impl;
+package ch.icclab.netfloc.impl;
 
-import org.opendaylight.netfloc.iface.IBridgeOperator;
-import org.opendaylight.netfloc.iface.IPortOperator;
-import org.opendaylight.netfloc.iface.ITenantBridgeOperator;
+import ch.icclab.netfloc.iface.IBridgeOperator;
+import ch.icclab.netfloc.iface.IPortOperator;
+import ch.icclab.netfloc.iface.ITenantBridgeOperator;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Uuid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
@@ -109,9 +109,5 @@ public class Port implements IPortOperator {
 
 	private String getOFTpIdValue() {
 		return "openflow:" + Long.parseLong(this.bridge.getDatapathId().replace(":", ""), 16) + ":" + this.getOfport();
-	}
-
-	public boolean equals(Object o) {
-		return (o instanceof IPortOperator) && ((IPortOperator)o).getPortUuid().equals(this.getPortUuid());
 	}
 }
