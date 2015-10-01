@@ -21,10 +21,15 @@ public class NetworkPath implements INetworkPath {
 	private List<IBridgeOperator> bridges = new LinkedList<IBridgeOperator>();
 	private IHostPort beginPort;
 	private IHostPort endPort;
+	private boolean closed = false;
 
 	public NetworkPath(IHostPort beginPort, IHostPort endPort) {
 		this.beginPort = beginPort;
 		this.endPort = endPort;
+	}
+
+	public void close() {
+		this.closed = true;
 	}
 
 	public int getLength() {
@@ -98,6 +103,9 @@ public class NetworkPath implements INetworkPath {
 	}
 
 	public INetworkPath getCleanPath() {
+		if (!this.closed) {
+			return null;
+		}
 		INetworkPath cleanPath = new NetworkPath(this.beginPort, this.endPort);
 		List<IBridgeOperator> cleanBridges = new LinkedList<IBridgeOperator>();
 		IBridgeOperator bridge = this.getBegin();
@@ -128,5 +136,26 @@ public class NetworkPath implements INetworkPath {
 		} while (!bridge.equals(this.getEnd()));
 		cleanPath.addBridges(cleanBridges);
 		return cleanPath;
+	}
+
+	public boolean isEqualConnection(INetworkPath np) {
+		return (this.getBeginPort().equals(np.getBeginPort()) &&
+			this.getEndPort().equals(np.getEndPort())) ||
+			(this.getBeginPort().equals(np.getEndPort()) &&
+			this.getEndPort().equals(np.getBeginPort()));
+	}
+
+	public boolean equals(Object o) {
+		if (!(o instanceof NetworkPath)) {
+			return false;
+		}
+		NetworkPath np = (NetworkPath)o;
+		return this.isEqualConnection(np) && this.getBridges().equals(np.getBridges());
+	}
+
+	public int hashCode() {
+		return 13 * (this.getBeginPort().hashCode() +
+			this.getEndPort().hashCode() +
+			this.getBridges().hashCode());
 	}
 }

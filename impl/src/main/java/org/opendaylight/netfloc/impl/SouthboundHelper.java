@@ -13,6 +13,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.netfloc.iface.IBridgeOperator;
 import org.opendaylight.netfloc.iface.IPortOperator;
 import org.opendaylight.netfloc.iface.IHostPort;
+import org.opendaylight.netfloc.iface.IInternalPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.InterfaceTypeInternal;
 
@@ -32,7 +33,7 @@ public class SouthboundHelper {
 		return null;
 	}
 
-    public static IPortOperator maybeCreateInternalPort(IBridgeOperator bo, TerminationPoint tp, OvsdbTerminationPointAugmentation terminationPointAugmentation) {
+    public static IInternalPort maybeCreateInternalPort(IBridgeOperator bo, TerminationPoint tp, OvsdbTerminationPointAugmentation terminationPointAugmentation) {
         java.lang.Class<? extends InterfaceTypeBase> type = terminationPointAugmentation.getInterfaceType();
         if (type == InterfaceTypeInternal.class) {
             IPortOperator po = new InternalPort(bo, tp, terminationPointAugmentation);

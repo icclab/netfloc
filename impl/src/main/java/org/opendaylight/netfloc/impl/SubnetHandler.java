@@ -7,6 +7,8 @@
  */
 package org.opendaylight.netfloc.impl;
 
+import org.opendaylight.netfloc.iface.nbhandlers.INeutronSubnetHandler;
+
 import org.opendaylight.neutron.spi.INeutronSubnetAware;
 import org.opendaylight.neutron.spi.NeutronSubnet;
 
@@ -23,7 +25,13 @@ public class SubnetHandler implements INeutronSubnetAware {
 
     static final Logger logger = LoggerFactory.getLogger(SubnetHandler.class);
 
+    private INeutronSubnetHandler network;
+
     // The implementation for each of these services is resolved by the OSGi Service Manager
+
+    public SubnetHandler(INeutronSubnetHandler network) {
+        this.network = network;
+    }
 
     @Override
     public int canCreateSubnet(NeutronSubnet subnet) {
@@ -34,6 +42,7 @@ public class SubnetHandler implements INeutronSubnetAware {
     @Override
     public void neutronSubnetCreated(NeutronSubnet subnet) {
         logger.info("neutron subnet created");
+        network.neutronSubnetCreated(subnet);
     }
 
     @Override
@@ -45,6 +54,7 @@ public class SubnetHandler implements INeutronSubnetAware {
     @Override
     public void neutronSubnetUpdated(NeutronSubnet subnet) {
         logger.info("neutron subnet updated");
+        network.neutronSubnetUpdated(subnet);
     }
 
     @Override
@@ -56,5 +66,6 @@ public class SubnetHandler implements INeutronSubnetAware {
     @Override
     public void neutronSubnetDeleted(NeutronSubnet subnet) {
         logger.info("neutron subnet deleted");
+        network.neutronSubnetDeleted(subnet);
     }
 }

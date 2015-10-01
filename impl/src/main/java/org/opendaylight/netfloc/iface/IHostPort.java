@@ -12,15 +12,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.re
 
 import java.util.List;
 
-// idk
 public interface IHostPort extends IPortOperator {
-	/*
-	public L2Address getL2Address();
-	public List<L3Address> getL3Addresses();
-	public L3Address getL3Address(Tenant tenant); // maybe network???*/
 
 	public String getMacAddress();
 	public List<String> getIPAddresses();
 	public void update(NeutronPort changes);
 	public String getNeutronUuid();
+	public boolean canConnectTo(IHostPort dst);
+	public NeutronPort getNeutronPort();
 }

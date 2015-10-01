@@ -46,4 +46,27 @@ public class HostPort extends Port implements IHostPort {
 	public String getNeutronUuid() {
 		return this.neutronPort.getPortUUID();
 	}
+
+	public NeutronPort getNeutronPort() {
+		return this.neutronPort;
+	}
+
+	public boolean canConnectTo(IHostPort dst) {
+
+		if (this.equals(dst)) {
+			return false;
+		}
+
+		List<String> dstSubnets = new LinkedList<String>();
+		for (Neutron_IPs ipDst : dst.getNeutronPort().getFixedIPs()) {
+			dstSubnets.add(ipDst.getSubnetUUID());
+		}
+
+		for (Neutron_IPs ip : this.getNeutronPort().getFixedIPs()) {
+			if (dstSubnets.contains(ip.getSubnetUUID())) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

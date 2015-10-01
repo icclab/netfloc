@@ -8,6 +8,5 @@
 package org.opendaylight.netfloc.iface;
 
 public interface IFlowprogrammer {
-	// maybe return a status value?
-	public void programFlows(INetworkPath networkPath);
+	public void programFlows(IFlowPattern flowPattern, INetworkPath networkPath);
 }

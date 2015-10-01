@@ -7,9 +7,7 @@
  */
 package org.opendaylight.netfloc.impl;
 
-import org.opendaylight.netfloc.iface.IPortOperator;
-import org.opendaylight.netfloc.iface.ILinkPort;
-import org.opendaylight.netfloc.iface.INetworkOperator;
+import org.opendaylight.netfloc.iface.ofhandlers.ILinkHandler;
 
 import java.util.Map;
 import java.util.Set;
@@ -49,10 +47,10 @@ public class LinkDataChangeListener implements DataChangeListener, AutoCloseable
     private static final String DEFAULT_TOPOLOGY_ID = "flow:1";
     private DataBroker dataBroker = null;
     private ListenerRegistration<DataChangeListener> registration;
-    private INetworkOperator network;
+    private ILinkHandler linkHandler;
 
-    public LinkDataChangeListener (DataBroker dataBroker, INetworkOperator network) {
-        this.network = network;
+    public LinkDataChangeListener (DataBroker dataBroker, ILinkHandler linkHandler) {
+        this.linkHandler = linkHandler;
         this.dataBroker = dataBroker;
         this.start();
     }
@@ -77,6 +75,8 @@ public class LinkDataChangeListener implements DataChangeListener, AutoCloseable
     public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> changes) {
         LOG.trace(">>>>> Link onDataChanged: {}", changes);
         processLinkCreation(changes);
+        processLinkDeletion(changes);
+        processLinkUpdate(changes);
     }
 
     private void processLinkCreation(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> changes) {
@@ -87,19 +87,36 @@ public class LinkDataChangeListener implements DataChangeListener, AutoCloseable
                 LOG.trace("processLinkCreation <{}>", newLink.getValue());
 
                 Link link = (Link)newLink.getValue();
+                this.linkHandler.handleLinkCreate(link);
+            }
+        }
+    }
 
-                // TODO: handle this inside the network?
-                TpId tpIdSrc = link.getSource().getSourceTp();
-                TpId tpIdDst = link.getDestination().getDestTp();
+    private void processLinkDeletion(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> changes) {
+        for(InstanceIdentifier<?> removedLinkId : changes.getRemovedPaths()) {
+            if(removedLinkId.getTargetType().equals(Link.class)){
+                LOG.info("link deleted");
 
-                if (tpIdSrc == null || tpIdDst == null) {
-                    LOG.error("TpId is null for <{}>, <{}>", tpIdSrc, tpIdDst);
-                }
+                @SuppressWarnings("unchecked")
+                Link removedLink = getDataChanges(changes.getOriginalData(),
+                        (InstanceIdentifier<Link>)removedLinkId);
 
-                ILinkPort portSrc = network.getLinkPort(tpIdSrc);
-                ILinkPort portDst = network.getLinkPort(tpIdDst);
+                LOG.trace("processLinkDeletion <{}>", removedLink);
+                
+                this.linkHandler.handleLinkDelete(removedLink);
+            }
+        }
+    }
 
-                portSrc.setLinkedPort(portDst);
+    private void processLinkUpdate(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> changes) {
+        for(Map.Entry<InstanceIdentifier<?>, DataObject> updatedLink : changes.getCreatedData().entrySet()){
+            if(updatedLink.getKey().getTargetType().equals(Link.class)){
+                LOG.info("link updated");
+
+                LOG.trace("processLinkUpdate <{}>", updatedLink.getValue());
+
+                Link link = (Link)updatedLink.getValue();
+                this.linkHandler.handleLinkUpdate(link);
             }
         }
     }

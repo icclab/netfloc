@@ -44,14 +44,13 @@ public class ConfigActivator implements BundleActivator {
 				floatingIPHandlerProperties, floatingIPHandler);
 
 		Dictionary<String, Object> networkHandlerProperties = new Hashtable<>();
-		// final?
-		NetworkHandler networkHandler = new NetworkHandler();
+		NetworkHandler networkHandler = new NetworkHandler(network);
 		registerService(context,
 				new String[]{INeutronNetworkAware.class.getName()},
 				networkHandlerProperties, networkHandler);
 
 		Dictionary<String, Object> subnetHandlerProperties = new Hashtable<>();
-		SubnetHandler subnetHandler = new SubnetHandler();
+		SubnetHandler subnetHandler = new SubnetHandler(network);
 		registerService(context,
 				new String[] {INeutronSubnetAware.class.getName()},
 				subnetHandlerProperties, subnetHandler);

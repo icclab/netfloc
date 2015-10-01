@@ -7,8 +7,8 @@
  */
 package org.opendaylight.netfloc.iface;
 
-public interface ILinkPort extends IPortOperator {
-	public ILinkPort getLinkedPort();
-	public void setLinkedPort(ILinkPort linkedPort);
-	public void removeLinkedPort(ILinkPort linkedPort);
+public interface IFlowPattern {
+	// public Instruction getSrcBridgeInstruction();
+	// public Instruction getAggregationBridgeInstruction();
+	// public Instruction getDstBridgeInstruction();
 }

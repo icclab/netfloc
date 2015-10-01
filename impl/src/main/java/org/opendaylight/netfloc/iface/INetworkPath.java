@@ -13,14 +13,19 @@ public interface INetworkPath {
 	public int getLength();
 	public IBridgeOperator getBegin();
 	public IBridgeOperator getEnd();
-	public void append(IBridgeOperator bridge);
 	public IBridgeOperator getPrevious(IBridgeOperator bridge);
 	public IBridgeOperator getNext(IBridgeOperator bridge);
 	public ILinkPort getPreviousLink(IBridgeOperator bridge);
 	public ILinkPort getNextLink(IBridgeOperator bridge);
-	public void addBridges(List<IBridgeOperator> bridges);
 	public List<IBridgeOperator> getBridges();
-	public INetworkPath getCleanPath();
 	public IHostPort getBeginPort();
 	public IHostPort getEndPort();
+
+	public boolean isEqualConnection(INetworkPath np);
+
+	public void append(IBridgeOperator bridge);
+	public void addBridges(List<IBridgeOperator> bridges);
+	public INetworkPath getCleanPath();
+
+	public void close();
 }

@@ -9,10 +9,11 @@ package org.opendaylight.netfloc.impl;
 
 import org.opendaylight.netfloc.iface.IFlowprogrammer;
 import org.opendaylight.netfloc.iface.INetworkPath;
+import org.opendaylight.netfloc.iface.IFlowPattern;
 
 public class Flowprogrammer implements IFlowprogrammer {
-	// maybe return a status value?
-	public void programFlows(INetworkPath networkPath) {
+
+	public void programFlows(IFlowPattern flowPattern, INetworkPath networkPath) {
 		// TODO
 	}
 }

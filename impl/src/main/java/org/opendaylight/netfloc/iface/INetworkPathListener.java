@@ -7,8 +7,8 @@
  */
 package org.opendaylight.netfloc.iface;
 
-public interface ILinkPort extends IPortOperator {
-	public ILinkPort getLinkedPort();
-	public void setLinkedPort(ILinkPort linkedPort);
-	public void removeLinkedPort(ILinkPort linkedPort);
+public interface INetworkPathListener {
+	public void networkPathCreated(INetworkPath np);
+	public void networkPathUpdated(INetworkPath np);
+	public void networkPathDeleted(INetworkPath np);
 }

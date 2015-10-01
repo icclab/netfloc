@@ -7,6 +7,7 @@
  */
 package org.opendaylight.netfloc.impl;
 
+import org.opendaylight.netfloc.iface.nbhandlers.INeutronNetworkHandler;
 import org.opendaylight.neutron.spi.INeutronNetworkAware;
 import org.opendaylight.neutron.spi.INeutronNetworkCRUD;
 import org.opendaylight.neutron.spi.NeutronNetwork;
@@ -27,8 +28,12 @@ public class NetworkHandler implements INeutronNetworkAware {
     public static final String NETWORK_TYPE_VXLAN = "vxlan";
     public static final String NETWORK_TYPE_GRE = "gre";
     public static final String NETWORK_TYPE_VLAN = "vlan";
+    public static final String NETWORK_TYPE_NETFLOC = "netfloc"; // TBI
+    private INeutronNetworkHandler netHandler;
 
-    // The implementation for each of these services is resolved by the OSGi Service Manager
+    public NetworkHandler(INeutronNetworkHandler netHandler) {
+        this.netHandler = netHandler;
+    }
 
     /**
      * Invoked when a network creation is requested
@@ -55,7 +60,7 @@ public class NetworkHandler implements INeutronNetworkAware {
     @Override
     public void neutronNetworkCreated(NeutronNetwork network) {
         logger.info("neutron network created");
-
+        this.netHandler.neutronNetworkCreated(network);
     }
 
     /**
@@ -87,7 +92,7 @@ public class NetworkHandler implements INeutronNetworkAware {
     @Override
     public void neutronNetworkUpdated(NeutronNetwork network) {
         logger.info("neutron network updated");
-
+        this.netHandler.neutronNetworkUpdated(network);
     }
 
     /**
@@ -111,5 +116,6 @@ public class NetworkHandler implements INeutronNetworkAware {
     @Override
     public void neutronNetworkDeleted(NeutronNetwork network) {
         logger.info("neutron network deleted");
+        this.netHandler.neutronNetworkDeleted(network);
     }
 }

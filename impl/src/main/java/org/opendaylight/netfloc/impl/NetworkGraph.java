@@ -14,9 +14,12 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Uuid;
 import org.opendaylight.neutron.spi.NeutronPort;
+import org.opendaylight.neutron.spi.NeutronSubnet;
+import org.opendaylight.neutron.spi.NeutronNetwork;
 import org.opendaylight.netfloc.iface.IBridgeIterator;
 import org.opendaylight.netfloc.iface.IBridgeOperator;
 import org.opendaylight.netfloc.iface.ILinkPort;
@@ -28,7 +31,10 @@ import org.opendaylight.netfloc.iface.IPortOperator;
 import org.opendaylight.netfloc.iface.ITenantNetworkOperator;
 import org.opendaylight.netfloc.iface.IHostPort;
 import org.opendaylight.netfloc.iface.ITraversableBridge;
+import org.opendaylight.netfloc.iface.INetworkPathListener;
 import org.opendaylight.netfloc.iface.nbhandlers.INeutronPortHandler;
+import org.opendaylight.netfloc.iface.nbhandlers.INeutronSubnetHandler;
+import org.opendaylight.netfloc.iface.nbhandlers.INeutronNetworkHandler;
 import org.opendaylight.netfloc.iface.sbhandlers.IBridgeCreateHandler;
 import org.opendaylight.netfloc.iface.sbhandlers.IBridgeDeleteHandler;
 import org.opendaylight.netfloc.iface.sbhandlers.IBridgeUpdateHandler;
@@ -39,6 +45,7 @@ import org.opendaylight.netfloc.iface.sbhandlers.INodeDisconnectHandler;
 import org.opendaylight.netfloc.iface.sbhandlers.IPortCreateHandler;
 import org.opendaylight.netfloc.iface.sbhandlers.IPortDeleteHandler;
 import org.opendaylight.netfloc.iface.sbhandlers.IPortUpdateHandler;
+import org.opendaylight.netfloc.iface.ofhandlers.ILinkHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,15 +69,27 @@ public class NetworkGraph implements
 	IPortCreateHandler,
 	IPortDeleteHandler,
 	IPortUpdateHandler,
-	INeutronPortHandler{
+	INeutronPortHandler,
+	INeutronNetworkHandler,
+	INeutronSubnetHandler,
+	ILinkHandler{
 	
 	static final Logger logger = LoggerFactory.getLogger(NetworkGraph.class);
 
 	List<INodeOperator> nodes = new LinkedList<INodeOperator>();
 	List<ITenantNetworkOperator> tenantNetworks = new LinkedList<ITenantNetworkOperator>();
+
 	List<IHostPort> neutronPortCache = new LinkedList<IHostPort>();
 
-	// BFS
+	Map<String, NeutronSubnet> neutronSubnetCache = new HashMap<String, NeutronSubnet>();
+	Map<String, NeutronNetwork> neutronNetworkCache = new HashMap<String, NeutronNetwork>();
+
+	List<INetworkPathListener> networkPathListeners = new LinkedList<INetworkPathListener>();
+
+	public void registerNetworkPathListener(INetworkPathListener npl) {
+		this.networkPathListeners.add(npl);
+	}
+
 	public void traverse(IBridgeIterator bridgeIterator) {
 		List<ITraversableBridge> bridgesToVisit = new LinkedList<ITraversableBridge>();
 		bridgesToVisit.add(new TraversableBridge(this.getBridges().get(0)));
@@ -121,6 +140,7 @@ public class NetworkGraph implements
 		return adjacentBridges;
 	}
 
+	// unused, todo: revise
 	public List<INetworkPath> getNetworkPaths() {
 		List<INetworkPath> networkPaths1 = new LinkedList<INetworkPath>();
 		List<IHostPort> hostPorts = new LinkedList<IHostPort>();
@@ -132,6 +152,27 @@ public class NetworkGraph implements
 			}
 		}
 		return networkPaths1;
+	}
+
+	public List<INetworkPath> getConnectableNetworkPaths(IHostPort src) {
+		List<INetworkPath> paths = new LinkedList<INetworkPath>();
+		for (IHostPort dst : this.neutronPortCache) {
+			if (src.canConnectTo(dst)) {
+				INetworkPath np = getNetworkPath(src, dst);
+				if (np != null) {
+					paths.add(np);
+				}
+			}
+		}
+		return paths;
+	}
+
+	public List<INetworkPath> getConnectableNetworkPaths() {
+		List<INetworkPath> paths = new LinkedList<INetworkPath>();
+		for (IHostPort src : this.neutronPortCache) {
+			paths.addAll(this.getConnectableNetworkPaths(src));
+		}
+		return paths;
 	}
 
 	public INetworkPath getNetworkPath(final IHostPort begin, final IHostPort end) {
@@ -156,6 +197,7 @@ public class NetworkGraph implements
 				if (currentBridge.equals(endBridge)) {
 					this.shortestPath = this.getRootPath(currentBridge);
 					this.shortestPath.append(currentBridge.getBridge());
+					this.shortestPath.close();
 					return false;
 				}
 
@@ -163,7 +205,6 @@ public class NetworkGraph implements
 
 				if (!paths.isEmpty()) {
 					INetworkPath rootPath = this.getRootPath(currentBridge);
-					System.out.println("root path size: " + rootPath.getLength());
 					newPath.addBridges(rootPath.getBridges());
 				}
 
@@ -178,7 +219,7 @@ public class NetworkGraph implements
 			}
 
 			public INetworkPath getResult() {
-				return this.shortestPath;
+				return this.shortestPath.getCleanPath();
 			}
 
 			private INetworkPath getRootPath(ITraversableBridge currentBridge) {
@@ -328,6 +369,7 @@ public class NetworkGraph implements
 			}
 		};
 	}
+
 	public IHandleResponse handleBridgeDelete(Node node, OvsdbBridgeAugmentation ovsdbBridgeAugmentation) {
 		INodeOperator no = this.getParentNode(node.getNodeId());
 		IBridgeOperator bo = new Bridge(no, node, ovsdbBridgeAugmentation);
@@ -383,10 +425,8 @@ public class NetworkGraph implements
 		};
 	}
 
-	public IHandleResponse handlePortCreate(Node node, TerminationPoint tp, OvsdbTerminationPointAugmentation ovsdbTerminationPointAugmentation) {
+	public IHandleResponse handlePortCreate(Node node, TerminationPoint tp, OvsdbTerminationPointAugmentation tpa) {
 		INodeOperator no = this.getParentNode(node.getNodeId());
-
-		IPortOperator port;
 
 		if (no == null) {
 			throw new IllegalStateException("node is null on port create");
@@ -400,18 +440,7 @@ public class NetworkGraph implements
 			}
 		}
 
-		// is it a neutron port
-		port = SouthboundHelper.maybeCreateHostPort(this.neutronPortCache, bo, tp, ovsdbTerminationPointAugmentation);
-
-		if (port == null) {
-			logger.info("not a neutron port");
-			port = SouthboundHelper.maybeCreateInternalPort(bo, tp, ovsdbTerminationPointAugmentation);
-		}
-
-		if (port == null) {
-			logger.info("not an internal port");
-			port = new LinkPort(bo, tp, ovsdbTerminationPointAugmentation);
-		}
+		IPortOperator port = this.createPort(bo, tp, tpa);
 
 		bo.addPort(port);
 
@@ -421,13 +450,40 @@ public class NetworkGraph implements
 			}
 		};
 	}
+	private IPortOperator createPort(IBridgeOperator bo, TerminationPoint tp, OvsdbTerminationPointAugmentation tpa) {
+		IPortOperator port = SouthboundHelper.maybeCreateHostPort(this.neutronPortCache, bo, tp, tpa);
 
-	public IHandleResponse handlePortDelete(Node node, OvsdbTerminationPointAugmentation ovsdbTerminationPointAugmentation) {
+		if (port != null) {
+			logger.info("is a neutron port");
+			IHostPort srcPort = (IHostPort)port;
+			for (IHostPort dstPort : this.getHostPorts()) {
+				if (srcPort.canConnectTo(dstPort)) {
+					for (INetworkPathListener npl : this.networkPathListeners) {
+						npl.networkPathCreated(this.getNetworkPath(srcPort, dstPort));
+					}
+				}
+			}
+			return port;
+		}
+
+		port = SouthboundHelper.maybeCreateInternalPort(bo, tp, tpa);
+
+		if (port != null) {
+			logger.info("is an internal port");
+			return port;
+		}
+
+		logger.info("is a link port");
+		return new LinkPort(bo, tp, tpa);
+	}
+
+	public IHandleResponse handlePortDelete(Node node, OvsdbTerminationPointAugmentation tpa) {
 		INodeOperator no = this.getParentNode(node.getNodeId());
 
 		if (no == null) {
 			throw new IllegalStateException("node is null on port delete");
 		}
+		
 		IBridgeOperator bo = null;
 
 		for (IBridgeOperator br : no.getBridges()) {
@@ -435,7 +491,17 @@ public class NetworkGraph implements
 				bo = br; break;
 			}
 		}
-		IPortOperator po = bo.getPort(ovsdbTerminationPointAugmentation.getPortUuid());
+
+		IPortOperator po = bo.getPort(tpa.getPortUuid());
+
+		if (po instanceof IHostPort) {
+			IHostPort hostPort = (IHostPort)po;
+			for (INetworkPath removedPath : this.getConnectableNetworkPaths(hostPort)) {
+				for (INetworkPathListener npl : this.networkPathListeners) {
+					npl.networkPathDeleted(removedPath);
+				}
+			}
+		}
 
 		bo.removePort(po);
 
@@ -446,7 +512,7 @@ public class NetworkGraph implements
 		};
 	}
 	
-	public IHandleResponse handlePortUpdate(Node node, TerminationPoint tp, OvsdbTerminationPointAugmentation ovsdbTerminationPointAugmentation) {
+	public IHandleResponse handlePortUpdate(Node node, TerminationPoint tp, OvsdbTerminationPointAugmentation tpa) {
 		INodeOperator no = this.getParentNode(node.getNodeId());
 
 		if (no == null) {
@@ -461,15 +527,79 @@ public class NetworkGraph implements
 			}
 		}
 
-		IPortOperator po = bo.getPort(ovsdbTerminationPointAugmentation.getPortUuid());
+		IPortOperator po = bo.getPort(tpa.getPortUuid());
 
-		po.update(tp, ovsdbTerminationPointAugmentation);
+		po.update(tp, tpa);
+
+		// todo test connections
 
 		return new IHandleResponse() {
 			public HandleStatus getStatus() {
 				return HandleStatus.OK;
 			}
 		};
+	}
+
+	public void handleLinkCreate(Link link) {
+		TpId tpIdSrc = link.getSource().getSourceTp();
+		TpId tpIdDst = link.getDestination().getDestTp();
+
+		if (tpIdSrc == null || tpIdDst == null) {
+			logger.error("TpId is null for <{}>, <{}>", tpIdSrc, tpIdDst);
+		}
+
+		ILinkPort portSrc = this.getLinkPort(tpIdSrc);
+		ILinkPort portDst = this.getLinkPort(tpIdDst);
+
+		portSrc.setLinkedPort(portDst);
+
+		// todo: update network paths?
+	}
+
+	public void handleLinkDelete(Link link) {
+		TpId tpIdSrc = link.getSource().getSourceTp();
+		TpId tpIdDst = link.getDestination().getDestTp();
+
+		if (tpIdSrc == null || tpIdDst == null) {
+			logger.error("TpId is null for <{}>, <{}>", tpIdSrc, tpIdDst);
+		}
+
+		ILinkPort portSrc = this.getLinkPort(tpIdSrc);
+		ILinkPort portDst = this.getLinkPort(tpIdDst);
+
+		// old paths
+		List<INetworkPath> oldPaths = this.getConnectableNetworkPaths();
+
+		portSrc.removeLinkedPort(portDst);
+		
+		// notify network path listeners by comparing old to new path list
+		List<INetworkPath> newPaths = this.getConnectableNetworkPaths();
+		
+		for (INetworkPath oldPath : oldPaths) {
+			boolean found = false;
+			for (INetworkPath newPath : newPaths) {
+				if (oldPath.isEqualConnection(newPath)) {
+					found = true;
+
+					if (!oldPath.equals(newPath)) {
+						// link is broken but connection can be recovered
+						for (INetworkPathListener npl : this.networkPathListeners) {
+							npl.networkPathUpdated(newPath);
+						}
+					}
+				}
+			}
+			if (!found) {
+				// this is a broken link and connection cannot be recovered
+				for (INetworkPathListener npl : this.networkPathListeners) {
+					npl.networkPathDeleted(oldPath);
+				}
+			}
+		}
+	}
+
+	public void handleLinkUpdate(Link link) {
+		// todo
 	}
 
     /**
@@ -520,5 +650,61 @@ public class NetworkGraph implements
     	}
     	return null;
     }
-	
+
+    /**
+     * Services provide this interface method for taking action after a subnet has been created
+     *
+     * @param subnet
+     *            instance of new Neutron Subnet object
+     */
+    public void neutronSubnetCreated(NeutronSubnet subnet) {
+    	this.neutronSubnetCache.put(subnet.getSubnetUUID(), subnet);
+    }
+
+    /**
+     * Services provide this interface method for taking action after a subnet has been updated
+     *
+     * @param subnet
+     *            instance of modified Neutron Subnet object
+     */
+    public void neutronSubnetUpdated(NeutronSubnet subnet) {
+    	this.neutronSubnetCache.put(subnet.getSubnetUUID(), subnet);
+    }
+
+    /**
+     * Services provide this interface method for taking action after a subnet has been deleted
+     *
+     * @param subnet
+     *            instance of deleted Router Subnet object
+     */
+    public void neutronSubnetDeleted(NeutronSubnet subnet) {
+    	this.neutronSubnetCache.remove(subnet.getSubnetUUID());
+    }
+
+	/**
+     * Invoked to take action after a network has been created.
+     *
+     * @param network  An instance of new Neutron Network object.
+     */
+    public void neutronNetworkCreated(NeutronNetwork network) {
+    	this.neutronNetworkCache.put(network.getNetworkUUID(), network);
+    }
+
+    /**
+     * Invoked to take action after a network has been updated.
+     *
+     * @param network An instance of modified Neutron Network object.
+     */
+    public void neutronNetworkUpdated(NeutronNetwork network) {
+    	this.neutronNetworkCache.put(network.getNetworkUUID(), network);
+    }
+
+    /**
+     * Invoked to take action after a network has been deleted.
+     *
+     * @param network  An instance of deleted Neutron Network object.
+     */
+    public void neutronNetworkDeleted(NeutronNetwork network) {
+    	this.neutronNetworkCache.remove(network.getNetworkUUID());
+    }
 }

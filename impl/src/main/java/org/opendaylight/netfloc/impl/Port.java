@@ -110,4 +110,8 @@ public class Port implements IPortOperator {
 	private String getOFTpIdValue() {
 		return "openflow:" + Long.parseLong(this.bridge.getDatapathId().replace(":", ""), 16) + ":" + this.getOfport();
 	}
+
+	public boolean equals(Object o) {
+		return (o instanceof IPortOperator) && ((IPortOperator)o).getPortUuid().equals(this.getPortUuid());
+	}
 }
