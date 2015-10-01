@@ -20,6 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.neutron.spi.NeutronPort;
 import org.opendaylight.neutron.spi.NeutronSubnet;
 import org.opendaylight.neutron.spi.NeutronNetwork;
+import org.opendaylight.neutron.spi.NeutronRouter;
+import org.opendaylight.neutron.spi.NeutronFloatingIP;
 import org.opendaylight.netfloc.iface.IBridgeIterator;
 import org.opendaylight.netfloc.iface.IBridgeOperator;
 import org.opendaylight.netfloc.iface.ILinkPort;
@@ -35,6 +37,8 @@ import org.opendaylight.netfloc.iface.INetworkPathListener;
 import org.opendaylight.netfloc.iface.nbhandlers.INeutronPortHandler;
 import org.opendaylight.netfloc.iface.nbhandlers.INeutronSubnetHandler;
 import org.opendaylight.netfloc.iface.nbhandlers.INeutronNetworkHandler;
+import org.opendaylight.netfloc.iface.nbhandlers.INeutronRouterHandler;
+import org.opendaylight.netfloc.iface.nbhandlers.INeutronFloatingIPHandler;
 import org.opendaylight.netfloc.iface.sbhandlers.IBridgeCreateHandler;
 import org.opendaylight.netfloc.iface.sbhandlers.IBridgeDeleteHandler;
 import org.opendaylight.netfloc.iface.sbhandlers.IBridgeUpdateHandler;
@@ -72,6 +76,8 @@ public class NetworkGraph implements
 	INeutronPortHandler,
 	INeutronNetworkHandler,
 	INeutronSubnetHandler,
+	INeutronRouterHandler,
+	INeutronFloatingIPHandler,
 	ILinkHandler{
 	
 	static final Logger logger = LoggerFactory.getLogger(NetworkGraph.class);
@@ -706,5 +712,59 @@ public class NetworkGraph implements
      */
     public void neutronNetworkDeleted(NeutronNetwork network) {
     	this.neutronNetworkCache.remove(network.getNetworkUUID());
+    }
+
+    /**
+     * Invoked to take action after a network has been created.
+     *
+     * @param network  An instance of new Neutron Network object.
+     */
+    public void neutronRouterCreated(NeutronRouter router) {
+    	// do something
+    }
+
+    /**
+     * Invoked to take action after a router has been updated.
+     *
+     * @param router An instance of modified Neutron Router object.
+     */
+    public void neutronRouterUpdated(NeutronRouter router) {
+    	// do something
+    }
+
+    /**
+     * Invoked to take action after a router has been deleted.
+     *
+     * @param router  An instance of deleted Neutron Router object.
+     */
+    public void neutronRouterDeleted(NeutronRouter router) {
+    	// do something
+    }
+
+    /**
+     * Invoked to take action after a floatingIP has been created.
+     *
+     * @param floatingIP  An instance of new Neutron Network object.
+     */
+    public void neutronFloatingIPCreated(NeutronFloatingIP floatingIP) {
+    	// do something
+    }
+
+    /**
+     * Invoked to take action after a floatingIP has been updated.
+     *
+     * @param floatingIP An instance of modified Neutron FloatingIP object.
+     */
+    public void neutronFloatingIPUpdated(NeutronFloatingIP floatingIP) {
+    	// do something
+    }
+
+    /**
+     * Invoked to take action after a floatingIP has been deleted.
+     *
+     * @param floatingIP  An instance of deleted Neutron FloatingIP object.
+     */
+    public void neutronFloatingIPDeleted(NeutronFloatingIP floatingIP) {
+    	// do something
     }
 }

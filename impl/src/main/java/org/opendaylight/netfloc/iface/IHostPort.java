@@ -8,6 +8,7 @@
 package org.opendaylight.netfloc.iface;
 
 import org.opendaylight.neutron.spi.NeutronPort;
+import org.opendaylight.neutron.spi.NeutronFloatingIP;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 
 import java.util.List;
@@ -20,4 +21,6 @@ public interface IHostPort extends IPortOperator {
 	public String getNeutronUuid();
 	public boolean canConnectTo(IHostPort dst);
 	public NeutronPort getNeutronPort();
+	public NeutronFloatingIP getNeutronFloatingIP();
+	public void setNeutronFloatingIP(NeutronFloatingIP neutronFloatingIP);
 }

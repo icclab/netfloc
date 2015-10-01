@@ -7,6 +7,8 @@
  */
 package org.opendaylight.netfloc.impl;
 
+import org.opendaylight.netfloc.iface.nbhandlers.INeutronRouterHandler;
+
 import org.opendaylight.neutron.spi.INeutronRouterAware;
 import org.opendaylight.neutron.spi.NeutronRouter;
 import org.opendaylight.neutron.spi.NeutronRouter_Interface;
@@ -24,7 +26,11 @@ import java.net.HttpURLConnection;
 public class RouterHandler implements INeutronRouterAware {
     static final Logger logger = LoggerFactory.getLogger(RouterHandler.class);
 
-    // The implementation for each of these services is resolved by the OSGi Service Manager
+    private INeutronRouterHandler handler;
+
+    public RouterHandler(INeutronRouterHandler handler) {
+        this.handler = handler;
+    }
 
     /**
      * Services provide this interface method to indicate if the specified router can be created

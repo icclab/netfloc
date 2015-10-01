@@ -38,7 +38,7 @@ public class ConfigActivator implements BundleActivator {
 		NetworkGraph network = new NetworkGraph();
 
 		Dictionary<String, Object> floatingIPHandlerProperties = new Hashtable<>();
-		FloatingIPHandler floatingIPHandler = new FloatingIPHandler();
+		FloatingIPHandler floatingIPHandler = new FloatingIPHandler(network);
 		registerService(context,
 				new String[] {INeutronFloatingIPAware.class.getName()},
 				floatingIPHandlerProperties, floatingIPHandler);
@@ -62,7 +62,7 @@ public class ConfigActivator implements BundleActivator {
 				portHandlerProperties, portHandler);
 
 		Dictionary<String, Object> routerHandlerProperties = new Hashtable<>();
-		RouterHandler routerHandler = new RouterHandler();
+		RouterHandler routerHandler = new RouterHandler(network);
 		registerService(context,
 				new String[]{INeutronRouterAware.class.getName()},
 				routerHandlerProperties, routerHandler);

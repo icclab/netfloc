@@ -11,6 +11,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.re
 
 import org.opendaylight.neutron.spi.NeutronPort;
 import org.opendaylight.neutron.spi.Neutron_IPs;
+import org.opendaylight.neutron.spi.NeutronFloatingIP;
 import org.opendaylight.netfloc.iface.IBridgeOperator;
 import org.opendaylight.netfloc.iface.IHostPort;
 
@@ -21,6 +22,7 @@ import java.util.LinkedList;
 public class HostPort extends Port implements IHostPort {
 
 	private NeutronPort neutronPort;
+	private NeutronFloatingIP neutronFloatingIP;
 
 	public HostPort(NeutronPort neutronPort) {
 		this.neutronPort = neutronPort;
@@ -51,8 +53,15 @@ public class HostPort extends Port implements IHostPort {
 		return this.neutronPort;
 	}
 
-	public boolean canConnectTo(IHostPort dst) {
+	public NeutronFloatingIP getNeutronFloatingIP() {
+		return this.neutronFloatingIP;
+	}
 
+	public void setNeutronFloatingIP(NeutronFloatingIP neutronFloatingIP) {
+		this.neutronFloatingIP = neutronFloatingIP;
+	}
+
+	public boolean canConnectTo(IHostPort dst) {
 		if (this.equals(dst)) {
 			return false;
 		}

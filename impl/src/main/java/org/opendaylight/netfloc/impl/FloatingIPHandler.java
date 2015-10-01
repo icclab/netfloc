@@ -7,6 +7,8 @@
  */
 package org.opendaylight.netfloc.impl;
 
+import org.opendaylight.netfloc.iface.nbhandlers.INeutronFloatingIPHandler;
+
 import org.opendaylight.neutron.spi.INeutronFloatingIPAware;
 import org.opendaylight.neutron.spi.NeutronFloatingIP;
 
@@ -23,6 +25,12 @@ import java.net.HttpURLConnection;
 public class FloatingIPHandler implements INeutronFloatingIPAware {
 
     static final Logger logger = LoggerFactory.getLogger(FloatingIPHandler.class);
+
+    private INeutronFloatingIPHandler handler;
+
+    public FloatingIPHandler(INeutronFloatingIPHandler handler) {
+        this.handler = handler;
+    }
 
     // The implementation for each of these services is resolved by the OSGi Service Manager
 
@@ -52,6 +60,7 @@ public class FloatingIPHandler implements INeutronFloatingIPAware {
     @Override
     public void neutronFloatingIPCreated(NeutronFloatingIP floatingIP) {
         logger.info("neutron floating ip created");
+        handler.neutronFloatingIPCreated(floatingIP);
     }
 
     /**
@@ -82,6 +91,7 @@ public class FloatingIPHandler implements INeutronFloatingIPAware {
     @Override
     public void neutronFloatingIPUpdated(NeutronFloatingIP floatingIP) {
         logger.info("neutron floating ip updated");
+        handler.neutronFloatingIPUpdated(floatingIP);
     }
 
     /**
@@ -109,5 +119,6 @@ public class FloatingIPHandler implements INeutronFloatingIPAware {
     @Override
     public void neutronFloatingIPDeleted(NeutronFloatingIP floatingIP) {
         logger.info("neutron floating ip deleted");
+        handler.neutronFloatingIPDeleted(floatingIP);
     }
 }
