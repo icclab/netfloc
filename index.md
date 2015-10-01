@@ -2,62 +2,75 @@
 layout: default
 ---
 
-[Solo](http://chibicode.github.io/solo) is a Jekyll theme that supports **single-page websites** only, but supports them well. Yes, it's responsive.
+[What is Netfloc?](https://github.com/icclab/netfloc/) NETwork FLOws for Clouds (Netfloc) is a framework for datacenter network programming. It is comprised of set of tools and libraries packed as Java bundles that interoperate with the OpenDaylight controller. Netfloc exposes REST API abstractions and Java interfaces for network programmers to enable optimal integration in cloud datacenters and fully SDN-enabled end-to-end management of OpenFlow enabled switches.
+ 
+## Why OpenDaylight as SDN controller?
 
-<iframe src="http://ghbtns.com/github-btn.html?user=chibicode&amp;repo=solo&amp;type=watch&amp;count=true&amp;size=large"
-  allowtransparency="true" frameborder="0" scrolling="0" width="170" height="30"></iframe><br/>
+OpenDaylight is hosting one of the biggest growing community for network programability and NFV support that has gone beyond being just being SDN controller. It supports variety of networking projects, standards and protocols.
 
-Looking for a more standard Jekyll theme? Try out [Shiori](http://github.com/ellekasai/shiori) theme, which has Bootstrap integration.
+## Work in progress
 
-## Solo is useful if...
+Currently Netfloc provides library support for OpenStack tenant-based network graph management and traversal. It is based on the following OpenDaylight features: mdsal, openflowplugin and ovsdb (see Architecture and Roadmap.) It also provides a support for the northbound OpenStack Neutron ML2 plugin APIs. For upcoming milestones, check the Roadmap section.
 
-* You want to create an "about me" page from a single markdown file and host it under a custom domain name.
-* You want to create a single-page website that's mostly text, like [Know Your Company](https://knowyourcompany.com/).
-* You want to share a single markdown file and tried GitHub Gist ([example](https://gist.github.com/dypsilon/5819504)), but would like something nicer-looking.
-* You want something like GitHub's [automatic page generator](http://pages.github.com/) for a non-code repository.
+## Architecture Design
 
-This page itself is built with Solo. It's generated from [this markdown file](https://github.com/chibicode/solo/blob/gh-pages/_includes/index.md).
+Check the <a href="https://github.com/icclab/netfloc/blob/master/docs/architecture.md/">Netfloc architecture</a> for overall architecture, components and their implementation details and examples.
 
-## Usage
 
-First, [install Jekyll](http://jekyllrb.com/docs/installation/). Then download Solo from its [GitHub Repository](https://github.com/chibicode/solo). Start Jekyll and you should see this page up and running.
+## Features
 
-**The main file you'll be editing is `index.md`**. This becomes the content for the page.
+- Facilitate pluggable and chainable network functions as Java bundles
+- End-to-end network control in datacenters
+- Reduce the complexity and protocol overhead in cloud networks
+- Increase tenant traffic efficiency
+- Enable optimal data center network planing and design
+- OpenStack Neutron ML2 plugin and northbound API support
+- ODL Lithium support
+- OpenFlow support
 
-### Other Files
 
-* Edit `_config.yml` to change the site's title and description.
-* Edit `_includes/head.html` to add custom code to `<head>`.
-* Edit `_includes/scripts.html` to add custom code before `</body>`.
-* Edit `CNAME` to host on a custom domain.
-* Edit `README.md` before pushing your code.
+## See further details on:
 
-### Don't use `<h1>` tags
+<p><a href="https://github.com/icclab/netfloc/blob/master/docs/installation_guide.md/">Netfloc instalation and adminisatrion</a></p>
+<p><a href="https://github.com/icclab/netfloc/blob/master/docs/programmers_guide.md">Netfloc programmers guide</a></p>
 
-Wthin `index.md`, do not use `<h1>` tags - `<h1>` is reserved for the site title.
 
-### Supported Tags
+## Netfloc APIs
 
-Solo supports lists, `<hr>`s, `<table>`s,
+Currently Netfloc defines [API Specification](https://github.com/icclab/netfloc/tree/master/docs/netfloc_api_spec) for the following network resources:
 
-> blockquotes, and...
+- Tenant filtered network graph
+- All host ports
+- End-to-end network path 
+- Flow patterns on netowrk paths
 
-~~~html
-<pre>code blocks with syntax highlighting.</pre>
-~~~
+## Roadmap
 
-### Keep Solo up to date
+Next milestone for Netfloc is to provide application examples based on the libraries to showcase efficient management of OpenFlow enabled switches in datacenters, optimize tenant traffic isolation in datacenter cloud networks, leverage novel and improve existing networking functions. Some of the application in scope are:
 
-Instead of downloading, you can [fork Solo](https://github.com/chibicode/solo/fork) and use the "upstream" strategy described on [this page](https://help.github.com/articles/fork-a-repo) to keep Solo up to date.
+- Isolation: Ensure end-to-end tenant segregation using novel non-GRE/VxLAN tunneling mechanism for optimized packet header.
+- Resilience: Provide direct SDN control on a physical level enabling fully SDN-managed infrastructure.
+- Service Function Chaining: Traffic classification and steering support for NFVs.
+- Advanced monitoring for cloud datacenters based on OpenFlow. 
 
-## Author
+In paralel, support for the following features has been scheduled:
 
-Shu Uesugi ([Twitter](http://twitter.com/chibicode)/[GitHub](http://github.com/chibicode)/[G+](https://plus.google.com/110325199858284431541?rel=author)).
+- Nefloc northbound API specification
+- Advanced flow programming library based on OpenFlow
+- Testing and monitoring tools
 
-![Shu Uesugi](http://www.gravatar.com/avatar/b868d84bbe2ed30ec45c9253e1c1cefe.jpg?s=200)
 
 ### License
 
-[MIT License](http://chibicode.mit-license.org/)
+Netfloc is licensed under the [Apache License version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
-<div class="github-fork-ribbon-wrapper right fixed" style="width: 150px;height: 150px;position: fixed;overflow: hidden;top: 0;z-index: 9999;pointer-events: none;right: 0;"><div class="github-fork-ribbon" style="position: absolute;padding: 2px 0;background-color: #333;background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));-webkit-box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.5);-moz-box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.5);box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.5);z-index: 9999;pointer-events: auto;top: 42px;right: -43px;-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);-ms-transform: rotate(45deg);-o-transform: rotate(45deg);transform: rotate(45deg);"><a href="https://github.com/chibicode/solo" style="font: 700 13px &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;color: #fff;text-decoration: none;text-shadow: 0 -1px rgba(0, 0, 0, 0.5);text-align: center;width: 200px;line-height: 20px;display: inline-block;padding: 2px 0;border-width: 1px 0;border-style: dotted;border-color: rgba(255, 255, 255, 0.7);">Fork me on GitHub</a></div></div>
+<footer>
+        <p>This project is made and maintained by <a href="https://github.com/icclab">icclab</a></p>
+        <p><img src="https://raw.githubusercontent.com/icclab/netfloc/master/docs/img/icclab-logo.png"></p>
+        <p><small>Hosted on <a href="http://chibicode.github.io/solo/">GitHub Pages</a> &mdash; Theme by <a href="https://github.com/chibicode/solo">chibicode</a>
+        </small>
+        </p>
+</footer>
+
+
+<div class="github-fork-ribbon-wrapper right fixed" style="width: 150px;height: 150px;position: fixed;overflow: hidden;top: 0;z-index: 9999;pointer-events: none;right: 0;"><div class="github-fork-ribbon" style="position: absolute;padding: 2px 0;background-color: #333;background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));-webkit-box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.5);-moz-box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.5);box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.5);z-index: 9999;pointer-events: auto;top: 42px;right: -43px;-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);-ms-transform: rotate(45deg);-o-transform: rotate(45deg);transform: rotate(45deg);"><a href="https://github.com/icclab/netfloc/" style="font: 700 13px &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;color: #fff;text-decoration: none;text-shadow: 0 -1px rgba(0, 0, 0, 0.5);text-align: center;width: 200px;line-height: 20px;display: inline-block;padding: 2px 0;border-width: 1px 0;border-style: dotted;border-color: rgba(255, 255, 255, 0.7);">Fork me on GitHub</a></div></div>
