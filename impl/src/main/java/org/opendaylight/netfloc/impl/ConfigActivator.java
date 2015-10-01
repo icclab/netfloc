@@ -35,39 +35,40 @@ public class ConfigActivator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
 		LOG.info("ConfigActivator start");
 
-		NetworkGraph network = new NetworkGraph();
+		NetworkGraph graph = new NetworkGraph();
+		NetflocManager manager = new NetflocManager(graph);
 
 		Dictionary<String, Object> floatingIPHandlerProperties = new Hashtable<>();
-		FloatingIPHandler floatingIPHandler = new FloatingIPHandler(network);
+		FloatingIPHandler floatingIPHandler = new FloatingIPHandler(manager);
 		registerService(context,
 				new String[] {INeutronFloatingIPAware.class.getName()},
 				floatingIPHandlerProperties, floatingIPHandler);
 
 		Dictionary<String, Object> networkHandlerProperties = new Hashtable<>();
-		NetworkHandler networkHandler = new NetworkHandler(network);
+		NetworkHandler networkHandler = new NetworkHandler(manager);
 		registerService(context,
 				new String[]{INeutronNetworkAware.class.getName()},
 				networkHandlerProperties, networkHandler);
 
 		Dictionary<String, Object> subnetHandlerProperties = new Hashtable<>();
-		SubnetHandler subnetHandler = new SubnetHandler(network);
+		SubnetHandler subnetHandler = new SubnetHandler(manager);
 		registerService(context,
 				new String[] {INeutronSubnetAware.class.getName()},
 				subnetHandlerProperties, subnetHandler);
 
 		Dictionary<String, Object> portHandlerProperties = new Hashtable<>();
-		PortHandler portHandler = new PortHandler(network);
+		PortHandler portHandler = new PortHandler(manager);
 		registerService(context,
 				new String[]{INeutronPortAware.class.getName()},
 				portHandlerProperties, portHandler);
 
 		Dictionary<String, Object> routerHandlerProperties = new Hashtable<>();
-		RouterHandler routerHandler = new RouterHandler(network);
+		RouterHandler routerHandler = new RouterHandler(manager);
 		registerService(context,
 				new String[]{INeutronRouterAware.class.getName()},
 				routerHandlerProperties, routerHandler);
 
-		OvsdbDataChangeListener ovsdbDataChangeListener = new OvsdbDataChangeListener(providerContext.getSALService(DataBroker.class), network);
+		OvsdbDataChangeListener ovsdbDataChangeListener = new OvsdbDataChangeListener(providerContext.getSALService(DataBroker.class), manager, manager, manager);
         registerService(context,
                 new String[] {OvsdbDataChangeListener.class.getName()}, null, ovsdbDataChangeListener);
 
@@ -76,7 +77,7 @@ public class ConfigActivator implements BundleActivator {
         LinkDiscoveryListener linkDiscoveryListener = new LinkDiscoveryListener();
         notificationService.registerNotificationListener(linkDiscoveryListener);
 
-        LinkDataChangeListener linkDataChangeListener = new LinkDataChangeListener(providerContext.getSALService(DataBroker.class), network);
+        LinkDataChangeListener linkDataChangeListener = new LinkDataChangeListener(providerContext.getSALService(DataBroker.class), manager);
         registerService(context,
                 new String[] {LinkDataChangeListener.class.getName()}, null, linkDataChangeListener);
 	}

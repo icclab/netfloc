@@ -44,10 +44,10 @@ public class OvsdbDataChangeListener implements DataChangeListener, AutoCloseabl
     private INodeHandler nodeHandler;
     private IPortHandler portHandler;
 
-    public OvsdbDataChangeListener (DataBroker dataBroker, NetworkGraph network) {
-        this.bridgeHandler = network;
-        this.nodeHandler = network;
-        this.portHandler = network;
+    public OvsdbDataChangeListener (DataBroker dataBroker, IBridgeHandler bridgeHandler, INodeHandler nodeHandler, IPortHandler portHandler) {
+        this.bridgeHandler = bridgeHandler;
+        this.nodeHandler = nodeHandler;
+        this.portHandler = portHandler;
         this.dataBroker = dataBroker;
         this.start();
     }
