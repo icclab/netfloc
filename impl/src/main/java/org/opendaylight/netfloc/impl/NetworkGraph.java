@@ -39,16 +39,9 @@ import org.opendaylight.netfloc.iface.nbhandlers.INeutronSubnetHandler;
 import org.opendaylight.netfloc.iface.nbhandlers.INeutronNetworkHandler;
 import org.opendaylight.netfloc.iface.nbhandlers.INeutronRouterHandler;
 import org.opendaylight.netfloc.iface.nbhandlers.INeutronFloatingIPHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.IBridgeCreateHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.IBridgeDeleteHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.IBridgeUpdateHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.IHandleResponse;
-import org.opendaylight.netfloc.iface.sbhandlers.INodeConnectHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.INodeConnectionAttributeChangeHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.INodeDisconnectHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.IPortCreateHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.IPortDeleteHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.IPortUpdateHandler;
+import org.opendaylight.netfloc.iface.sbhandlers.IBridgeHandler;
+import org.opendaylight.netfloc.iface.sbhandlers.INodeHandler;
+import org.opendaylight.netfloc.iface.sbhandlers.IPortHandler;
 import org.opendaylight.netfloc.iface.ofhandlers.ILinkHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,15 +57,9 @@ import java.lang.IllegalStateException;
 public class NetworkGraph implements
 	INetworkTraverser,
 	INetworkOperator,
-	IBridgeCreateHandler,
-	IBridgeDeleteHandler,
-	IBridgeUpdateHandler,
-	INodeConnectHandler,
-	INodeConnectionAttributeChangeHandler,
-	INodeDisconnectHandler,
-	IPortCreateHandler,
-	IPortDeleteHandler,
-	IPortUpdateHandler,
+	IBridgeHandler,
+	INodeHandler,
+	IPortHandler,
 	INeutronPortHandler,
 	INeutronNetworkHandler,
 	INeutronSubnetHandler,
@@ -365,28 +352,18 @@ public class NetworkGraph implements
 		return null;
 	}
 
-	public IHandleResponse handleBridgeCreate(Node node, OvsdbBridgeAugmentation ovsdbBridgeAugmentation) {
+	public void handleBridgeCreate(Node node, OvsdbBridgeAugmentation ovsdbBridgeAugmentation) {
 		INodeOperator no = this.getParentNode(node.getNodeId());
 		IBridgeOperator bo = new Bridge(no, node, ovsdbBridgeAugmentation);
 		no.addBridge(bo);
-		return new IHandleResponse() {
-			public HandleStatus getStatus() {
-				return HandleStatus.OK;
-			}
-		};
 	}
 
-	public IHandleResponse handleBridgeDelete(Node node, OvsdbBridgeAugmentation ovsdbBridgeAugmentation) {
+	public void handleBridgeDelete(Node node, OvsdbBridgeAugmentation ovsdbBridgeAugmentation) {
 		INodeOperator no = this.getParentNode(node.getNodeId());
 		IBridgeOperator bo = new Bridge(no, node, ovsdbBridgeAugmentation);
 		no.removeBridge(bo);
-		return new IHandleResponse() {
-			public HandleStatus getStatus() {
-				return HandleStatus.OK;
-			}
-		};
 	}
-	public IHandleResponse handleBridgeUpdate(Node node, OvsdbBridgeAugmentation ovsdbBridgeAugmentation) {
+	public void handleBridgeUpdate(Node node, OvsdbBridgeAugmentation ovsdbBridgeAugmentation) {
 		INodeOperator no = this.getParentNode(node.getNodeId());
 		for (IBridgeOperator bo : no.getBridges()) {
 			if (bo.getNodeId().equals(node.getNodeId())) {
@@ -394,44 +371,24 @@ public class NetworkGraph implements
 				break;
 			}
 		}
-		return new IHandleResponse() {
-			public HandleStatus getStatus() {
-				return HandleStatus.OK;
-			}
-		};
 	}
 	
-	public IHandleResponse handleNodeConnect(Node node, OvsdbNodeAugmentation ovsdbNodeAugmentation) {
+	public void handleNodeConnect(Node node, OvsdbNodeAugmentation ovsdbNodeAugmentation) {
 		INodeOperator no = new Datapath(this, node, ovsdbNodeAugmentation);
 		this.addNode(no);
-		return new IHandleResponse() {
-			public HandleStatus getStatus() {
-				return HandleStatus.OK;
-			}
-		};
 	}
 	
-	public IHandleResponse handleNodeConnectionAttributeChange(Node node, OvsdbNodeAugmentation ovsdbNodeAugmentation) {
+	public void handleNodeConnectionAttributeChange(Node node, OvsdbNodeAugmentation ovsdbNodeAugmentation) {
 		INodeOperator no = this.getNode(node.getNodeId());
 		no.update(node, ovsdbNodeAugmentation);
-		return new IHandleResponse() {
-			public HandleStatus getStatus() {
-				return HandleStatus.OK;
-			}
-		};
 	}
 	
-	public IHandleResponse handleNodeDisconnect(Node node, OvsdbNodeAugmentation ovsdbNodeAugmentation) {
+	public void handleNodeDisconnect(Node node, OvsdbNodeAugmentation ovsdbNodeAugmentation) {
 		INodeOperator no = new Datapath(this, node, ovsdbNodeAugmentation);
 		this.removeNode(no.getNodeId());
-		return new IHandleResponse() {
-			public HandleStatus getStatus() {
-				return HandleStatus.OK;
-			}
-		};
 	}
 
-	public IHandleResponse handlePortCreate(Node node, TerminationPoint tp, OvsdbTerminationPointAugmentation tpa) {
+	public void handlePortCreate(Node node, TerminationPoint tp, OvsdbTerminationPointAugmentation tpa) {
 		INodeOperator no = this.getParentNode(node.getNodeId());
 
 		if (no == null) {
@@ -450,11 +407,6 @@ public class NetworkGraph implements
 
 		bo.addPort(port);
 
-		return new IHandleResponse() {
-			public HandleStatus getStatus() {
-				return HandleStatus.OK;
-			}
-		};
 	}
 	private IPortOperator createPort(IBridgeOperator bo, TerminationPoint tp, OvsdbTerminationPointAugmentation tpa) {
 		IPortOperator port = SouthboundHelper.maybeCreateHostPort(this.neutronPortCache, bo, tp, tpa);
@@ -483,7 +435,7 @@ public class NetworkGraph implements
 		return new LinkPort(bo, tp, tpa);
 	}
 
-	public IHandleResponse handlePortDelete(Node node, OvsdbTerminationPointAugmentation tpa) {
+	public void handlePortDelete(Node node, OvsdbTerminationPointAugmentation tpa) {
 		INodeOperator no = this.getParentNode(node.getNodeId());
 
 		if (no == null) {
@@ -511,14 +463,9 @@ public class NetworkGraph implements
 
 		bo.removePort(po);
 
-		return new IHandleResponse() {
-			public HandleStatus getStatus() {
-				return HandleStatus.OK;
-			}
-		};
 	}
 	
-	public IHandleResponse handlePortUpdate(Node node, TerminationPoint tp, OvsdbTerminationPointAugmentation tpa) {
+	public void handlePortUpdate(Node node, TerminationPoint tp, OvsdbTerminationPointAugmentation tpa) {
 		INodeOperator no = this.getParentNode(node.getNodeId());
 
 		if (no == null) {
@@ -539,11 +486,6 @@ public class NetworkGraph implements
 
 		// todo test connections
 
-		return new IHandleResponse() {
-			public HandleStatus getStatus() {
-				return HandleStatus.OK;
-			}
-		};
 	}
 
 	public void handleLinkCreate(Link link) {

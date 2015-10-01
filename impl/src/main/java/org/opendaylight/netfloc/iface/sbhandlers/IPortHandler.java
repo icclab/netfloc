@@ -11,6 +11,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.re
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 
-public interface IPortUpdateHandler {
-	public IHandleResponse handlePortUpdate(Node node, TerminationPoint tp, OvsdbTerminationPointAugmentation ovsdbTerminationPointAugmentation);
+public interface IPortHandler {
+	public void handlePortCreate(Node node, TerminationPoint tp, OvsdbTerminationPointAugmentation ovsdbTerminationPointAugmentation);
+	public void handlePortDelete(Node node, OvsdbTerminationPointAugmentation ovsdbTerminationPointAugmentation);
+	public void handlePortUpdate(Node node, TerminationPoint tp, OvsdbTerminationPointAugmentation ovsdbTerminationPointAugmentation);
 }

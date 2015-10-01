@@ -7,9 +7,11 @@
  */
 package org.opendaylight.netfloc.iface.sbhandlers;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 
-public interface IBridgeCreateHandler {
-	public IHandleResponse handleBridgeCreate(Node node, OvsdbBridgeAugmentation ovsdbBridgeAugmentation);
+public interface INodeHandler {
+	public void handleNodeConnect(Node node, OvsdbNodeAugmentation ovsdbNodeAugmentation);
+	public void handleNodeDisconnect(Node node, OvsdbNodeAugmentation ovsdbNodeAugmentation);
+	public void handleNodeConnectionAttributeChange(Node node, OvsdbNodeAugmentation ovsdbNodeAugmentation);
 }

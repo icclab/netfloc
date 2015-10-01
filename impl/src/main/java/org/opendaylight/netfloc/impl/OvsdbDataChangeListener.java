@@ -16,15 +16,9 @@ import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.netfloc.iface.sbhandlers.IBridgeCreateHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.IBridgeDeleteHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.IBridgeUpdateHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.INodeConnectHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.INodeConnectionAttributeChangeHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.INodeDisconnectHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.IPortCreateHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.IPortDeleteHandler;
-import org.opendaylight.netfloc.iface.sbhandlers.IPortUpdateHandler;
+import org.opendaylight.netfloc.iface.sbhandlers.IBridgeHandler;
+import org.opendaylight.netfloc.iface.sbhandlers.INodeHandler;
+import org.opendaylight.netfloc.iface.sbhandlers.IPortHandler;
 import org.opendaylight.netfloc.impl.SouthboundConstants;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
@@ -46,26 +40,14 @@ public class OvsdbDataChangeListener implements DataChangeListener, AutoCloseabl
     private DataBroker dataBroker = null;
     private ListenerRegistration<DataChangeListener> registration;
 
-    private IBridgeCreateHandler bridgeCreateHandler;
-    private IBridgeDeleteHandler bridgeDeleteHandler;
-    private IBridgeUpdateHandler bridgeUpdateHandler;
-    private INodeConnectHandler nodeConnectHandler;
-    private INodeConnectionAttributeChangeHandler nodeConnectionAttributeChangeHandler;
-    private INodeDisconnectHandler nodeDisconnectHandler;
-    private IPortCreateHandler portCreateHandler;
-    private IPortDeleteHandler portDeleteHandler;
-    private IPortUpdateHandler portUpdateHandler;
+    private IBridgeHandler bridgeHandler;
+    private INodeHandler nodeHandler;
+    private IPortHandler portHandler;
 
     public OvsdbDataChangeListener (DataBroker dataBroker, NetworkGraph network) {
-        this.bridgeCreateHandler = network;
-        this.bridgeUpdateHandler = network;
-        this.bridgeDeleteHandler = network;
-        this.nodeConnectHandler = network;
-        this.nodeConnectionAttributeChangeHandler = network;
-        this.nodeDisconnectHandler = network;
-        this.portCreateHandler = network;
-        this.portDeleteHandler = network;
-        this.portUpdateHandler = network;
+        this.bridgeHandler = network;
+        this.nodeHandler = network;
+        this.portHandler = network;
         this.dataBroker = dataBroker;
         this.start();
     }
@@ -108,7 +90,7 @@ public class OvsdbDataChangeListener implements DataChangeListener, AutoCloseabl
                 LOG.info("connection change");
                 Node ovsdbNode = getNode(changes.getCreatedData(), created);
                 LOG.trace("processOvsdbConnections: <{}>, ovsdbNode: <{}>", created, ovsdbNode);
-                nodeConnectHandler.handleNodeConnect(ovsdbNode, (OvsdbNodeAugmentation)created.getValue());
+                nodeHandler.handleNodeConnect(ovsdbNode, (OvsdbNodeAugmentation)created.getValue());
             }
         }
     }
@@ -136,7 +118,7 @@ public class OvsdbDataChangeListener implements DataChangeListener, AutoCloseabl
                 LOG.trace("processOvsdbDisconnect: {} ", removedOvsdbNode);
                 ////Assuming Openvswitch type represent the ovsdb node connection and not OvsdbType.NODE
 
-                nodeDisconnectHandler.handleNodeDisconnect(parentNode, removedOvsdbNodeAugmentationData);
+                nodeHandler.handleNodeDisconnect(parentNode, removedOvsdbNodeAugmentationData);
             }
         }
     }
@@ -169,7 +151,7 @@ public class OvsdbDataChangeListener implements DataChangeListener, AutoCloseabl
                 // TODO
 
                 OvsdbNodeAugmentation ovsdbNodeAugmentation = (OvsdbNodeAugmentation)updatedOvsdbNode.getValue();
-                nodeConnectionAttributeChangeHandler.handleNodeConnectionAttributeChange(parentNode, ovsdbNodeAugmentation);
+                nodeHandler.handleNodeConnectionAttributeChange(parentNode, ovsdbNodeAugmentation);
             }
         }
     }
@@ -206,7 +188,7 @@ public class OvsdbDataChangeListener implements DataChangeListener, AutoCloseabl
                 // ovsdbUpdate(tpParentNode, newPort.getValue(),OvsdbInventoryListener.OvsdbType.PORT, Action.ADD);
                 // TODO
                 OvsdbTerminationPointAugmentation ovsdbTerminationPointAugmentation = (OvsdbTerminationPointAugmentation)newPort.getValue();
-                portCreateHandler.handlePortCreate(tpParentNode, tp, ovsdbTerminationPointAugmentation);
+                portHandler.handlePortCreate(tpParentNode, tp, ovsdbTerminationPointAugmentation);
             }
         }
     }
@@ -232,7 +214,7 @@ public class OvsdbDataChangeListener implements DataChangeListener, AutoCloseabl
                 LOG.trace("processPortDeletion <{}> deletion on Node <{}>", removedPort, tpParentNode);
                 // ovsdbUpdate(tpParentNode, removedTPAugmentationData,
                 //         OvsdbInventoryListener.OvsdbType.PORT, Action.DELETE);
-                portDeleteHandler.handlePortDelete(tpParentNode, removedTPAugmentationData);
+                portHandler.handlePortDelete(tpParentNode, removedTPAugmentationData);
             }
         }
     }
@@ -270,7 +252,7 @@ public class OvsdbDataChangeListener implements DataChangeListener, AutoCloseabl
                 // ovsdbUpdate(tpParentNode, updatedPort.getValue(),
                 //         OvsdbInventoryListener.OvsdbType.PORT, Action.UPDATE);
                 OvsdbTerminationPointAugmentation ovsdbTerminationPointAugmentation = (OvsdbTerminationPointAugmentation)updatedPort.getValue();
-                portUpdateHandler.handlePortUpdate(tpParentNode, tp, ovsdbTerminationPointAugmentation);
+                portHandler.handlePortUpdate(tpParentNode, tp, ovsdbTerminationPointAugmentation);
             }
         }
     }
@@ -295,7 +277,7 @@ public class OvsdbDataChangeListener implements DataChangeListener, AutoCloseabl
                 // ovsdbUpdate(bridgeParentNode, newBridge.getValue(),
                 //         OvsdbInventoryListener.OvsdbType.BRIDGE, Action.ADD);
                 OvsdbBridgeAugmentation ovsdbBridgeAugmentation = (OvsdbBridgeAugmentation)newBridge.getValue();
-                bridgeCreateHandler.handleBridgeCreate(bridgeParentNode, ovsdbBridgeAugmentation);
+                bridgeHandler.handleBridgeCreate(bridgeParentNode, ovsdbBridgeAugmentation);
             }
         }
     }
@@ -324,7 +306,7 @@ public class OvsdbDataChangeListener implements DataChangeListener, AutoCloseabl
                 // ovsdbUpdate(bridgeParentNode, updatedBridge.getValue(),
                 //         OvsdbInventoryListener.OvsdbType.BRIDGE, Action.UPDATE);
                 OvsdbBridgeAugmentation ovsdbBridgeAugmentation = (OvsdbBridgeAugmentation)updatedBridge.getValue();
-                bridgeUpdateHandler.handleBridgeUpdate(bridgeParentNode, ovsdbBridgeAugmentation);
+                bridgeHandler.handleBridgeUpdate(bridgeParentNode, ovsdbBridgeAugmentation);
             }
         }
     }
@@ -350,7 +332,7 @@ public class OvsdbDataChangeListener implements DataChangeListener, AutoCloseabl
                 LOG.debug("processBridgeDeletion <{}> deletion on Node <{}>", removedBridge,bridgeParentNode);
                 // ovsdbUpdate(bridgeParentNode, removedBridgeAugmentationData,
                 //         OvsdbInventoryListener.OvsdbType.BRIDGE, Action.DELETE);
-                bridgeDeleteHandler.handleBridgeDelete(bridgeParentNode, removedBridgeAugmentationData);
+                bridgeHandler.handleBridgeDelete(bridgeParentNode, removedBridgeAugmentationData);
             }
         }
     }
