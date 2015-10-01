@@ -7,7 +7,11 @@
  */
 package org.opendaylight.netfloc.iface;
 
-public interface IFlowprogrammer {
-	public void programFlows(IFlowPathPattern flowPattern, INetworkPath networkPath);
-	public void programFlows(IFlowBridgePattern flowPattern, IBridgeOperator bridge);
+public interface IFlowPathPattern {
+
+	// todo: build sufficient state
+
+	// public Instruction getSrcBridgeInstruction();
+	// public Instruction getAggregationBridgeInstruction();
+	// public Instruction getDstBridgeInstruction();
 }

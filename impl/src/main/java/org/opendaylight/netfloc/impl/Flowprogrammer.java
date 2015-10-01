@@ -9,11 +9,17 @@ package org.opendaylight.netfloc.impl;
 
 import org.opendaylight.netfloc.iface.IFlowprogrammer;
 import org.opendaylight.netfloc.iface.INetworkPath;
-import org.opendaylight.netfloc.iface.IFlowPattern;
+import org.opendaylight.netfloc.iface.IFlowBridgePattern;
+import org.opendaylight.netfloc.iface.IBridgeOperator;
+import org.opendaylight.netfloc.iface.IFlowPathPattern;
 
 public class Flowprogrammer implements IFlowprogrammer {
 
-	public void programFlows(IFlowPattern flowPattern, INetworkPath networkPath) {
+	public void programFlows(IFlowPathPattern flowPattern, INetworkPath networkPath) {
+		// TODO
+	}
+
+	public void programFlows(IFlowBridgePattern flowPattern, IBridgeOperator bridge) {
 		// TODO
 	}
 }

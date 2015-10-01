@@ -7,8 +7,9 @@
  */
 package org.opendaylight.netfloc.iface;
 
-public interface IFlowPattern {
-	// public Instruction getSrcBridgeInstruction();
-	// public Instruction getAggregationBridgeInstruction();
-	// public Instruction getDstBridgeInstruction();
+public interface IFlowBridgePattern {
+
+	// TODO: build a sufficient state
+
+	// public Instruction getBridgeInstruction();
 }
