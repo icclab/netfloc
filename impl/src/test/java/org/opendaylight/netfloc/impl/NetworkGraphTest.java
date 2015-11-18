@@ -68,9 +68,8 @@ public class NetworkGraphTest {
 			// add vm's ports
 			for (int j = 0; j < 5; j++) {
 				NeutronPort neutronPort = mock(NeutronPort.class);
-				IHostPort vmPort = new HostPort(neutronPort);
 				OvsdbTerminationPointAugmentation terminationPointAugmentation1 = mock(OvsdbTerminationPointAugmentation.class);
-				vmPort.relateSouthbound(bridge, mock(TerminationPoint.class), terminationPointAugmentation1);
+				IHostPort vmPort = new HostPort(bridge, mock(TerminationPoint.class), terminationPointAugmentation1, neutronPort);
 				bridge.addHostPort(vmPort);
 				vmPorts.add(vmPort);
 			}

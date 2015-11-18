@@ -33,23 +33,23 @@ public class TenantBridgeTest {
 
 	@Before
     public void setUp() {
-    	Node tpnode = mock(Node.class);
-    	INodeOperator node = mock(INodeOperator.class);
-		OvsdbBridgeAugmentation bridgeAugmentation = mock(OvsdbBridgeAugmentation.class);
+  //   	Node tpnode = mock(Node.class);
+  //   	INodeOperator node = mock(INodeOperator.class);
+		// OvsdbBridgeAugmentation bridgeAugmentation = mock(OvsdbBridgeAugmentation.class);
 
-		this.cachedBridge = new Bridge(node, tpnode, bridgeAugmentation);
+		// this.cachedBridge = new Bridge(node, tpnode, bridgeAugmentation);
 
-		final String tenantID = "MyId";
+		// final String tenantID = "MyId";
 
-		Tenant tenant = new Tenant(tenantID);
-		this.tenantBridge = new TenantBridge(tenant, cachedBridge);
+		// Tenant tenant = new Tenant(tenantID);
+		// this.tenantBridge = new TenantBridge(tenant, cachedBridge);
 
-		NeutronPort neutronPort = mock(NeutronPort.class);
-		when(neutronPort.getTenantID()).thenReturn(tenantID);
+		// NeutronPort neutronPort = mock(NeutronPort.class);
+		// when(neutronPort.getTenantID()).thenReturn(tenantID);
 
-		this.cachedHostPort = new HostPort(neutronPort);
+		// this.cachedHostPort = new HostPort(neutronPort);
 
-		tenantBridge.addHostPort(this.cachedHostPort);
+		// tenantBridge.addHostPort(this.cachedHostPort);
     }
 
 	@Test

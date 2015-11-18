@@ -21,30 +21,19 @@ import java.util.List;
 import java.util.LinkedList;
 
 public class SouthboundHelper {
-	
-	public static IHostPort maybeCreateHostPort(List<IHostPort> ports, IBridgeOperator bo, TerminationPoint tp, OvsdbTerminationPointAugmentation terminationPointAugmentation) {
-		String value = SouthboundHelper.getInterfaceExternalIdsValue(terminationPointAugmentation, Constants.EXTERNAL_ID_INTERFACE_ID);
-		for (IHostPort port : ports) {
-			if (value != null && value.equalsIgnoreCase(port.getNeutronUuid())) {
-                port.relateSouthbound(bo, tp, terminationPointAugmentation);
-				return port;
-			}
-		}
-		return null;
-	}
 
-    public static IInternalPort maybeCreateInternalPort(IBridgeOperator bo, TerminationPoint tp, OvsdbTerminationPointAugmentation terminationPointAugmentation) {
-        java.lang.Class<? extends InterfaceTypeBase> type = terminationPointAugmentation.getInterfaceType();
+    public static IInternalPort maybeCreateInternalPort(IBridgeOperator bo, TerminationPoint tp, OvsdbTerminationPointAugmentation tpa) {
+        java.lang.Class<? extends InterfaceTypeBase> type = tpa.getInterfaceType();
         if (type == InterfaceTypeInternal.class) {
-            IPortOperator po = new InternalPort(bo, tp, terminationPointAugmentation);
+            IPortOperator po = new InternalPort(bo, tp, tpa);
         }
         return null;
     }
 
 	public static String getInterfaceExternalIdsValue(
-            OvsdbTerminationPointAugmentation terminationPointAugmentation, String key) {
+            OvsdbTerminationPointAugmentation tpa, String key) {
         String value = null;
-        List<InterfaceExternalIds> pairs = terminationPointAugmentation.getInterfaceExternalIds();
+        List<InterfaceExternalIds> pairs = tpa.getInterfaceExternalIds();
         if (pairs != null && !pairs.isEmpty()) {
             for (InterfaceExternalIds pair : pairs) {
                 if (pair.getExternalIdKey().equals(key)) {

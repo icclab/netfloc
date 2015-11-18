@@ -68,18 +68,13 @@ public class NetflocManager implements
 	static final Logger logger = LoggerFactory.getLogger(NetflocManager.class);
 
 	private NetworkGraph graph;
-
-	private List<IHostPort> neutronPortCache = new LinkedList<IHostPort>();
+	private Map<String, NeutronPort> neutronPortCache = new HashMap<String, NeutronPort>();
 	private Map<String, NeutronSubnet> neutronSubnetCache = new HashMap<String, NeutronSubnet>();
 	private Map<String, NeutronNetwork> neutronNetworkCache = new HashMap<String, NeutronNetwork>();
-	private List<INetworkPathListener> networkPathListeners = new LinkedList<INetworkPathListener>();
 
+	// todo: singleton
 	public NetflocManager(NetworkGraph graph) {
 		this.graph = graph;
-	}
-
-	public void registerNetworkPathListener(INetworkPathListener npl) {
-		this.networkPathListeners.add(npl);
 	}
 
 	@Override
@@ -127,166 +122,38 @@ public class NetflocManager implements
 
 	@Override
 	public void handlePortCreate(Node node, TerminationPoint tp, OvsdbTerminationPointAugmentation tpa) {
-		INodeOperator no = graph.getParentNode(node.getNodeId());
-
-		if (no == null) {
-			throw new IllegalStateException("node is null on port create");
-		}
-
-		IBridgeOperator bo = null;
-
-		for (IBridgeOperator br : no.getBridges()) {
-			if (br.getNodeId().equals(node.getNodeId())) {
-				bo = br; break;
-			}
-		}
-
-		IPortOperator port = this.createPort(bo, tp, tpa);
-
-		bo.addPort(port);
-
-	}
-
-	private IPortOperator createPort(IBridgeOperator bo, TerminationPoint tp, OvsdbTerminationPointAugmentation tpa) {
-		IPortOperator port = SouthboundHelper.maybeCreateHostPort(this.neutronPortCache, bo, tp, tpa);
-
-		if (port != null) {
-			logger.info("is a neutron port");
-			IHostPort srcPort = (IHostPort)port;
-			for (IHostPort dstPort : this.neutronPortCache) {
-				if (srcPort.canConnectTo(dstPort)) {
-					for (INetworkPathListener npl : this.networkPathListeners) {
-						npl.networkPathCreated(graph.getNetworkPath(srcPort, dstPort));
-					}
+		// check if ovs port matches neutron port
+		String value = SouthboundHelper.getInterfaceExternalIdsValue(tpa, Constants.EXTERNAL_ID_INTERFACE_ID);
+		if (value != null) {
+			for (NeutronPort neutronPort : this.neutronPortCache.values()) {
+				if (value.equalsIgnoreCase(neutronPort.getPortUUID())) {
+					graph.addPort(node, tp, tpa, neutronPort);
+					return;
 				}
 			}
-			return port;
 		}
 
-		port = SouthboundHelper.maybeCreateInternalPort(bo, tp, tpa);
-
-		if (port != null) {
-			logger.info("is an internal port");
-			return port;
-		}
-
-		logger.info("is a link port");
-		return new LinkPort(bo, tp, tpa);
+		graph.addPort(node, tp, tpa);
 	}
 
 	@Override
 	public void handlePortDelete(Node node, OvsdbTerminationPointAugmentation tpa) {
-		INodeOperator no = graph.getParentNode(node.getNodeId());
-
-		if (no == null) {
-			throw new IllegalStateException("node is null on port delete");
-		}
-		
-		IBridgeOperator bo = null;
-
-		for (IBridgeOperator br : no.getBridges()) {
-			if (br.getNodeId().equals(node.getNodeId())) {
-				bo = br; break;
-			}
-		}
-
-		IPortOperator po = bo.getPort(tpa.getPortUuid());
-
-		if (po instanceof IHostPort) {
-			IHostPort hostPort = (IHostPort)po;
-			for (INetworkPath removedPath : graph.getConnectableNetworkPaths(hostPort, this.neutronPortCache)) {
-				for (INetworkPathListener npl : this.networkPathListeners) {
-					npl.networkPathDeleted(removedPath);
-				}
-			}
-		}
-
-		bo.removePort(po);
-
+		graph.removePort(node, tpa);
 	}
 	
 	@Override
 	public void handlePortUpdate(Node node, TerminationPoint tp, OvsdbTerminationPointAugmentation tpa) {
-		INodeOperator no = graph.getParentNode(node.getNodeId());
-
-		if (no == null) {
-			throw new IllegalStateException("node is null on port update");
-		}
-
-		IBridgeOperator bo = null;
-
-		for (IBridgeOperator br : no.getBridges()) {
-			if (br.getNodeId().equals(node.getNodeId())) {
-				bo = br; break;
-			}
-		}
-
-		IPortOperator po = bo.getPort(tpa.getPortUuid());
-
-		po.update(tp, tpa);
-
-		// todo test connections
-
+		graph.updatePort(node, tp, tpa);
 	}
 
 	@Override
 	public void handleLinkCreate(Link link) {
-		TpId tpIdSrc = link.getSource().getSourceTp();
-		TpId tpIdDst = link.getDestination().getDestTp();
-
-		if (tpIdSrc == null || tpIdDst == null) {
-			logger.error("TpId is null for <{}>, <{}>", tpIdSrc, tpIdDst);
-		}
-
-		ILinkPort portSrc = graph.getLinkPort(tpIdSrc);
-		ILinkPort portDst = graph.getLinkPort(tpIdDst);
-
-		portSrc.setLinkedPort(portDst);
-
-		// todo: update network paths?
+		graph.createLink(link);
 	}
 
 	@Override
 	public void handleLinkDelete(Link link) {
-		TpId tpIdSrc = link.getSource().getSourceTp();
-		TpId tpIdDst = link.getDestination().getDestTp();
-
-		if (tpIdSrc == null || tpIdDst == null) {
-			logger.error("TpId is null for <{}>, <{}>", tpIdSrc, tpIdDst);
-		}
-
-		ILinkPort portSrc = graph.getLinkPort(tpIdSrc);
-		ILinkPort portDst = graph.getLinkPort(tpIdDst);
-
-		// old paths
-		List<INetworkPath> oldPaths = graph.getConnectableNetworkPaths(this.neutronPortCache);
-
-		portSrc.removeLinkedPort(portDst);
-		
-		// notify network path listeners by comparing old to new path list
-		List<INetworkPath> newPaths = graph.getConnectableNetworkPaths(this.neutronPortCache);
-		
-		for (INetworkPath oldPath : oldPaths) {
-			boolean found = false;
-			for (INetworkPath newPath : newPaths) {
-				if (oldPath.isEqualConnection(newPath)) {
-					found = true;
-
-					if (!oldPath.equals(newPath)) {
-						// link is broken but connection can be recovered
-						for (INetworkPathListener npl : this.networkPathListeners) {
-							npl.networkPathUpdated(newPath);
-						}
-					}
-				}
-			}
-			if (!found) {
-				// this is a broken link and connection cannot be recovered
-				for (INetworkPathListener npl : this.networkPathListeners) {
-					npl.networkPathDeleted(oldPath);
-				}
-			}
-		}
+		graph.deleteLink(link);
 	}
 
 	@Override
@@ -302,8 +169,7 @@ public class NetflocManager implements
      */
     @Override
     public void neutronPortCreated(NeutronPort port) {
-    	IHostPort po = new HostPort(port);
-    	this.neutronPortCache.add(po);
+    	this.neutronPortCache.put(port.getPortUUID(), port);
     }
 
     /**
@@ -314,8 +180,7 @@ public class NetflocManager implements
      */
     @Override
     public void neutronPortUpdated(NeutronPort port) {
-    	IHostPort cachedPort = this.getHostPortByNeutronId(port.getPortUUID());
-    	cachedPort.update(port);
+		this.neutronPortCache.put(port.getPortUUID(), port);
     }
 
     /**
@@ -326,24 +191,7 @@ public class NetflocManager implements
      */
     @Override
     public void neutronPortDeleted(NeutronPort port) {
-    	IHostPort cachedPort = this.getHostPortByNeutronId(port.getPortUUID());
-    	this.neutronPortCache.remove(cachedPort);
-    	for (IBridgeOperator bo : graph.getBridges()) {
-    		IHostPort po = bo.getHostPort(port.getPortUUID());
-    		if (po != null) {
-    			bo.removeHostPort(po);
-    			return;
-    		}
-    	}
-    }
-
-    private IHostPort getHostPortByNeutronId(String id) {
-    	for (IHostPort cachedPort : this.neutronPortCache) {
-    		if (cachedPort.getNeutronUuid().equals(id)) {
-    			return cachedPort;
-    		}
-    	}
-    	return null;
+    	this.neutronPortCache.remove(port.getPortUUID());
     }
 
     /**

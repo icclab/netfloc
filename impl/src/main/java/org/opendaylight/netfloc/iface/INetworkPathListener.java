@@ -9,6 +9,6 @@ package ch.icclab.netfloc.iface;
 
 public interface INetworkPathListener {
 	public void networkPathCreated(INetworkPath np);
-	public void networkPathUpdated(INetworkPath np);
+	public void networkPathUpdated(INetworkPath oldNp, INetworkPath nNp);
 	public void networkPathDeleted(INetworkPath np);
 }

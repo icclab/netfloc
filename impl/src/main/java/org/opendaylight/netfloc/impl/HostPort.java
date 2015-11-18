@@ -8,6 +8,7 @@
 package ch.icclab.netfloc.impl;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 
 import org.opendaylight.neutron.spi.NeutronPort;
 import org.opendaylight.neutron.spi.Neutron_IPs;
@@ -18,13 +19,13 @@ import ch.icclab.netfloc.iface.IHostPort;
 import java.util.List;
 import java.util.LinkedList;
 
-// idk
 public class HostPort extends Port implements IHostPort {
 
 	private NeutronPort neutronPort;
 	private NeutronFloatingIP neutronFloatingIP;
 
-	public HostPort(NeutronPort neutronPort) {
+	public HostPort(IBridgeOperator bridge, TerminationPoint tp, OvsdbTerminationPointAugmentation tpa, NeutronPort neutronPort) {
+		super(bridge, tp, tpa);
 		this.neutronPort = neutronPort;
 		this.tenant = new Tenant(neutronPort.getTenantID());
 	}

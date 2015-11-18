@@ -53,7 +53,6 @@ import java.util.HashMap;
 import java.lang.System;
 import java.lang.IllegalStateException;
 
-// idk
 public class NetworkGraph implements
 	INetworkTraverser,
 	INetworkOperator {
@@ -62,6 +61,29 @@ public class NetworkGraph implements
 
 	List<INodeOperator> nodes = new LinkedList<INodeOperator>();
 	List<ITenantNetworkOperator> tenantNetworks = new LinkedList<ITenantNetworkOperator>();
+	private List<INetworkPathListener> networkPathListeners = new LinkedList<INetworkPathListener>();
+
+	public void registerNetworkPathListener(INetworkPathListener npl) {
+		this.networkPathListeners.add(npl);
+	}
+
+	public void notifyNetworkPathListenersCreate(INetworkPath networkPath) {	
+		for (INetworkPathListener npl : this.networkPathListeners) {
+			npl.networkPathCreated(networkPath);
+		}
+	}
+
+	public void notifyNetworkPathListenersDelete(INetworkPath networkPath) {
+		for (INetworkPathListener npl : this.networkPathListeners) {
+			npl.networkPathDeleted(networkPath);
+		}
+	}
+
+	public void notifyNetworkPathListenersUpdate(INetworkPath oldPath, INetworkPath newPath) {
+		for (INetworkPathListener npl : this.networkPathListeners) {
+			npl.networkPathUpdated(oldPath, newPath);
+		}
+	}
 
 	public void traverse(IBridgeIterator bridgeIterator) {
 		List<ITraversableBridge> bridgesToVisit = new LinkedList<ITraversableBridge>();
@@ -128,9 +150,9 @@ public class NetworkGraph implements
 		return networkPaths1;
 	}
 
-	public List<INetworkPath> getConnectableNetworkPaths(IHostPort src, List<IHostPort> dsts) {
+	public List<INetworkPath> getConnectableNetworkPaths(IHostPort src) {
 		List<INetworkPath> paths = new LinkedList<INetworkPath>();
-		for (IHostPort dst : dsts) {
+		for (IHostPort dst : this.getHostPorts()) {
 			if (src.canConnectTo(dst)) {
 				INetworkPath np = this.getNetworkPath(src, dst);
 				if (np != null) {
@@ -144,7 +166,7 @@ public class NetworkGraph implements
 	public List<INetworkPath> getConnectableNetworkPaths(List<IHostPort> ports) {
 		List<INetworkPath> paths = new LinkedList<INetworkPath>();
 		for (IHostPort src : ports) {
-			paths.addAll(this.getConnectableNetworkPaths(src, ports));
+			paths.addAll(this.getConnectableNetworkPaths(src));
 		}
 		return paths;
 	}
@@ -212,6 +234,7 @@ public class NetworkGraph implements
 		return resultPath;
 	}
 
+	// concurrency issue: links that are not established through LLDP
 	private List<IHostPort> getHostPorts() {
 		IBridgeIterator<List<IHostPort>> iterator = new IBridgeIterator<List<IHostPort>>() {
 			
@@ -232,6 +255,14 @@ public class NetworkGraph implements
 
 	public List<ITenantNetworkOperator> getTenantNetworks() {
 		return this.tenantNetworks;
+	}
+
+	private void checkPossibleConnections(IHostPort srcPort) {
+		for (IHostPort port : this.getHostPorts()) {
+			if (srcPort.canConnectTo(port)) {
+				this.notifyNetworkPathListenersCreate(this.getNetworkPath(srcPort, port));
+			}
+		}
 	}
 
 	// delete
@@ -280,26 +311,6 @@ public class NetworkGraph implements
 		return null;
 	}
 
-	public INodeOperator getParentNode(NodeId id) {
-		if (id == null) {
-			throw new IllegalArgumentException("node id cannot be null");
-		}
-
-		logger.info("search node: " + id.getValue());
-
-		for (INodeOperator nd : this.nodes) {
-			NodeId ndid = nd.getNodeId();
-			if (ndid == null) {
-				throw new IllegalStateException("cached node id is null");
-			}
-			logger.info("compare node: " + ndid.getValue());
-			if (id.getValue().contains(ndid.getValue())) {
-				return nd;
-			}
-		}
-		return null;
-	}
-
 	public void addNode(INodeOperator node) {
 		this.nodes.add(node);
 	}
@@ -322,6 +333,152 @@ public class NetworkGraph implements
 			bridges.addAll(node.getBridges());
 		}
 		return bridges;
+	}
+
+	public void addPort(Node node, TerminationPoint tp, OvsdbTerminationPointAugmentation tpa) {
+		IBridgeOperator bo = getParentBridge(node.getNodeId());
+
+		if (bo == null) {
+			throw new IllegalStateException("bridge is null on port create");
+		}
+
+		IPortOperator port = SouthboundHelper.maybeCreateInternalPort(bo, tp, tpa);
+
+		if (port != null) {
+			logger.info("is an internal port");
+			bo.addPort(port);
+			return;
+		}
+
+		logger.info("is a link port");
+		port = new LinkPort(bo, tp, tpa);
+
+		bo.addPort(port);
+	}
+
+	public void addPort(Node node, TerminationPoint tp, OvsdbTerminationPointAugmentation tpa, NeutronPort neutronPort) {
+		IBridgeOperator bo = getParentBridge(node.getNodeId());
+
+		if (bo == null) {
+			throw new IllegalStateException("bridge is null on port create");
+		}
+
+		logger.info("is a neutron port");
+		IHostPort port = new HostPort(bo, tp, tpa, neutronPort);
+		bo.addPort(port);
+	}
+
+	public void removePort(Node node, OvsdbTerminationPointAugmentation tpa) {
+		IBridgeOperator bo = this.getParentBridge(node.getNodeId());
+		IPortOperator po = bo.getPort(tpa.getPortUuid());
+
+		if (po instanceof IHostPort) {
+			IHostPort hostPort = (IHostPort)po;
+			for (INetworkPath removedPath : this.getConnectableNetworkPaths(hostPort)) {
+				this.notifyNetworkPathListenersDelete(removedPath);
+			}
+		}
+
+		bo.removePort(po);
+	}
+
+	public void updatePort(Node node, TerminationPoint tp, OvsdbTerminationPointAugmentation tpa) {
+		IBridgeOperator bo = this.getParentBridge(node.getNodeId());
+		IPortOperator po = bo.getPort(tpa.getPortUuid());
+		po.update(tp, tpa);
+
+		// todo test connections
+	}
+
+	// needs to be tested with ovs
+	private IBridgeOperator getParentBridge(NodeId id) {
+		// find the node and bridge of this port
+		INodeOperator no = this.getParentNode(id);
+
+		if (no == null) {
+			throw new IllegalStateException("node is null on port create");
+		}
+
+		for (IBridgeOperator br : no.getBridges()) {
+			if (br.getNodeId().equals(id)) {
+				return br;
+			}
+		}
+		return null;
+	}
+
+	public INodeOperator getParentNode(NodeId id) {
+		if (id == null) {
+			throw new IllegalArgumentException("node id cannot be null");
+		}
+
+		logger.info("search node: " + id.getValue());
+
+		for (INodeOperator nd : this.nodes) {
+			NodeId ndid = nd.getNodeId();
+			if (ndid == null) {
+				throw new IllegalStateException("cached node id is null");
+			}
+			logger.info("compare node: " + ndid.getValue());
+			if (id.getValue().contains(ndid.getValue())) {
+				return nd;
+			}
+		}
+		return null;
+	}
+
+	public void createLink(Link link) {
+		TpId tpIdSrc = link.getSource().getSourceTp();
+		TpId tpIdDst = link.getDestination().getDestTp();
+
+		if (tpIdSrc == null || tpIdDst == null) {
+			logger.error("TpId is null for src: <{}>, dst: <{}>", tpIdSrc, tpIdDst);
+		}
+
+		ILinkPort portSrc = this.getLinkPort(tpIdSrc);
+		ILinkPort portDst = this.getLinkPort(tpIdDst);
+
+		portSrc.setLinkedPort(portDst);
+
+		// todo: update network paths?
+	}
+
+	public void deleteLink(Link link) {
+		TpId tpIdSrc = link.getSource().getSourceTp();
+		TpId tpIdDst = link.getDestination().getDestTp();
+
+		if (tpIdSrc == null || tpIdDst == null) {
+			logger.error("TpId is null for <{}>, <{}>", tpIdSrc, tpIdDst);
+		}
+
+		ILinkPort portSrc = this.getLinkPort(tpIdSrc);
+		ILinkPort portDst = this.getLinkPort(tpIdDst);
+
+		// old paths
+		List<INetworkPath> oldPaths = this.getConnectableNetworkPaths(this.getHostPorts());
+
+		portSrc.removeLinkedPort(portDst);
+		
+		// notify network path listeners by comparing old to new path list
+		List<INetworkPath> newPaths = this.getConnectableNetworkPaths(this.getHostPorts());
+		
+		for (INetworkPath oldPath : oldPaths) {
+			boolean found = false;
+			for (INetworkPath newPath : newPaths) {
+				if (oldPath.isEqualConnection(newPath)) {
+					found = true;
+
+					if (!oldPath.equals(newPath)) {
+						// link is broken but connection can be recovered
+						this.notifyNetworkPathListenersUpdate(oldPath, newPath);
+					}
+				}
+			}
+			if (!found) {
+				// this is a broken link and connection cannot be recovered
+				this.notifyNetworkPathListenersDelete(oldPath);
+			}
+		}
 	}
 
 	public ILinkPort getLinkPort(TpId tpid) {

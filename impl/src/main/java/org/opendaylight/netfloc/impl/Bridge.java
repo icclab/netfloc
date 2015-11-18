@@ -56,6 +56,7 @@ public class Bridge implements IBridgeOperator{
 		return this.node;
 	}
 
+	// mb not working
 	public NodeId getNodeId() {
 		return this.node.getNodeId();
 	}
