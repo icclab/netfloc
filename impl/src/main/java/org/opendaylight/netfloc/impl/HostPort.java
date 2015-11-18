@@ -27,7 +27,6 @@ public class HostPort extends Port implements IHostPort {
 	public HostPort(IBridgeOperator bridge, TerminationPoint tp, OvsdbTerminationPointAugmentation tpa, NeutronPort neutronPort) {
 		super(bridge, tp, tpa);
 		this.neutronPort = neutronPort;
-		this.tenant = new Tenant(neutronPort.getTenantID());
 	}
 
 	public String getMacAddress() {

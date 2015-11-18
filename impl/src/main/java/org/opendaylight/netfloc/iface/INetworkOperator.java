@@ -14,15 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 
-import ch.icclab.netfloc.impl.Tenant;
-
 public interface INetworkOperator {
-
-	// ??
-	public List<ITenantNetworkOperator> getTenantNetworks();
-	public void addTenantNetwork(ITenantNetworkOperator tenantNetwork);
-	public void removeTenantNetwork(ITenantNetworkOperator tenantNetwork);
-	public ITenantNetworkOperator getTenantNetwork(Tenant tenant);
 
 	public List<INodeOperator> getNodes();
 	public INodeOperator getNode(NodeId id);

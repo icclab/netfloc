@@ -10,7 +10,6 @@ package ch.icclab.netfloc.iface;
 import java.util.List;
 import java.util.Map;
 
-import ch.icclab.netfloc.impl.Tenant;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Uuid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -48,8 +47,6 @@ public interface IBridgeOperator {
 	public void removeInternalPort(IInternalPort internalPort);
 	public void removeHostPort(IHostPort hostPort);
 	public void removeLinkPort(ILinkPort linkPort);
-	
-	public ITenantBridgeOperator getTenantBridge(Tenant tenant);
 
 	public OvsdbBridgeAugmentation getAugmentation();
 

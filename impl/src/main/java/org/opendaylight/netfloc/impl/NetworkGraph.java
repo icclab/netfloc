@@ -30,7 +30,6 @@ import ch.icclab.netfloc.iface.INetworkPath;
 import ch.icclab.netfloc.iface.INetworkTraverser;
 import ch.icclab.netfloc.iface.INodeOperator;
 import ch.icclab.netfloc.iface.IPortOperator;
-import ch.icclab.netfloc.iface.ITenantNetworkOperator;
 import ch.icclab.netfloc.iface.IHostPort;
 import ch.icclab.netfloc.iface.ITraversableBridge;
 import ch.icclab.netfloc.iface.INetworkPathListener;
@@ -60,7 +59,6 @@ public class NetworkGraph implements
 	static final Logger logger = LoggerFactory.getLogger(NetworkGraph.class);
 
 	List<INodeOperator> nodes = new LinkedList<INodeOperator>();
-	List<ITenantNetworkOperator> tenantNetworks = new LinkedList<ITenantNetworkOperator>();
 	private List<INetworkPathListener> networkPathListeners = new LinkedList<INetworkPathListener>();
 
 	public void registerNetworkPathListener(INetworkPathListener npl) {
@@ -253,37 +251,12 @@ public class NetworkGraph implements
 		return iterator.getResult();
 	}
 
-	public List<ITenantNetworkOperator> getTenantNetworks() {
-		return this.tenantNetworks;
-	}
-
 	private void checkPossibleConnections(IHostPort srcPort) {
 		for (IHostPort port : this.getHostPorts()) {
 			if (srcPort.canConnectTo(port)) {
 				this.notifyNetworkPathListenersCreate(this.getNetworkPath(srcPort, port));
 			}
 		}
-	}
-
-	// delete
-	public void addTenantNetwork(ITenantNetworkOperator tenantNetwork) {
-		this.tenantNetworks.add(tenantNetwork);
-		// TODO relate the bridges
-	}
-
-	// delete
-	public void removeTenantNetwork(ITenantNetworkOperator tenantNetwork) {
-		this.tenantNetworks.remove(tenantNetwork);
-		// TODO relate the bridges
-	}
-
-	public ITenantNetworkOperator getTenantNetwork(Tenant tenant) {
-		for (ITenantNetworkOperator tenantNetwork : this.tenantNetworks) {
-			if (tenantNetwork.getTenant().equals(tenant)) {
-				return tenantNetwork;
-			}
-		}
-		return null;
 	}
 
 	public List<INodeOperator> getNodes() {

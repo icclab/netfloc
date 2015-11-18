@@ -15,9 +15,8 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.neutron.spi.NeutronPort;
 
 // idk
-public interface IPortOperator extends ITenantOwner {
+public interface IPortOperator {
 	public IBridgeOperator getBridge();
-	public ITenantBridgeOperator getTenantBridge();
 	public Uuid getPortUuid();
 	public boolean isOvsPort(TpId tpid);
 	public void update(TerminationPoint tp, OvsdbTerminationPointAugmentation changes);

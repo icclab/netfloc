@@ -30,7 +30,6 @@ import ch.icclab.netfloc.iface.INetworkPath;
 import ch.icclab.netfloc.iface.INetworkTraverser;
 import ch.icclab.netfloc.iface.INodeOperator;
 import ch.icclab.netfloc.iface.IPortOperator;
-import ch.icclab.netfloc.iface.ITenantNetworkOperator;
 import ch.icclab.netfloc.iface.IHostPort;
 import ch.icclab.netfloc.iface.ITraversableBridge;
 import ch.icclab.netfloc.iface.INetworkPathListener;

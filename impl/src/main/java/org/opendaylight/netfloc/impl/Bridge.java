@@ -21,7 +21,6 @@ import ch.icclab.netfloc.iface.ILinkPort;
 import ch.icclab.netfloc.iface.IInternalPort;
 import ch.icclab.netfloc.iface.INodeOperator;
 import ch.icclab.netfloc.iface.IPortOperator;
-import ch.icclab.netfloc.iface.ITenantBridgeOperator;
 import ch.icclab.netfloc.iface.IHostPort;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Uuid;
 
@@ -32,7 +31,6 @@ public class Bridge implements IBridgeOperator{
 	List<IHostPort> hostPorts = new LinkedList<IHostPort>();
 	List<ILinkPort> linkPorts = new LinkedList<ILinkPort>();
 
-	private Map<Tenant, ITenantBridgeOperator> tenantBridges = new HashMap<Tenant, ITenantBridgeOperator>();
 	private INodeOperator parentNode;
 	private Node node;
 	private OvsdbBridgeAugmentation ovsdbBridgeAugmentation;
@@ -208,14 +206,6 @@ public class Bridge implements IBridgeOperator{
 
 	public void removeLinkPort(ILinkPort linkPort) {
 		this.linkPorts.remove(linkPort);
-	}
-
-	public ITenantBridgeOperator getTenantBridge(Tenant tenant) {
-		ITenantBridgeOperator tenantBridge = new TenantBridge(tenant, this);
-		for (IPortOperator port : Tenant.filterByTenant(this.getPorts(), tenant)) {
-			tenantBridge.addPort(port);
-		}
-		return tenantBridge;
 	}
 	
 	public boolean equals(Object o) {

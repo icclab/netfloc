@@ -9,7 +9,6 @@ package ch.icclab.netfloc.impl;
 
 import ch.icclab.netfloc.iface.IBridgeOperator;
 import ch.icclab.netfloc.iface.IPortOperator;
-import ch.icclab.netfloc.iface.ITenantBridgeOperator;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Uuid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
@@ -28,8 +27,7 @@ import org.slf4j.LoggerFactory;
 public class Port implements IPortOperator {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Port.class);
-	
-	protected Tenant tenant;
+
 	private IBridgeOperator bridge;
 	private TerminationPoint tp;
 	private OvsdbTerminationPointAugmentation ovsdbTerminationPointAugmentation;
@@ -54,14 +52,6 @@ public class Port implements IPortOperator {
 
 	public IBridgeOperator getBridge() {
 		return this.bridge;
-	}
-
-	public Tenant getTenant() {
-		return this.tenant;
-	}
-
-	public ITenantBridgeOperator getTenantBridge() {
-		return this.bridge.getTenantBridge(this.getTenant());
 	}
 
 	public Uuid getPortUuid() {
