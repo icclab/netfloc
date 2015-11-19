@@ -12,6 +12,7 @@ import ch.icclab.netfloc.iface.IBridgeIterator;
 import ch.icclab.netfloc.iface.IBridgeOperator;
 import ch.icclab.netfloc.iface.ILinkPort;
 import ch.icclab.netfloc.iface.INetworkPath;
+import ch.icclab.netfloc.iface.INetworkPathListener;
 import ch.icclab.netfloc.iface.INodeOperator;
 import ch.icclab.netfloc.iface.IPortOperator;
 import ch.icclab.netfloc.iface.IHostPort;
@@ -22,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.neutron.spi.Neutron_IPs;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -31,6 +33,9 @@ import org.junit.Before;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import static org.mockito.Matchers.any;
 import org.mockito.stubbing.Answer;
 import org.mockito.invocation.InvocationOnMock;
 
@@ -191,5 +196,93 @@ public class NetworkGraphTest {
 		assertTrue(networkPath.getEnd().equals(endBridge));
 		assertTrue(networkPath.getPrevious(endBridge).equals(aggregationBridge));
 		assertTrue(networkPath.getPrevious(aggregationBridge).equals(beginBridge));
+	}
+
+	@Test
+	public void testAddPort() {
+		// A and B are on bridge 1
+		// C is on bridge 2
+		// Whitelist
+		// A <-> B can talk
+		// C <-> B can talk
+
+		// register path listeners so we can verify path creation
+		INetworkPathListener nplm = mock(INetworkPathListener.class);
+		final List<INetworkPath> netpaths = new LinkedList<INetworkPath>();
+		INetworkPathListener nplr = new INetworkPathListener() {
+
+			public void networkPathCreated(INetworkPath np) {
+				netpaths.add(np);
+			}
+
+			public void networkPathUpdated(INetworkPath oldNp, INetworkPath nNp){
+				// noop
+			}
+
+			public void networkPathDeleted(INetworkPath np) {
+				// noop
+			}
+		};
+		network.registerNetworkPathListener(nplm);
+		network.registerNetworkPathListener(nplr);
+
+		// bridges
+		Node bridgeNode1 = hostBridges.get(0).getNode();
+		Node bridgeNode2 = hostBridges.get(1).getNode();
+
+		// mock neutron subnet ips
+		Neutron_IPs nip_AB = mock(Neutron_IPs.class);
+		when(nip_AB.getSubnetUUID()).thenReturn("idAB");
+		Neutron_IPs nip_BC = mock(Neutron_IPs.class);
+		when(nip_BC.getSubnetUUID()).thenReturn("idBC");
+
+		// PORT A
+		NeutronPort np_A = mock(NeutronPort.class);
+		List<Neutron_IPs> nipList_A = new LinkedList<Neutron_IPs>();
+		nipList_A.add(nip_AB);
+		when(np_A.getFixedIPs()).thenReturn(nipList_A);
+
+		OvsdbTerminationPointAugmentation otpa_A = mock(OvsdbTerminationPointAugmentation.class);
+		TerminationPoint tp_A = mock(TerminationPoint.class);
+
+		network.addPort(bridgeNode1, tp_A, otpa_A, np_A);
+
+		// PORT B
+		NeutronPort np_B = mock(NeutronPort.class);
+		List<Neutron_IPs> nipList_B = new LinkedList<Neutron_IPs>();
+		nipList_B.add(nip_AB);
+		nipList_B.add(nip_BC);
+		when(np_B.getFixedIPs()).thenReturn(nipList_B);
+
+		OvsdbTerminationPointAugmentation otpa_B = mock(OvsdbTerminationPointAugmentation.class);
+		TerminationPoint tp_B = mock(TerminationPoint.class);
+
+		network.addPort(bridgeNode1, tp_B, otpa_B, np_B);
+
+		// PORT C
+		NeutronPort np_C = mock(NeutronPort.class);
+		List<Neutron_IPs> nipList_C = new LinkedList<Neutron_IPs>();
+		nipList_C.add(nip_BC);
+		when(np_C.getFixedIPs()).thenReturn(nipList_C);
+
+		OvsdbTerminationPointAugmentation otpa_C = mock(OvsdbTerminationPointAugmentation.class);
+		TerminationPoint tp_C = mock(TerminationPoint.class);
+
+		network.addPort(bridgeNode2, tp_C, otpa_C, np_C);
+
+		// check if listener was called exactly 2 times for A <-> B and B <-> C
+		verify(nplm, times(2)).networkPathCreated(any(INetworkPath.class));
+
+		// examine the paths
+		assertTrue(netpaths.size() == 2);
+		INetworkPath np_AB = netpaths.get(0);
+		INetworkPath np_BC = netpaths.get(1);
+
+		assertTrue(np_AB.getLength() == 1);
+		assertTrue(np_BC.getLength() == 3);
+
+		assertTrue(np_AB.getBegin().equals(hostBridges.get(0)));
+		assertTrue(np_AB.getEnd().equals(hostBridges.get(0)));
+		assertTrue(np_BC.getBegin().equals(hostBridges.get(0)) && np_BC.getEnd().equals(hostBridges.get(1)) || np_BC.getBegin().equals(hostBridges.get(1)) && np_BC.getEnd().equals(hostBridges.get(0)));
 	}
 }

@@ -65,7 +65,7 @@ public class NetworkGraph implements
 		this.networkPathListeners.add(npl);
 	}
 
-	public void notifyNetworkPathListenersCreate(INetworkPath networkPath) {	
+	public void notifyNetworkPathListenersCreate(INetworkPath networkPath) {
 		for (INetworkPathListener npl : this.networkPathListeners) {
 			npl.networkPathCreated(networkPath);
 		}
@@ -170,7 +170,7 @@ public class NetworkGraph implements
 	}
 
 	public INetworkPath getNetworkPath(final IHostPort begin, final IHostPort end) {
-		ITraversableBridge beginBridge = new TraversableBridge(begin.getBridge());
+		final ITraversableBridge beginBridge = new TraversableBridge(begin.getBridge());
 		final ITraversableBridge endBridge = new TraversableBridge(end.getBridge());
 
 		assert begin.getBridge() != null : "begin bridge can't be null";
@@ -188,8 +188,14 @@ public class NetworkGraph implements
 
 			public boolean visitBridge(ITraversableBridge currentBridge) {
 				iterations++;
+
+				// termination when the final bridge is reached
 				if (currentBridge.equals(endBridge)) {
-					this.shortestPath = this.getRootPath(currentBridge);
+
+					// bridges in path > 1
+					if (!currentBridge.equals(beginBridge)) {
+						this.shortestPath = this.getRootPath(currentBridge);
+					}
 					this.shortestPath.append(currentBridge.getBridge());
 					this.shortestPath.close();
 					return false;
@@ -251,7 +257,7 @@ public class NetworkGraph implements
 		return iterator.getResult();
 	}
 
-	private void checkPossibleConnections(IHostPort srcPort) {
+	private void checkNewConnections(IHostPort srcPort) {
 		for (IHostPort port : this.getHostPorts()) {
 			if (srcPort.canConnectTo(port)) {
 				this.notifyNetworkPathListenersCreate(this.getNetworkPath(srcPort, port));
@@ -339,6 +345,7 @@ public class NetworkGraph implements
 		logger.info("is a neutron port");
 		IHostPort port = new HostPort(bo, tp, tpa, neutronPort);
 		bo.addPort(port);
+		this.checkNewConnections(port);
 	}
 
 	public void removePort(Node node, OvsdbTerminationPointAugmentation tpa) {
