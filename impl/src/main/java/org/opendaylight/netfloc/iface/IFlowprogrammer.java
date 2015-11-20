@@ -9,5 +9,7 @@ package ch.icclab.netfloc.iface;
 
 public interface IFlowprogrammer {
 	public void programFlows(IFlowPathPattern flowPattern, INetworkPath networkPath);
+	public void deleteFlows(IFlowPathPattern flowPattern, INetworkPath networkPath);
 	public void programFlows(IFlowBridgePattern flowPattern, IBridgeOperator bridge);
+	public void deleteFlows(IFlowBridgePattern flowPattern, IBridgeOperator bridge);
 }

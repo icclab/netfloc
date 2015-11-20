@@ -212,6 +212,7 @@ public class NetworkGraphTest {
 		INetworkPathListener nplr = new INetworkPathListener() {
 
 			public void networkPathCreated(INetworkPath np) {
+				// outer frame reference
 				netpaths.add(np);
 			}
 
