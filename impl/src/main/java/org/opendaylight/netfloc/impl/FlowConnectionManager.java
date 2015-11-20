@@ -7,7 +7,16 @@
  */
 package ch.icclab.netfloc.impl;
 
+import ch.icclab.netfloc.iface.INetworkPath;
+import ch.icclab.netfloc.iface.IBridgeOperator;
+import ch.icclab.netfloc.iface.IFlowPathPattern;
+import ch.icclab.netfloc.iface.IFlowBridgePattern;
 import ch.icclab.netfloc.iface.INetworkPathListener;
+import ch.icclab.netfloc.iface.IFlowprogrammer;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import java.util.Map;
+import java.util.List;
+import java.util.LinkedList;
 
 public class FlowConnectionManager implements INetworkPathListener {
 	
@@ -46,33 +55,38 @@ public class FlowConnectionManager implements INetworkPathListener {
 	@Override
 	public void networkPathCreated(INetworkPath np) {
 		// TODO: decide which pattern
-		IFlowPathPattern pattern;
-
-		// TODO: handle status, mb retry etc.
-		flowprogrammer.programFlows(pattern, np);
-
+		IFlowPathPattern pattern = null;
+		for (Map.Entry<IBridgeOperator, Flow> flowEntry : pattern.apply(np).entrySet()) {
+			// TODO: handle status, mb retry etc.
+			flowprogrammer.programFlow(flowEntry.getValue(), flowEntry.getKey());
+		}
 		// TODO: reference the flows
 	}
 
 	@Override
 	public void networkPathUpdated(INetworkPath oldNp, INetworkPath nNp) {
-		// TODO: decide which pattern
-		IFlowPathPattern pattern;
+		IFlowPathPattern pattern = null;
 
-		// TODO: handle status, mb retry etc.
-		flowprogrammer.deleteFlows(pattern, oldNp);
+		for (Map.Entry<IBridgeOperator, Flow> flowEntry : pattern.apply(oldNp).entrySet()) {
+			// TODO: handle status, mb retry etc.
+			flowprogrammer.deleteFlow(flowEntry.getValue(), flowEntry.getKey());
+		}
 
-		// TODO: handle status, mb retry etc.
-		flowprogrammer.programFlows(pattern, nNp)
+		for (Map.Entry<IBridgeOperator, Flow> flowEntry : pattern.apply(nNp).entrySet()) {
+			// TODO: handle status, mb retry etc.
+			flowprogrammer.programFlow(flowEntry.getValue(), flowEntry.getKey());
+		}
 	}
 	
 	@Override
 	public void networkPathDeleted(INetworkPath np) {
 		// TODO: decide which pattern
-		IFlowPathPattern pattern;
+		IFlowPathPattern pattern = null;
 
-		// TODO: handle status, mb retry etc.
-		flowprogrammer.deleteFlows(pattern, np);
+		for (Map.Entry<IBridgeOperator, Flow> flowEntry : pattern.apply(np).entrySet()) {
+			// TODO: handle status, mb retry etc.
+			flowprogrammer.deleteFlow(flowEntry.getValue(), flowEntry.getKey());
+		}
 	}
 
 }

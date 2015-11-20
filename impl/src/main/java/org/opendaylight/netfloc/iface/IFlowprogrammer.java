@@ -7,9 +7,9 @@
  */
 package ch.icclab.netfloc.iface;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+
 public interface IFlowprogrammer {
-	public void programFlows(IFlowPathPattern flowPattern, INetworkPath networkPath);
-	public void deleteFlows(IFlowPathPattern flowPattern, INetworkPath networkPath);
-	public void programFlows(IFlowBridgePattern flowPattern, IBridgeOperator bridge);
-	public void deleteFlows(IFlowBridgePattern flowPattern, IBridgeOperator bridge);
+	public void programFlow(Flow flow, IBridgeOperator bo);
+	public void deleteFlow(Flow flow, IBridgeOperator bo);
 }

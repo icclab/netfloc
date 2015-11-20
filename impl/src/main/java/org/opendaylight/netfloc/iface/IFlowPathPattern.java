@@ -7,11 +7,11 @@
  */
 package ch.icclab.netfloc.iface;
 
+import ch.icclab.netfloc.iface.INetworkPath;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import java.util.Map;
+
 public interface IFlowPathPattern {
 
-	// todo: build sufficient state
-
-	// public Instruction getSrcBridgeInstruction();
-	// public Instruction getAggregationBridgeInstruction();
-	// public Instruction getDstBridgeInstruction();
+	public Map<IBridgeOperator, Flow> apply(INetworkPath path);
 }

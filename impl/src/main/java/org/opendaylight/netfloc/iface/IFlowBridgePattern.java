@@ -7,9 +7,10 @@
  */
 package ch.icclab.netfloc.iface;
 
+import ch.icclab.netfloc.iface.IBridgeOperator;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+
 public interface IFlowBridgePattern {
 
-	// TODO: build a sufficient state
-
-	// public Instruction getBridgeInstruction();
+	public Flow apply(IBridgeOperator bo);
 }
