@@ -14,7 +14,9 @@ import ch.icclab.netfloc.iface.IFlowBridgePattern;
 import ch.icclab.netfloc.iface.INetworkPathListener;
 import ch.icclab.netfloc.iface.IFlowprogrammer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import com.google.common.util.concurrent.FutureCallback;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -28,6 +30,9 @@ public class FlowConnectionManager implements INetworkPathListener {
 	// mb reference them with strings or sth (map) ???
 	private List<IBridgeOperator> bridges = new LinkedList<IBridgeOperator>();
 	private List<IFlowBridgePattern> flowBridgePatterns = new LinkedList<IFlowBridgePattern>();
+
+	private final Map<INetworkPath, IFlowPathPattern> programSuccess = new HashMap<INetworkPath, IFlowPathPattern>();
+	private final Map<INetworkPath, IFlowPathPattern> programFailure = new HashMap<INetworkPath, IFlowPathPattern>();
 
 	private IFlowprogrammer flowprogrammer;
 
@@ -47,45 +52,84 @@ public class FlowConnectionManager implements INetworkPathListener {
 		this.flowprogrammer = flowprogrammer;
 	}
 
-	// TODO: utility methods for querying the flow status
-	// examples:
-	// get all flow connections!
-	// does x have connection?
+	// API
+	public IFlowPathPattern getSuccessfulConnection(INetworkPath np) {
+		return this.programSuccess.get(np);
+	}
 
+	public IFlowPathPattern getFailedConnection(INetworkPath np) {
+		return this.programFailure.get(np);
+	}
+
+	public void registerPathPattern(IFlowPathPattern pattern) {
+		// currently we have no way to use more than one pattern (TODO)
+		this.flowPathPatterns.add(pattern);
+	}
+
+	// Callbacks
 	@Override
-	public void networkPathCreated(INetworkPath np) {
+	public void networkPathCreated(final INetworkPath np) {
 		// TODO: decide which pattern
-		IFlowPathPattern pattern = null;
+		final IFlowPathPattern pattern = this.flowPathPatterns.get(0);
+
 		for (Map.Entry<IBridgeOperator, Flow> flowEntry : pattern.apply(np).entrySet()) {
-			// TODO: handle status, mb retry etc.
-			flowprogrammer.programFlow(flowEntry.getValue(), flowEntry.getKey());
+			flowprogrammer.programFlow(flowEntry.getValue(), flowEntry.getKey(), new FutureCallback<Void>() {
+				public void onSuccess(Void result) {
+					programSuccess.put(np, pattern);
+				}
+
+				public void onFailure(Throwable t) {
+					programFailure.put(np, pattern);
+				}
+			});
 		}
-		// TODO: reference the flows
 	}
 
 	@Override
-	public void networkPathUpdated(INetworkPath oldNp, INetworkPath nNp) {
-		IFlowPathPattern pattern = null;
+	public void networkPathUpdated(final INetworkPath oldNp, final INetworkPath nNp) {
+		// TODO: decide which pattern
+		final IFlowPathPattern pattern = this.flowPathPatterns.get(0);
 
 		for (Map.Entry<IBridgeOperator, Flow> flowEntry : pattern.apply(oldNp).entrySet()) {
-			// TODO: handle status, mb retry etc.
-			flowprogrammer.deleteFlow(flowEntry.getValue(), flowEntry.getKey());
+			flowprogrammer.deleteFlow(flowEntry.getValue(), flowEntry.getKey(), new FutureCallback<Void>() {
+				public void onSuccess(Void result) {
+					programSuccess.put(oldNp, pattern);
+				}
+
+				public void onFailure(Throwable t) {
+					programFailure.put(oldNp, pattern);
+				}
+			});
 		}
 
 		for (Map.Entry<IBridgeOperator, Flow> flowEntry : pattern.apply(nNp).entrySet()) {
-			// TODO: handle status, mb retry etc.
-			flowprogrammer.programFlow(flowEntry.getValue(), flowEntry.getKey());
+			flowprogrammer.programFlow(flowEntry.getValue(), flowEntry.getKey(), new FutureCallback<Void>() {
+				public void onSuccess(Void result) {
+					programSuccess.put(nNp, pattern);
+				}
+
+				public void onFailure(Throwable t) {
+					programFailure.put(nNp, pattern);
+				}
+			});
 		}
 	}
 	
 	@Override
-	public void networkPathDeleted(INetworkPath np) {
+	public void networkPathDeleted(final INetworkPath np) {
 		// TODO: decide which pattern
-		IFlowPathPattern pattern = null;
+		final IFlowPathPattern pattern = this.flowPathPatterns.get(0);
 
 		for (Map.Entry<IBridgeOperator, Flow> flowEntry : pattern.apply(np).entrySet()) {
-			// TODO: handle status, mb retry etc.
-			flowprogrammer.deleteFlow(flowEntry.getValue(), flowEntry.getKey());
+			flowprogrammer.deleteFlow(flowEntry.getValue(), flowEntry.getKey(), new FutureCallback<Void>() {
+				public void onSuccess(Void result) {
+					programSuccess.put(np, pattern);
+				}
+
+				public void onFailure(Throwable t) {
+					programFailure.put(np, pattern);
+				}
+			});
 		}
 	}
 

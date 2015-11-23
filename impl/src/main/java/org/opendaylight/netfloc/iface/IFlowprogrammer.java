@@ -8,8 +8,9 @@
 package ch.icclab.netfloc.iface;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import com.google.common.util.concurrent.FutureCallback;
 
 public interface IFlowprogrammer {
-	public void programFlow(Flow flow, IBridgeOperator bo);
-	public void deleteFlow(Flow flow, IBridgeOperator bo);
+	public void programFlow(Flow flow, IBridgeOperator bo, FutureCallback<Void> cb);
+	public void deleteFlow(Flow flow, IBridgeOperator bo, FutureCallback<Void> cb);
 }

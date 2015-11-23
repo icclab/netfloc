@@ -31,12 +31,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 
-	//org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021
+import org.opendaylight.controller.md.sal.common.api.data.DataValidationFailedException;
+import org.opendaylight.controller.md.sal.common.api.data.OptimisticLockFailedException;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.FutureCallback;
 
 public class Flowprogrammer implements IFlowprogrammer {
 	static final Logger logger = LoggerFactory.getLogger(Flowprogrammer.class);
@@ -46,29 +50,46 @@ public class Flowprogrammer implements IFlowprogrammer {
 		this.dataBroker = dataBroker;
 	}
 
-	public void programFlow(Flow flow, IBridgeOperator bridge) {
+	public void programFlow(Flow flow, IBridgeOperator bridge, FutureCallback<Void> cb) {
 		WriteTransaction wt = this.dataBroker.newWriteOnlyTransaction();
 		InstanceIdentifier<Flow> flowId = buildFlowId(flow, bridge.getDatapathId());
 		wt.merge(LogicalDatastoreType.CONFIGURATION, flowId, flow, true);
-        commitWriteTransaction(wt, flow);
+        commitWriteTransaction(wt, cb, 3);
 	}
 
-	public void deleteFlow(Flow flow, IBridgeOperator bridge) {
+	public void deleteFlow(Flow flow, IBridgeOperator bridge, FutureCallback<Void> cb) {
 		WriteTransaction wt = this.dataBroker.newWriteOnlyTransaction();
 		InstanceIdentifier<Flow> flowId = buildFlowId(flow, bridge.getDatapathId());
 		wt.delete(LogicalDatastoreType.CONFIGURATION, flowId);
-		commitWriteTransaction(wt, null);
+		commitWriteTransaction(wt, cb, 3);
 	}
 
-	private void commitWriteTransaction(WriteTransaction wt, Flow flow) {
-		CheckedFuture<Void, TransactionCommitFailedException> commitFuture = wt.submit();
-        try {
-            commitFuture.checkedGet();
-            logger.debug("Transaction success for object {}", flow);
-        } catch (Exception e) {
-            logger.error("Transaction failed with error {} of object {}", e.getMessage(), flow);
-            wt.cancel();
-        }
+	private void commitWriteTransaction(final WriteTransaction wt, final FutureCallback<Void> cb, final int tries) {
+        Futures.addCallback(wt.submit(), new FutureCallback<Void>() {
+			public void onSuccess(Void result) {
+				logger.debug("Transaction success after {} tries for {}", tries, wt);
+				cb.onSuccess(result);
+			}
+
+			public void onFailure(Throwable t) {
+				if (t instanceof OptimisticLockFailedException) {
+					if((tries - 1) > 0) {
+						logger.warn("Transaction retry {} for {}", tries, wt);
+						commitWriteTransaction(wt, cb, tries - 1);
+					} else {
+						logger.error("Transaction out of retries: ", wt);
+						cb.onFailure(t);
+					}
+				} else {
+					if (t instanceof DataValidationFailedException) {
+						logger.error("Transaction validation failed {}", t.getMessage());
+					} else {
+						logger.error("Transaction failed {}", t.getMessage());
+					}
+					cb.onFailure(t);
+				}
+			}
+		});
 	}
 
 	private InstanceIdentifier<Node> buildNodeId(Node node) {
