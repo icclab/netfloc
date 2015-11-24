@@ -1,0 +1,3615 @@
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Netfloc</title>
+    <link href="css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/idea.css">
+    <script src="js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <link rel="stylesheet" type="text/css" href="css/api-specification.css"> 
+
+    
+</head>
+<body id="respecDocument" class="h-entry">
+<div class="container">
+  <div id="TOC-container">
+    
+<section id="toc">
+
+        <div id="fiware-logo"></div>
+    <ul class="toc">
+
+
+    
+    
+
+
+
+
+
+<li><a href="#API_specification">API Specification</a>
+    <ul class="toc">
+    
+
+                        <li>
+                            
+                                <a href="#default_group" title = "Group default">Default</a>
+                            
+                            <ul class="toc">
+                              
+                                
+                                    <li>
+                                        <a href="#resource_network-graph" title = "Resource Network Graph">Resource Network Graph</a>
+                                        <ul class="toc  ">
+                                        
+                                            
+                                                <li><a href="#action_get-the-network-graph" title ="GET - Get the Network Graph">GET - Get the Network Graph</a></li>
+                                            
+
+                                        
+                                        </ul>
+                                    </li>
+                                
+                              
+                                
+                                    <li>
+                                        <a href="#resource_tenant-filtered-network-graph" title = "Resource Tenant filtered Network Graph">Resource Tenant filtered Network Graph</a>
+                                        <ul class="toc  ">
+                                        
+                                            
+                                                <li><a href="#action_get-the-tenant-filtered-network-graph" title ="GET - Get the tenant filtered Network Graph">GET - Get the tenant filtered Network Graph</a></li>
+                                            
+
+                                        
+                                        </ul>
+                                    </li>
+                                
+                              
+                                
+                                    <li>
+                                        <a href="#resource_tenants" title = "Resource Tenants">Resource Tenants</a>
+                                        <ul class="toc  ">
+                                        
+                                            
+                                                <li><a href="#action_get-all-tenants" title ="GET - Get all tenants">GET - Get all tenants</a></li>
+                                            
+
+                                        
+                                        </ul>
+                                    </li>
+                                
+                              
+                                
+                                    <li>
+                                        <a href="#resource_host-ports" title = "Resource Host Ports">Resource Host Ports</a>
+                                        <ul class="toc  ">
+                                        
+                                            
+                                                <li><a href="#action_get-all-host-ports" title ="GET - Get all Host Ports">GET - Get all Host Ports</a></li>
+                                            
+
+                                        
+                                        </ul>
+                                    </li>
+                                
+                              
+                                
+                                    <li>
+                                        <a href="#resource_network-path" title = "Resource Network Path">Resource Network Path</a>
+                                        <ul class="toc  ">
+                                        
+                                            
+                                                <li><a href="#action_get-a-network-path-between-source-and-destination-ports" title ="GET - Get a Network Path between source and destination ports">GET - Get a Network Path between source and destination ports</a></li>
+                                            
+
+                                        
+                                        </ul>
+                                    </li>
+                                
+                              
+                                
+                                    <li>
+                                        <a href="#resource_flow-patterns" title = "Resource Flow Patterns">Resource Flow Patterns</a>
+                                        <ul class="toc  ">
+                                        
+                                            
+                                                <li><a href="#action_get-all-flow-patterns" title ="GET - Get all flow patterns">GET - Get all flow patterns</a></li>
+                                            
+
+                                        
+                                            
+                                                <li><a href="#action_create-a-new-flow-pattern" title ="POST - Create a new flow pattern">POST - Create a new flow pattern</a></li>
+                                            
+
+                                        
+                                        </ul>
+                                    </li>
+                                
+                              
+                                
+                                    <li>
+                                        <a href="#resource_flow-pattern" title = "Resource Flow Pattern">Resource Flow Pattern</a>
+                                        <ul class="toc  ">
+                                        
+                                            
+                                                <li><a href="#action_get-flow-pattern-by-id" title ="GET - Get flow pattern by id">GET - Get flow pattern by id</a></li>
+                                            
+
+                                        
+                                            
+                                                <li><a href="#action_update-flow-pattern-by-id" title ="PUT - Update flow pattern by id">PUT - Update flow pattern by id</a></li>
+                                            
+
+                                        
+                                            
+                                                <li><a href="#action_delete-flow-pattern-by-id" title ="DELETE - Delete flow pattern by id">DELETE - Delete flow pattern by id</a></li>
+                                            
+
+                                        
+                                        </ul>
+                                    </li>
+                                
+                              
+                                
+                                    <li>
+                                        <a href="#resource_install-and-delete-flow-patterns-on-network-paths" title = "Resource Install and delete Flow Patterns on Network Paths">Resource Install and delete Flow Patterns on Network Paths</a>
+                                        <ul class="toc  ">
+                                        
+                                            
+                                                <li><a href="#action_post-a-flow-pattern-onto-a-network-path" title ="POST - Post a flow pattern onto a network path">POST - Post a flow pattern onto a network path</a></li>
+                                            
+
+                                        
+                                            
+                                                <li><a href="#action_delete-a-flow-pattern-on-a-network-path" title ="DELETE - Delete a flow pattern on a network path">DELETE - Delete a flow pattern on a network path</a></li>
+                                            
+
+                                        
+                                        </ul>
+                                    </li>
+                                
+                              
+                            </ul>
+                        </li>
+                      
+    <li><a href="#examples">Examples</a></li>
+    </ul>
+</li>
+    
+    
+    
+   </ul>
+</section>
+
+  </div>
+  <div id="API-content">
+  
+	
+
+
+
+	
+
+
+
+
+	
+
+
+
+
+
+
+<hr>
+
+
+	<h2 id="abstract">Abstract</h2>
+	<p>Netfloc application API.</p>
+
+
+
+
+<hr>
+
+    
+    
+
+
+
+
+		
+	
+	
+
+
+
+
+
+	
+
+
+
+    
+
+  
+  <section id="API_specification">
+      <h1>API Specification</h1>
+      
+
+
+
+
+        
+            <section id="default_group" class="resourceGroup">
+             <div class= "header" ><h2 id="h-default_group"> Default </h2></div>
+        
+	
+        
+            <section id="resource_network-graph" class="resource">
+                 <div class= "header" ><h3 id="h-resource_network-graph">Network Graph [/networkGraph]</h3> </div>
+                
+                
+                
+
+		        
+                
+                
+
+
+
+
+
+
+    
+
+
+                
+
+
+                    
+                        <div id="action_get-the-network-graph" class="action GET">
+
+                        
+    <h4 id="h-action_get-the-network-graph">
+        Get the Network Graph -
+        GET
+        
+            /networkGraph
+        
+    </h4>
+
+        
+                            <div id="get-the-network-graph_body" class="">
+                                
+                                
+                                
+                                
+			
+                                
+                                
+      
+                                    
+        	                            
+    
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+                                    
+                                    
+                                    <div class="goExample">
+                                        <a href="#action_get-the-network-graph_examples">Go to example</a>
+                                    </div>
+                                    
+                                        
+    <div class="goApiary">
+    
+        
+    
+    </div>
+
+                                    
+                                
+                            </div>
+                        </div>
+                    
+            </section>
+        
+            <section id="resource_tenant-filtered-network-graph" class="resource">
+                 <div class= "header" ><h3 id="h-resource_tenant-filtered-network-graph">Tenant filtered Network Graph [/networkGraph/{tenant}]</h3> </div>
+                
+                
+                
+
+		        
+                
+                
+
+
+
+
+
+
+    
+
+
+                
+
+	<span class="parameters-title">Parameters</span>
+	<dl>
+		
+			<dt>
+				tenant (Required, string
+				)
+			</dt>
+			<dd>
+				Name of the tenant
+				
+			</dd>
+		
+	</dl>
+
+
+                    
+                        <div id="action_get-the-tenant-filtered-network-graph" class="action GET">
+
+                        
+    <h4 id="h-action_get-the-tenant-filtered-network-graph">
+        Get the tenant filtered Network Graph -
+        GET
+        
+            /networkGraph/{tenant}
+        
+    </h4>
+
+        
+                            <div id="get-the-tenant-filtered-network-graph_body" class="">
+                                
+                                
+                                
+                                
+			
+                                
+                                
+      
+                                    
+        	                            
+    
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+                                    
+                                    
+                                    <div class="goExample">
+                                        <a href="#action_get-the-tenant-filtered-network-graph_examples">Go to example</a>
+                                    </div>
+                                    
+                                        
+    <div class="goApiary">
+    
+        
+    
+    </div>
+
+                                    
+                                
+                            </div>
+                        </div>
+                    
+            </section>
+        
+            <section id="resource_tenants" class="resource">
+                 <div class= "header" ><h3 id="h-resource_tenants">Tenants [/tenant]</h3> </div>
+                
+                
+                
+
+		        
+                
+                
+
+
+
+
+
+
+    
+
+
+                
+
+
+                    
+                        <div id="action_get-all-tenants" class="action GET">
+
+                        
+    <h4 id="h-action_get-all-tenants">
+        Get all tenants -
+        GET
+        
+            /tenant
+        
+    </h4>
+
+        
+                            <div id="get-all-tenants_body" class="">
+                                
+                                
+                                
+                                
+			
+                                
+                                
+      
+                                    
+        	                            
+    
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+                                    
+                                    
+                                    <div class="goExample">
+                                        <a href="#action_get-all-tenants_examples">Go to example</a>
+                                    </div>
+                                    
+                                        
+    <div class="goApiary">
+    
+        
+    
+    </div>
+
+                                    
+                                
+                            </div>
+                        </div>
+                    
+            </section>
+        
+            <section id="resource_host-ports" class="resource">
+                 <div class= "header" ><h3 id="h-resource_host-ports">Host Ports [/hostPort]</h3> </div>
+                
+                
+                
+
+		        
+                
+                
+
+
+
+
+
+
+    
+
+
+                
+
+
+                    
+                        <div id="action_get-all-host-ports" class="action GET">
+
+                        
+    <h4 id="h-action_get-all-host-ports">
+        Get all Host Ports -
+        GET
+        
+            /hostPort
+        
+    </h4>
+
+        
+                            <div id="get-all-host-ports_body" class="">
+                                
+                                
+                                
+                                
+			
+                                
+                                
+      
+                                    
+        	                            
+    
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+                                    
+                                    
+                                    <div class="goExample">
+                                        <a href="#action_get-all-host-ports_examples">Go to example</a>
+                                    </div>
+                                    
+                                        
+    <div class="goApiary">
+    
+        
+    
+    </div>
+
+                                    
+                                
+                            </div>
+                        </div>
+                    
+            </section>
+        
+            <section id="resource_network-path" class="resource">
+                 <div class= "header" ><h3 id="h-resource_network-path">Network Path [/networkPath/{src}/{dst}]</h3> </div>
+                
+                
+                
+
+		        
+                
+                
+
+
+
+
+
+
+    
+
+
+                
+
+
+                    
+                        <div id="action_get-a-network-path-between-source-and-destination-ports" class="action GET">
+
+                        
+    <h4 id="h-action_get-a-network-path-between-source-and-destination-ports">
+        Get a Network Path between source and destination ports -
+        GET
+        
+            /networkPath/{src}/{dst}
+        
+    </h4>
+
+        
+                            <div id="get-a-network-path-between-source-and-destination-ports_body" class="">
+                                
+                                
+                                
+                                
+			
+                                
+                                
+      
+                                    
+        	                            
+    
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+                                    
+                                    
+                                    <div class="goExample">
+                                        <a href="#action_get-a-network-path-between-source-and-destination-ports_examples">Go to example</a>
+                                    </div>
+                                    
+                                        
+    <div class="goApiary">
+    
+        
+    
+    </div>
+
+                                    
+                                
+                            </div>
+                        </div>
+                    
+            </section>
+        
+            <section id="resource_flow-patterns" class="resource">
+                 <div class= "header" ><h3 id="h-resource_flow-patterns">Flow Patterns [/flowPattern]</h3> </div>
+                
+                
+                
+
+		        
+                
+                
+
+
+
+
+
+
+    
+
+
+                
+
+
+                    
+                        <div id="action_get-all-flow-patterns" class="action GET">
+
+                        
+    <h4 id="h-action_get-all-flow-patterns">
+        Get all flow patterns -
+        GET
+        
+            /flowPattern
+        
+    </h4>
+
+        
+                            <div id="get-all-flow-patterns_body" class="">
+                                
+                                
+                                
+                                
+			
+                                
+                                
+      
+                                    
+        	                            
+    
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+                                    
+                                    
+                                    <div class="goExample">
+                                        <a href="#action_get-all-flow-patterns_examples">Go to example</a>
+                                    </div>
+                                    
+                                        
+    <div class="goApiary">
+    
+        
+    
+    </div>
+
+                                    
+                                
+                            </div>
+                        </div>
+                    
+                        <div id="action_create-a-new-flow-pattern" class="action POST">
+
+                        
+    <h4 id="h-action_create-a-new-flow-pattern">
+        Create a new flow pattern -
+        POST
+        
+            /flowPattern
+        
+    </h4>
+
+        
+                            <div id="create-a-new-flow-pattern_body" class="">
+                                
+                                
+                                
+                                
+			
+                                
+                                
+      
+                                    
+        	                            
+                                            
+                                            
+                                            
+                                            
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Request </span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+    
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 201</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 400</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+                                    
+                                    
+                                    <div class="goExample">
+                                        <a href="#action_create-a-new-flow-pattern_examples">Go to example</a>
+                                    </div>
+                                    
+                                        
+    <div class="goApiary">
+    
+        
+    
+    </div>
+
+                                    
+                                
+                            </div>
+                        </div>
+                    
+            </section>
+        
+            <section id="resource_flow-pattern" class="resource">
+                 <div class= "header" ><h3 id="h-resource_flow-pattern">Flow Pattern [/flowPattern/{id}]</h3> </div>
+                
+                
+                
+
+		        
+                
+                
+
+
+
+
+
+
+    
+
+
+                
+
+
+                    
+                        <div id="action_get-flow-pattern-by-id" class="action GET">
+
+                        
+    <h4 id="h-action_get-flow-pattern-by-id">
+        Get flow pattern by id -
+        GET
+        
+            /flowPattern/{id}
+        
+    </h4>
+
+        
+                            <div id="get-flow-pattern-by-id_body" class="">
+                                
+                                
+                                
+                                
+			
+                                
+                                
+      
+                                    
+        	                            
+    
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 404</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 410</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+                                    
+                                    
+                                    <div class="goExample">
+                                        <a href="#action_get-flow-pattern-by-id_examples">Go to example</a>
+                                    </div>
+                                    
+                                        
+    <div class="goApiary">
+    
+        
+    
+    </div>
+
+                                    
+                                
+                            </div>
+                        </div>
+                    
+                        <div id="action_update-flow-pattern-by-id" class="action PUT">
+
+                        
+    <h4 id="h-action_update-flow-pattern-by-id">
+        Update flow pattern by id -
+        PUT
+        
+            /flowPattern/{id}
+        
+    </h4>
+
+        
+                            <div id="update-flow-pattern-by-id_body" class="">
+                                
+                                
+                                
+                                
+			
+                                
+                                
+      
+                                    
+        	                            
+                                            
+                                            
+                                            
+                                            
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Request </span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+    
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 400</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 404</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 410</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+                                    
+                                    
+                                    <div class="goExample">
+                                        <a href="#action_update-flow-pattern-by-id_examples">Go to example</a>
+                                    </div>
+                                    
+                                        
+    <div class="goApiary">
+    
+        
+    
+    </div>
+
+                                    
+                                
+                            </div>
+                        </div>
+                    
+                        <div id="action_delete-flow-pattern-by-id" class="action DELETE">
+
+                        
+    <h4 id="h-action_delete-flow-pattern-by-id">
+        Delete flow pattern by id -
+        DELETE
+        
+            /flowPattern/{id}
+        
+    </h4>
+
+        
+                            <div id="delete-flow-pattern-by-id_body" class="">
+                                
+                                
+                                
+                                
+			
+                                
+                                
+      
+                                    
+        	                            
+    
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 409</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 404</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+                                    
+                                    
+                                    <div class="goExample">
+                                        <a href="#action_delete-flow-pattern-by-id_examples">Go to example</a>
+                                    </div>
+                                    
+                                        
+    <div class="goApiary">
+    
+        
+    
+    </div>
+
+                                    
+                                
+                            </div>
+                        </div>
+                    
+            </section>
+        
+            <section id="resource_install-and-delete-flow-patterns-on-network-paths" class="resource">
+                 <div class= "header" ><h3 id="h-resource_install-and-delete-flow-patterns-on-network-paths">Install and delete Flow Patterns on Network Paths [/flowPattern/{id}/{src}/{dst}]</h3> </div>
+                
+                
+                
+
+		        
+                
+                
+
+
+
+
+
+
+    
+
+
+                
+
+
+                    
+                        <div id="action_post-a-flow-pattern-onto-a-network-path" class="action POST">
+
+                        
+    <h4 id="h-action_post-a-flow-pattern-onto-a-network-path">
+        Post a flow pattern onto a network path -
+        POST
+        
+            /flowPattern/{id}/{src}/{dst}
+        
+    </h4>
+
+        
+                            <div id="post-a-flow-pattern-onto-a-network-path_body" class="">
+                                
+                                
+                                
+                                
+			
+                                
+                                
+      
+                                    
+        	                            
+    
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 400</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 201</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 404</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 410</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 409</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+                                    
+                                    
+                                    <div class="goExample">
+                                        <a href="#action_post-a-flow-pattern-onto-a-network-path_examples">Go to example</a>
+                                    </div>
+                                    
+                                        
+    <div class="goApiary">
+    
+        
+    
+    </div>
+
+                                    
+                                
+                            </div>
+                        </div>
+                    
+                        <div id="action_delete-a-flow-pattern-on-a-network-path" class="action DELETE">
+
+                        
+    <h4 id="h-action_delete-a-flow-pattern-on-a-network-path">
+        Delete a flow pattern on a network path -
+        DELETE
+        
+            /flowPattern/{id}/{src}/{dst}
+        
+    </h4>
+
+        
+                            <div id="delete-a-flow-pattern-on-a-network-path_body" class="">
+                                
+                                
+                                
+                                
+			
+                                
+                                
+      
+                                    
+        	                            
+    
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 404</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 404</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 410</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+                                    
+                                    
+                                    <div class="goExample">
+                                        <a href="#action_delete-a-flow-pattern-on-a-network-path_examples">Go to example</a>
+                                    </div>
+                                    
+                                        
+    <div class="goApiary">
+    
+        
+    
+    </div>
+
+                                    
+                                
+                            </div>
+                        </div>
+                    
+            </section>
+        
+    </section>
+
+<section id="examples">
+    <div class= "header" ><h2>Examples</h2> </div>
+    
+        
+            <section id="resource_group__example" class="resourceGroupExample">
+                <div class= "header" ><h3 id="h-resource_group__example">Default</h3> </div>
+        
+
+                
+                    <section id="resource_network-graph_example" class="resourceExample">
+                         <div class= "header" ><h4 id="h-resource_network-graph_example">Network Graph [/networkGraph]</h4></div>
+                            
+                            
+                            
+
+                            
+                            
+                            
+
+                            
+
+
+                            
+                                <div id="action_get-the-network-graph_examples" class="actionExample GET">
+
+                                    
+    <h4 id="h-action_get-the-network-graph_examples">
+        Get the Network Graph -
+        GET
+        
+            /networkGraph
+        
+    </h4>
+
+                
+                                    <div id="action_get-the-network-graph_body" class=""> 
+                                        
+                                        
+                                        
+                                        
+         
+                                        
+                                            
+                                            
+                                                
+            
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_get-the-network-graph_Response_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "Network Graphs retrieved",
+    "data": [
+        {
+            "linkPorts": [],
+            "internalPorts": [],
+            "hostPorts": []
+        }
+    ]
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                            
+                                            <div class="goActions">
+                                                <a href="#action_get-the-network-graph">Go to specification</a>
+                                            </div>
+                                    </div>
+                                </div>
+                            
+                    </section>
+            
+                    <section id="resource_tenant-filtered-network-graph_example" class="resourceExample">
+                         <div class= "header" ><h4 id="h-resource_tenant-filtered-network-graph_example">Tenant filtered Network Graph [/networkGraph/{tenant}]</h4></div>
+                            
+                            
+                            
+
+                            
+                            
+                            
+
+                            
+
+	<span class="parameters-title">Parameters</span>
+	<dl>
+		
+			<dt>
+				tenant (Required, string
+				)
+			</dt>
+			<dd>
+				Name of the tenant
+				
+			</dd>
+		
+	</dl>
+
+
+                            
+                                <div id="action_get-the-tenant-filtered-network-graph_examples" class="actionExample GET">
+
+                                    
+    <h4 id="h-action_get-the-tenant-filtered-network-graph_examples">
+        Get the tenant filtered Network Graph -
+        GET
+        
+            /networkGraph/{tenant}
+        
+    </h4>
+
+                
+                                    <div id="action_get-the-tenant-filtered-network-graph_body" class=""> 
+                                        
+                                        
+                                        
+                                        
+         
+                                        
+                                            
+                                            
+                                                
+            
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_get-the-tenant-filtered-network-graph_Response_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "filtered Network Graph retrieved",
+    "data": [
+        {
+            "externalPorts": [
+                { "link": ??? }
+            ],
+            "internalPorts": [],
+            "hostPorts": [
+                { "tenant": tenant }
+            ]
+        }   
+    ]
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                            
+                                            <div class="goActions">
+                                                <a href="#action_get-the-tenant-filtered-network-graph">Go to specification</a>
+                                            </div>
+                                    </div>
+                                </div>
+                            
+                    </section>
+            
+                    <section id="resource_tenants_example" class="resourceExample">
+                         <div class= "header" ><h4 id="h-resource_tenants_example">Tenants [/tenant]</h4></div>
+                            
+                            
+                            
+
+                            
+                            
+                            
+
+                            
+
+
+                            
+                                <div id="action_get-all-tenants_examples" class="actionExample GET">
+
+                                    
+    <h4 id="h-action_get-all-tenants_examples">
+        Get all tenants -
+        GET
+        
+            /tenant
+        
+    </h4>
+
+                
+                                    <div id="action_get-all-tenants_body" class=""> 
+                                        
+                                        
+                                        
+                                        
+         
+                                        
+                                            
+                                            
+                                                
+            
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_get-all-tenants_Response_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "tenant list retrieved",
+    "data": [
+        "tenant1", "tenant2", "tenant3"
+    ]
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                            
+                                            <div class="goActions">
+                                                <a href="#action_get-all-tenants">Go to specification</a>
+                                            </div>
+                                    </div>
+                                </div>
+                            
+                    </section>
+            
+                    <section id="resource_host-ports_example" class="resourceExample">
+                         <div class= "header" ><h4 id="h-resource_host-ports_example">Host Ports [/hostPort]</h4></div>
+                            
+                            
+                            
+
+                            
+                            
+                            
+
+                            
+
+
+                            
+                                <div id="action_get-all-host-ports_examples" class="actionExample GET">
+
+                                    
+    <h4 id="h-action_get-all-host-ports_examples">
+        Get all Host Ports -
+        GET
+        
+            /hostPort
+        
+    </h4>
+
+                
+                                    <div id="action_get-all-host-ports_body" class=""> 
+                                        
+                                        
+                                        
+                                        
+         
+                                        
+                                            
+                                            
+                                                
+            
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_get-all-host-ports_Response_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "all host ports retrieved",
+    "data": [
+        {
+            "ofPort": 1,
+            "tenant": "tenant1",
+            "l2Address": "ff:ff:ff:ff:ff:ff",
+            "l3Addresses": [
+                "192.168.0.1"
+            ]
+        }
+    ]
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                            
+                                            <div class="goActions">
+                                                <a href="#action_get-all-host-ports">Go to specification</a>
+                                            </div>
+                                    </div>
+                                </div>
+                            
+                    </section>
+            
+                    <section id="resource_network-path_example" class="resourceExample">
+                         <div class= "header" ><h4 id="h-resource_network-path_example">Network Path [/networkPath/{src}/{dst}]</h4></div>
+                            
+                            
+                            
+
+                            
+                            
+                            
+
+                            
+
+
+                            
+                                <div id="action_get-a-network-path-between-source-and-destination-ports_examples" class="actionExample GET">
+
+                                    
+    <h4 id="h-action_get-a-network-path-between-source-and-destination-ports_examples">
+        Get a Network Path between source and destination ports -
+        GET
+        
+            /networkPath/{src}/{dst}
+        
+    </h4>
+
+                
+                                    <div id="action_get-a-network-path-between-source-and-destination-ports_body" class=""> 
+                                        
+                                        
+                                        
+                                        
+         
+                                        
+                                            
+                                            
+                                                
+            
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_get-a-network-path-between-source-and-destination-ports_Response_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{   "status": "Network path retrieved",
+    "data": {
+        "flowPatterns" [],
+        "path" :[
+            {
+                "srcHostPort": {
+                    "ofPort": 1,
+                    "tenant": "tenant1",
+                    "l2Address": "00:00:00:00:00:01",
+                    "l3Addresses": [
+                        "192.168.0.1"
+                    ]
+                },
+                "nextLinkPort": {
+                    "ofPort": 3
+                }
+            },
+            {
+                "previousLinkPort": {
+                    "ofPort": 1
+                },
+                "nextLinkPort": {
+                    "ofPort": 3
+                }
+            },
+            {
+                "previousLinkPort": {
+                    "ofPort": 3
+                },
+                "dstHostPort": {
+                    "ofPort": 1,
+                    "tenant": "tenant1",
+                    "l2Address": "00:00:00:00:00:02",
+                    "l3Addresses": [
+                        "192.168.0.2"
+                    ]
+                }
+            }
+        ]
+    }
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                            
+                                            <div class="goActions">
+                                                <a href="#action_get-a-network-path-between-source-and-destination-ports">Go to specification</a>
+                                            </div>
+                                    </div>
+                                </div>
+                            
+                    </section>
+            
+                    <section id="resource_flow-patterns_example" class="resourceExample">
+                         <div class= "header" ><h4 id="h-resource_flow-patterns_example">Flow Patterns [/flowPattern]</h4></div>
+                            
+                            
+                            
+
+                            
+                            
+                            
+
+                            
+
+
+                            
+                                <div id="action_get-all-flow-patterns_examples" class="actionExample GET">
+
+                                    
+    <h4 id="h-action_get-all-flow-patterns_examples">
+        Get all flow patterns -
+        GET
+        
+            /flowPattern
+        
+    </h4>
+
+                
+                                    <div id="action_get-all-flow-patterns_body" class=""> 
+                                        
+                                        
+                                        
+                                        
+         
+                                        
+                                            
+                                            
+                                                
+            
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_get-all-flow-patterns_Response_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flow pattern retrieved",
+    "data": [
+        {
+            "srcBridge": [
+                {
+                    "match": {
+                        "in_port": "srcHostPort",
+                        "hw_src": "srcMAC",
+                        "hw_dst": "dstMAC"
+                    },
+                    "actions": {
+                        "output": "nextLinkPort"
+                    }
+                }
+            ],
+            "linkBridge": [
+                {
+                    "match": {
+                        "hw_dst": "dstMAC"
+                    },
+                    "actions": {
+                        "output": "nextLinkPort"
+                    }
+                }
+            ],
+            "dstBridge": [
+                {
+                    "match": {
+                        "hw_dst": "dstMAC"
+                    },
+                    "actions": {
+                        "output": "dstHostPort"
+                    }
+                }
+            ]
+        }
+    ]
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                            
+                                            <div class="goActions">
+                                                <a href="#action_get-all-flow-patterns">Go to specification</a>
+                                            </div>
+                                    </div>
+                                </div>
+                            
+                                <div id="action_create-a-new-flow-pattern_examples" class="actionExample POST">
+
+                                    
+    <h4 id="h-action_create-a-new-flow-pattern_examples">
+        Create a new flow pattern -
+        POST
+        
+            /flowPattern
+        
+    </h4>
+
+                
+                                    <div id="action_create-a-new-flow-pattern_body" class=""> 
+                                        
+                                        
+                                        
+                                        
+         
+                                        
+                                            
+                                            
+                                                
+                                                    
+                                                    
+                                                    
+                                                    
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Request </span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_create-a-new-flow-pattern_Request_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "srcBridge": [
+        {
+            "match": {
+                "in_port": "srcHostPort",
+                "hw_src": "srcMAC",
+                "hw_dst": "dstMAC"
+            },
+            "actions": {
+                "output": "nextLinkPort"
+            }
+        }
+    ],
+    "linkBridge": [
+        {
+            "match": {
+                "hw_dst": "dstMAC"
+            },
+            "actions": {
+                "output": "nextLinkPort"
+            }
+        }
+    ],
+    "dstBridge": [
+        {
+            "match": {
+                "hw_dst": "dstMAC"
+            },
+            "actions": {
+                "output": "dstHostPort"
+            }
+        }
+    ]
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+            
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 201</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_create-a-new-flow-pattern_Response_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flowPattern created",
+    "id": 2
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 400</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_create-a-new-flow-pattern_Response_2_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "request malformed"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                            
+                                            <div class="goActions">
+                                                <a href="#action_create-a-new-flow-pattern">Go to specification</a>
+                                            </div>
+                                    </div>
+                                </div>
+                            
+                    </section>
+            
+                    <section id="resource_flow-pattern_example" class="resourceExample">
+                         <div class= "header" ><h4 id="h-resource_flow-pattern_example">Flow Pattern [/flowPattern/{id}]</h4></div>
+                            
+                            
+                            
+
+                            
+                            
+                            
+
+                            
+
+
+                            
+                                <div id="action_get-flow-pattern-by-id_examples" class="actionExample GET">
+
+                                    
+    <h4 id="h-action_get-flow-pattern-by-id_examples">
+        Get flow pattern by id -
+        GET
+        
+            /flowPattern/{id}
+        
+    </h4>
+
+                
+                                    <div id="action_get-flow-pattern-by-id_body" class=""> 
+                                        
+                                        
+                                        
+                                        
+         
+                                        
+                                            
+                                            
+                                                
+            
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_get-flow-pattern-by-id_Response_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flow pattern retrieved"
+    "data": {
+        "srcBridge": [
+            {
+                "match": {
+                    "in_port": "srcHostPort",
+                    "hw_src": "srcMAC",
+                    "hw_dst": "dstMAC"
+                },
+                "actions": {
+                    "output": "nextLinkPort"
+                }
+            }
+        ],
+        "linkBridge": [
+            {
+                "match": {
+                    "hw_dst": "dstMAC"
+                },
+                "actions": {
+                    "output": "nextLinkPort"
+                }
+            }
+        ],
+        "dstBridge": [
+            {
+                "match": {
+                    "hw_dst": "dstMAC"
+                },
+                "actions": {
+                    "output": "dstHostPort"
+                }
+            }
+        ]
+    }
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 404</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_get-flow-pattern-by-id_Response_2_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flowPattern does not exist"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 410</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_get-flow-pattern-by-id_Response_3_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flowPattern is deleted permanently"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                            
+                                            <div class="goActions">
+                                                <a href="#action_get-flow-pattern-by-id">Go to specification</a>
+                                            </div>
+                                    </div>
+                                </div>
+                            
+                                <div id="action_update-flow-pattern-by-id_examples" class="actionExample PUT">
+
+                                    
+    <h4 id="h-action_update-flow-pattern-by-id_examples">
+        Update flow pattern by id -
+        PUT
+        
+            /flowPattern/{id}
+        
+    </h4>
+
+                
+                                    <div id="action_update-flow-pattern-by-id_body" class=""> 
+                                        
+                                        
+                                        
+                                        
+         
+                                        
+                                            
+                                            
+                                                
+                                                    
+                                                    
+                                                    
+                                                    
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Request </span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_update-flow-pattern-by-id_Request_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "srcBridge": [
+        {
+            "match": {
+                "in_port": "srcHostPort",
+                "hw_src": "srcMAC",
+                "hw_dst": "dstMAC"
+            },
+            "actions": {
+                "output": "nextLinkPort"
+            }
+        }
+    ],
+    "linkBridge": [
+        {
+            "match": {
+                "hw_dst": "dstMAC"
+            },
+            "actions": {
+                "output": "nextLinkPort"
+            }
+        }
+    ],
+    "dstBridge": [
+        {
+            "match": {
+                "hw_dst": "dstMAC"
+            },
+            "actions": {
+                "output": "dstHostPort"
+            }
+        }
+    ]
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+            
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_update-flow-pattern-by-id_Response_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flowPattern updated"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 400</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_update-flow-pattern-by-id_Response_2_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "request malformed"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 404</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_update-flow-pattern-by-id_Response_3_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flowPattern does not exist"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 410</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_update-flow-pattern-by-id_Response_4_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flowPattern has been deleted permanently"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                            
+                                            <div class="goActions">
+                                                <a href="#action_update-flow-pattern-by-id">Go to specification</a>
+                                            </div>
+                                    </div>
+                                </div>
+                            
+                                <div id="action_delete-flow-pattern-by-id_examples" class="actionExample DELETE">
+
+                                    
+    <h4 id="h-action_delete-flow-pattern-by-id_examples">
+        Delete flow pattern by id -
+        DELETE
+        
+            /flowPattern/{id}
+        
+    </h4>
+
+                
+                                    <div id="action_delete-flow-pattern-by-id_body" class=""> 
+                                        
+                                        
+                                        
+                                        
+         
+                                        
+                                            
+                                            
+                                                
+            
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_delete-flow-pattern-by-id_Response_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flowPattern is deleted successfully"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 409</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_delete-flow-pattern-by-id_Response_2_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "transaction condition not met, flowPattern is installed on networkPath(s)",
+    "data": {
+        "networkPaths": [
+        ]
+    }
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 404</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_delete-flow-pattern-by-id_Response_3_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flowPattern does not exist"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                            
+                                            <div class="goActions">
+                                                <a href="#action_delete-flow-pattern-by-id">Go to specification</a>
+                                            </div>
+                                    </div>
+                                </div>
+                            
+                    </section>
+            
+                    <section id="resource_install-and-delete-flow-patterns-on-network-paths_example" class="resourceExample">
+                         <div class= "header" ><h4 id="h-resource_install-and-delete-flow-patterns-on-network-paths_example">Install and delete Flow Patterns on Network Paths [/flowPattern/{id}/{src}/{dst}]</h4></div>
+                            
+                            
+                            
+
+                            
+                            
+                            
+
+                            
+
+
+                            
+                                <div id="action_post-a-flow-pattern-onto-a-network-path_examples" class="actionExample POST">
+
+                                    
+    <h4 id="h-action_post-a-flow-pattern-onto-a-network-path_examples">
+        Post a flow pattern onto a network path -
+        POST
+        
+            /flowPattern/{id}/{src}/{dst}
+        
+    </h4>
+
+                
+                                    <div id="action_post-a-flow-pattern-onto-a-network-path_body" class=""> 
+                                        
+                                        
+                                        
+                                        
+         
+                                        
+                                            
+                                            
+                                                
+            
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 400</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_post-a-flow-pattern-onto-a-network-path_Response_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "request malformed"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 201</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_post-a-flow-pattern-onto-a-network-path_Response_2_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flowPattern is posted onto networkPath"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 404</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_post-a-flow-pattern-onto-a-network-path_Response_3_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flowPattern does not exist"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 410</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_post-a-flow-pattern-onto-a-network-path_Response_4_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flowPattern has been deleted permanently"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 409</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_post-a-flow-pattern-onto-a-network-path_Response_5_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flowPattern is not already installed"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                            
+                                            <div class="goActions">
+                                                <a href="#action_post-a-flow-pattern-onto-a-network-path">Go to specification</a>
+                                            </div>
+                                    </div>
+                                </div>
+                            
+                                <div id="action_delete-a-flow-pattern-on-a-network-path_examples" class="actionExample DELETE">
+
+                                    
+    <h4 id="h-action_delete-a-flow-pattern-on-a-network-path_examples">
+        Delete a flow pattern on a network path -
+        DELETE
+        
+            /flowPattern/{id}/{src}/{dst}
+        
+    </h4>
+
+                
+                                    <div id="action_delete-a-flow-pattern-on-a-network-path_body" class=""> 
+                                        
+                                        
+                                        
+                                        
+         
+                                        
+                                            
+                                            
+                                                
+            
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_delete-a-flow-pattern-on-a-network-path_Response_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flowPattern successfully deleted from network path"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 404</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_delete-a-flow-pattern-on-a-network-path_Response_2_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flowPattern not found on network path"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 404</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_delete-a-flow-pattern-on-a-network-path_Response_3_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flowPattern does not exist"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 410</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_delete-a-flow-pattern-on-a-network-path_Response_4_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "status": "flowPattern allready deleted on network path"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                            
+                                            <div class="goActions">
+                                                <a href="#action_delete-a-flow-pattern-on-a-network-path">Go to specification</a>
+                                            </div>
+                                    </div>
+                                </div>
+                            
+                    </section>
+            
+        </section>
+    
+
+
+
+</section>
+  </section>
+  
+   
+
+
+
+    
+    
+    
+  </div>
+</div>
+</body>
+</html>
