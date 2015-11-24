@@ -37,7 +37,8 @@ Check the <a href="https://github.com/icclab/netfloc/blob/master/docs/architectu
 
 ## Netfloc APIs
 
-Currently Netfloc defines [API Specification](https://github.com/icclab/netfloc/tree/master/docs/netfloc_api_spec) for the following network resources:
+Currently Netfloc defines [API Specification](https://github.com/icclab/netfloc/blob/master/docs/netfloc_api_spec/netfloc.html) for the following network resources:
+
 
 - Tenant filtered network graph
 - All host ports
