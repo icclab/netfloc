@@ -21,31 +21,6 @@ $vagrant up && vagrant ssh
 $git clone https://github.com/icclab/netfloc.git
 $cd netfloc
 $mvn clean install
-
-# Netfloc already includes the Lithium version of the OpenDayligh controller. 
-To run it, all you have to do is:
-
-$cd karaf/target/assembly/
-$./bin/karaf
-
-```
-
-You should see the karaf console of the OpenDaylgith controller. 
-As a simple test run the topology discovery feature by starting a Miniet topology in the Vagrant machine and then installing flows on the ovs switch for LLDP traffic discovery. Netfloc uses this feature to notify the graph library any time a new switch (aka link) has been inserted in the SDN environment.
-
-``` 
-$mn  --topo linear,3 --mac --controller remote,ip=[Netfloc_Machine_IP]
-
-mininet> h1 ping h2
-
-$sudo ovs-vsctl set-manager tcp:[Netfloc_Machine_IP]:6640
-
-$sudo ovs-ofctl add-flow s3 dl_type=0x88cc,actions=output:controller
-
-$sudo ovs-ofctl dump-flows [bridge_name]
-
-$ovs-ofctl dump-flows
-
 ```
 
 ## Troubleshooting
@@ -69,4 +44,59 @@ $mvn dependency:go-offline
 $mvn clean install -o
 
 ```
+## Sanity Check Procedures
+### End to End testing
+Netfloc already includes the Lithium version of the OpenDayligh controller. 
+To run it, all you have to do is:
 
+```
+$cd karaf/target/assembly/
+$./bin/karaf
+
+```
+
+You should see the karaf console of the OpenDaylgith controller. 
+As a simple test run the topology discovery feature by starting a Miniet topology in the Vagrant machine and then installing flows on the ovs switch for LLDP traffic discovery. Netfloc uses this feature to notify the graph library any time a new switch (aka link) has been inserted in the SDN environment.
+
+``` 
+$mn  --topo linear,3 --mac --controller remote,ip=[Netfloc_Machine_IP]
+
+mininet> h1 ping h2
+
+$sudo ovs-vsctl set-manager tcp:[Netfloc_Machine_IP]:6640
+
+$sudo ovs-ofctl add-flow s3 dl_type=0x88cc,actions=output:controller
+
+$sudo ovs-ofctl dump-flows [bridge_name]
+
+$ovs-ofctl dump-flows
+
+```
+
+### List of Running Processes
+There has to be one java virtual machine running. You can find it like so:
+
+```
+
+$ps aux | grep karaf
+#or
+$ps aux | grep netfloc
+
+```
+
+### Network Interfaces Up & Open
+The ODL controller must be listing on the following TCP ports via its java process:
+
+```
+
+lsof -i | grep 6633
+lsof -i | grep 6640
+
+```
+
+## Diagnosis Procedures
+### Resource Availability
+For compilation the following is needed:
+```
+export MAVEN_OPTS="-Xmx1028m -XX:MaxPermSize=256m"
+```

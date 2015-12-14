@@ -4,7 +4,7 @@ Netfloc provides APIs and programmable interfaces to retrieve information from t
 The goal of this document is to provide useful guide for network developers who wants to create applications using the Netfloc SDK or the APIs. Netfloc is currently in a preliminary stage including the network graph library, openflow plugin lldp discovery service and interfaces and their implementation to establish an end-to-end SDN based network discovery per tenant base. Also it includes the necesary interfaces to retrieve all the information regarding a current host in OpenStack (ports and tenants) and create and traverse the path between two termination points (two VMs in OpenStack). Specific description will be provided in the following sections to guide the developers in their testing and development process.
 
 
-## Guide
+## Programmers Guide
 This section describes the way a programmer can interact ith the Netfloc SDK. It is assumed that Netfloc is up and running and you also have a OpenFlow enabled devices or Mininet installed.
 
 The [Netfloc_Restful_API_Specification_(PRELIMINARY)](./docs/netfloc_api_spec/netfloc.pdf) provides a reference page with the descriptions of the APIs and their usage (TBI). It includes a set of CRUD operations which 
@@ -86,6 +86,6 @@ POST http://private-f71da-test6192.apiary-mock.com/flowPattern
 }
 ```
 
+## User Guide
 
-
-
+As Netfloc is a SDK type software we refer to the [OpenDaylight user guide](https://www.opendaylight.org/sites/opendaylight/files/bk-user-guide.pdf).
