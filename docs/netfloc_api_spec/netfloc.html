@@ -9,7 +9,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Netfloc</title>
+    <title>FIWARE-Netfloc Open Specification</title>
     <link href="css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
     <link href="css/font-awesome.css" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -33,6 +33,23 @@
 
     
     
+
+    
+    
+    <li>
+        
+        <a href="#netfloc" title = "Netfloc" > Netfloc </a>
+        
+    <ul class="toc">
+    
+   
+
+
+
+
+ </ul>
+</li>
+
 
 
 
@@ -189,6 +206,14 @@
     
     
     
+    
+    
+    
+    
+    
+    
+        <li><a href="#references">References</a></li>
+    
    </ul>
 </section>
 
@@ -197,7 +222,31 @@
   
 	
 
+	
+		<h1>FIWARE-Netfloc Open Specification </h1>
+	
 
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+		<span class="dateLabel">DATE:</span> <span class="dateValue"> 11 September 2015 </span>
+	
+
+	
+
+	
 
 	
 
@@ -206,19 +255,60 @@
 
 	
 
+	
+
+	
+
+	
+
+	
+
+	
 
 
 
+	
+		<h2 id="editors">Editors</h2>
+		<ul>
+<li>Denis Baudinot, ZHAW</li>
+<li>Irena Trajkovska, ZHAW</li>
+</ul>
+	
+
+	
+
+	
+
+
+
+	
+
+	
+		<h2 id="copyright">Copyright</h2>
+		<p>All rights reserved. No part of this publication may be reproduced, distributed, or transmitted in any form or by any means, including photocopying, recording, or other electronic or mechanical methods, without the prior written permission of the publisher, except in the case of brief quotations embodied in critical reviews and certain other noncommercial uses permitted by copyright law. For permission requests, write to the publisher, addressed “Attention: Permissions Coordinator,” at the address below.</p>
+	
+
+	
 
 
 <hr>
 
 
 	<h2 id="abstract">Abstract</h2>
-	<p>Netfloc application API.</p>
+	<p>This specification defines the FIWARE-Netfloc GE API. The APIs expose the network filtered per tenant. This includes retrieval of network graph, interfaces and network path - all filtered per tenant. It also includes APIs to define network flow patterns and perform CRUD operations on such flow pattenrs over the network paths.</p>
 
 
 
+
+	
+
+	
+
+	
+		<h2 id="status">Status of this document</h2>
+		<p>This is a work in progress and is changing on a daily bases. 
+This specification is licensed under the <a href="http://forge.fiware.org/plugins/mediawiki/wiki/fiware/index.php/FI-WARE_Open_Specification_Legal_Notice_%28implicit_patents_license%29">FIWARE Open Specification License</a>. </p>
+	
 
 <hr>
 
@@ -228,6 +318,34 @@
 
 
 
+		
+	
+	
+		
+	
+		
+	
+		
+	
+
+
+
+
+
+	
+		
+	
+		
+	
+		
+	
+
+
+		
+            <section>
+			    <h1 id="netfloc">Netfloc</h1>
+			    <p>Netfloc application API.</p> 
+            </section>
 		
 	
 	
@@ -331,6 +449,28 @@
     
         
     
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                
+            
+            
+
+            
+                
+            
+            
+                <a target="_blank" href="http://docs.Netfloc.apiary.io/#reference/default/network-graph/get-the-network-graph">View in Apiary</a>
+            
+        
+    
     </div>
 
                                     
@@ -429,6 +569,28 @@
     
         
     
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                
+            
+            
+
+            
+                
+            
+            
+                <a target="_blank" href="http://docs.Netfloc.apiary.io/#reference/default/tenant-filtered-network-graph/get-the-tenant-filtered-network-graph">View in Apiary</a>
+            
+        
+    
     </div>
 
                                     
@@ -511,6 +673,28 @@
                                         
     <div class="goApiary">
     
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                
+            
+            
+
+            
+                
+            
+            
+                <a target="_blank" href="http://docs.Netfloc.apiary.io/#reference/default/tenants/get-all-tenants">View in Apiary</a>
+            
         
     
     </div>
@@ -597,6 +781,28 @@
     
         
     
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                
+            
+            
+
+            
+                
+            
+            
+                <a target="_blank" href="http://docs.Netfloc.apiary.io/#reference/default/host-ports/get-all-host-ports">View in Apiary</a>
+            
+        
+    
     </div>
 
                                     
@@ -681,6 +887,28 @@
     
         
     
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                
+            
+            
+
+            
+                
+            
+            
+                <a target="_blank" href="http://docs.Netfloc.apiary.io/#reference/default/network-path/get-a-network-path-between-source-and-destination-ports">View in Apiary</a>
+            
+        
+    
     </div>
 
                                     
@@ -763,6 +991,28 @@
                                         
     <div class="goApiary">
     
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                
+            
+            
+
+            
+                
+            
+            
+                <a target="_blank" href="http://docs.Netfloc.apiary.io/#reference/default/flow-patterns/get-all-flow-patterns">View in Apiary</a>
+            
         
     
     </div>
@@ -857,6 +1107,28 @@
                                         
     <div class="goApiary">
     
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                
+            
+            
+
+            
+                
+            
+            
+                <a target="_blank" href="http://docs.Netfloc.apiary.io/#reference/default/flow-patterns/create-a-new-flow-pattern">View in Apiary</a>
+            
         
     
     </div>
@@ -975,6 +1247,28 @@
                                         
     <div class="goApiary">
     
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                
+            
+            
+
+            
+                
+            
+            
+                <a target="_blank" href="http://docs.Netfloc.apiary.io/#reference/default/flow-pattern/get-flow-pattern-by-id">View in Apiary</a>
+            
         
     
     </div>
@@ -1105,6 +1399,28 @@
     
         
     
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                
+            
+            
+
+            
+                
+            
+            
+                <a target="_blank" href="http://docs.Netfloc.apiary.io/#reference/default/flow-pattern/update-flow-pattern-by-id">View in Apiary</a>
+            
+        
+    
     </div>
 
                                     
@@ -1197,6 +1513,28 @@
                                         
     <div class="goApiary">
     
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                
+            
+            
+
+            
+                
+            
+            
+                <a target="_blank" href="http://docs.Netfloc.apiary.io/#reference/default/flow-pattern/delete-flow-pattern-by-id">View in Apiary</a>
+            
         
     
     </div>
@@ -1351,6 +1689,28 @@
     
         
     
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                
+            
+            
+
+            
+                
+            
+            
+                <a target="_blank" href="http://docs.Netfloc.apiary.io/#reference/default/install-and-delete-flow-patterns-on-network-paths/post-a-flow-pattern-onto-a-network-path">View in Apiary</a>
+            
+        
+    
     </div>
 
                                     
@@ -1460,6 +1820,28 @@
                                         
     <div class="goApiary">
     
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+            
+                
+            
+            
+
+            
+                
+            
+            
+                <a target="_blank" href="http://docs.Netfloc.apiary.io/#reference/default/install-and-delete-flow-patterns-on-network-paths/delete-a-flow-pattern-on-a-network-path">View in Apiary</a>
+            
         
     
     </div>
@@ -3350,7 +3732,7 @@
                 
                     <div class= "header"><p>Body</p></div>
                     <pre><code>{
-    "status": "flowPattern is not already installed"
+    "status": "flowPattern is not allready installed"
 }
 </code></pre>
                 
@@ -3606,8 +3988,23 @@
 
 
 
+	
+
+	
+
+	
+
     
     
+    
+      <section id="references">
+      <h1>References</h1>
+          <ul>
+              
+                  <li><a href="http://forge.fiware.org/plugins/mediawiki/wiki/fiware/index.php/FI-WARE_Open_Specification_Legal_Notice_%28implicit_patents_license%29">FIWARE Open Specification License</a></li>
+              
+          </ul>
+      </section>
     
   </div>
 </div>
