@@ -16,19 +16,47 @@
     <link rel="stylesheet" href="css/idea.css">
     <script src="js/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="js/toc-resize.js"></script>
 
     <link rel="stylesheet" type="text/css" href="css/api-specification.css"> 
+    
+
 
     
 </head>
 <body id="respecDocument" class="h-entry">
 <div class="container">
+
+
   <div id="TOC-container">
     
-<section id="toc">
+<div id="fiware-logo-container">
+    <div id="fiware-logo"></div>
+</div>
+<nav id="toc">
 
-        <div id="fiware-logo"></div>
+        
     <ul class="toc">
+
+        
+	        
+        
+	        
+		        <li><a href="#API-content">FIWARE-Netfloc Open Specification</a></li>
+	        
+        
+	        
+        
+	        
+        
+	        
+        
+	        
+        
+
+
+<li><a href="#api-summary">API Summary</a></li>
 
 
     
@@ -49,6 +77,8 @@
 
  </ul>
 </li>
+
+
 
 
 
@@ -215,11 +245,15 @@
         <li><a href="#references">References</a></li>
     
    </ul>
-</section>
+</nav>
 
   </div>
+  
+
+
   <div id="API-content">
   
+    
 	
 
 	
@@ -253,17 +287,69 @@
 
 
 
+
+	
+	
 	
 
 	
-
+	
 	
 
 	
-
+	
 	
 
 	
+	
+		
+	
+	
+
+	
+	
+	
+		
+	
+
+	
+	
+	
+
+
+
+
+
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+    
+  
+  
+
+
+
+  <div id="top-source-buttons">
+  	
+    	<a target="_blank" href="http://docs.Netfloc.apiary.io/#reference">View in Apiary</a>
+    
+    
+  </div>
 
 
 
@@ -307,10 +393,294 @@
 	
 		<h2 id="status">Status of this document</h2>
 		<p>This is a work in progress and is changing on a daily bases. 
-This specification is licensed under the <a href="http://forge.fiware.org/plugins/mediawiki/wiki/fiware/index.php/FI-WARE_Open_Specification_Legal_Notice_%28implicit_patents_license%29">FIWARE Open Specification License</a>. </p>
+This specification is licensed under the <a href="http://forge.fiware.org/plugins/mediawiki/wiki/fiware/index.php/FI-WARE_Open_Specification_Legal_Notice_%28essential_patents_license%29">FIWARE Open Specification License</a>. </p>
 	
 
 <hr>
+  
+
+
+    
+    
+<nav class="api-summary">
+<h1 id="api-summary"> API Summary </h1>
+    <ul>
+
+
+    
+
+        <li>
+            
+                <a href="#default_group" title = "Default">Default</a>
+            
+            <ul>
+              
+                
+                    <li>
+                        <a href="#resource_network-graph" title = "Resource Network Graph">
+                        
+                            Network Graph
+                        
+                        </a>
+                        <ul class="toc  ">
+                        
+                            
+                                <li>
+                                    <a href="#action_get-the-network-graph" title ="GET - Get the Network Graph"><span class="actionMethod">GET</span> - Get the Network Graph
+                                    
+                                        
+                                            [/networkGraph]
+                                        
+                                    
+                                    </a>
+                                </li>
+                            
+
+                        
+                        </ul>
+                    </li>
+                
+              
+                
+                    <li>
+                        <a href="#resource_tenant-filtered-network-graph" title = "Resource Tenant filtered Network Graph">
+                        
+                            Tenant filtered Network Graph
+                        
+                        </a>
+                        <ul class="toc  ">
+                        
+                            
+                                <li>
+                                    <a href="#action_get-the-tenant-filtered-network-graph" title ="GET - Get the tenant filtered Network Graph"><span class="actionMethod">GET</span> - Get the tenant filtered Network Graph
+                                    
+                                        
+                                            [/networkGraph/{tenant}]
+                                        
+                                    
+                                    </a>
+                                </li>
+                            
+
+                        
+                        </ul>
+                    </li>
+                
+              
+                
+                    <li>
+                        <a href="#resource_tenants" title = "Resource Tenants">
+                        
+                            Tenants
+                        
+                        </a>
+                        <ul class="toc  ">
+                        
+                            
+                                <li>
+                                    <a href="#action_get-all-tenants" title ="GET - Get all tenants"><span class="actionMethod">GET</span> - Get all tenants
+                                    
+                                        
+                                            [/tenant]
+                                        
+                                    
+                                    </a>
+                                </li>
+                            
+
+                        
+                        </ul>
+                    </li>
+                
+              
+                
+                    <li>
+                        <a href="#resource_host-ports" title = "Resource Host Ports">
+                        
+                            Host Ports
+                        
+                        </a>
+                        <ul class="toc  ">
+                        
+                            
+                                <li>
+                                    <a href="#action_get-all-host-ports" title ="GET - Get all Host Ports"><span class="actionMethod">GET</span> - Get all Host Ports
+                                    
+                                        
+                                            [/hostPort]
+                                        
+                                    
+                                    </a>
+                                </li>
+                            
+
+                        
+                        </ul>
+                    </li>
+                
+              
+                
+                    <li>
+                        <a href="#resource_network-path" title = "Resource Network Path">
+                        
+                            Network Path
+                        
+                        </a>
+                        <ul class="toc  ">
+                        
+                            
+                                <li>
+                                    <a href="#action_get-a-network-path-between-source-and-destination-ports" title ="GET - Get a Network Path between source and destination ports"><span class="actionMethod">GET</span> - Get a Network Path between source and destination ports
+                                    
+                                        
+                                            [/networkPath/{src}/{dst}]
+                                        
+                                    
+                                    </a>
+                                </li>
+                            
+
+                        
+                        </ul>
+                    </li>
+                
+              
+                
+                    <li>
+                        <a href="#resource_flow-patterns" title = "Resource Flow Patterns">
+                        
+                            Flow Patterns
+                        
+                        </a>
+                        <ul class="toc  ">
+                        
+                            
+                                <li>
+                                    <a href="#action_get-all-flow-patterns" title ="GET - Get all flow patterns"><span class="actionMethod">GET</span> - Get all flow patterns
+                                    
+                                        
+                                            [/flowPattern]
+                                        
+                                    
+                                    </a>
+                                </li>
+                            
+
+                        
+                            
+                                <li>
+                                    <a href="#action_create-a-new-flow-pattern" title ="POST - Create a new flow pattern"><span class="actionMethod">POST</span> - Create a new flow pattern
+                                    
+                                        
+                                            [/flowPattern]
+                                        
+                                    
+                                    </a>
+                                </li>
+                            
+
+                        
+                        </ul>
+                    </li>
+                
+              
+                
+                    <li>
+                        <a href="#resource_flow-pattern" title = "Resource Flow Pattern">
+                        
+                            Flow Pattern
+                        
+                        </a>
+                        <ul class="toc  ">
+                        
+                            
+                                <li>
+                                    <a href="#action_get-flow-pattern-by-id" title ="GET - Get flow pattern by id"><span class="actionMethod">GET</span> - Get flow pattern by id
+                                    
+                                        
+                                            [/flowPattern/{id}]
+                                        
+                                    
+                                    </a>
+                                </li>
+                            
+
+                        
+                            
+                                <li>
+                                    <a href="#action_update-flow-pattern-by-id" title ="PUT - Update flow pattern by id"><span class="actionMethod">PUT</span> - Update flow pattern by id
+                                    
+                                        
+                                            [/flowPattern/{id}]
+                                        
+                                    
+                                    </a>
+                                </li>
+                            
+
+                        
+                            
+                                <li>
+                                    <a href="#action_delete-flow-pattern-by-id" title ="DELETE - Delete flow pattern by id"><span class="actionMethod">DELETE</span> - Delete flow pattern by id
+                                    
+                                        
+                                            [/flowPattern/{id}]
+                                        
+                                    
+                                    </a>
+                                </li>
+                            
+
+                        
+                        </ul>
+                    </li>
+                
+              
+                
+                    <li>
+                        <a href="#resource_install-and-delete-flow-patterns-on-network-paths" title = "Resource Install and delete Flow Patterns on Network Paths">
+                        
+                            Install and delete Flow Patterns on Network Paths
+                        
+                        </a>
+                        <ul class="toc  ">
+                        
+                            
+                                <li>
+                                    <a href="#action_post-a-flow-pattern-onto-a-network-path" title ="POST - Post a flow pattern onto a network path"><span class="actionMethod">POST</span> - Post a flow pattern onto a network path
+                                    
+                                        
+                                            [/flowPattern/{id}/{src}/{dst}]
+                                        
+                                    
+                                    </a>
+                                </li>
+                            
+
+                        
+                            
+                                <li>
+                                    <a href="#action_delete-a-flow-pattern-on-a-network-path" title ="DELETE - Delete a flow pattern on a network path"><span class="actionMethod">DELETE</span> - Delete a flow pattern on a network path
+                                    
+                                        
+                                            [/flowPattern/{id}/{src}/{dst}]
+                                        
+                                    
+                                    </a>
+                                </li>
+                            
+
+                        
+                        </ul>
+                    </li>
+                
+              
+            </ul>
+        </li>
+      
+
+    </ul>
+</nav>
 
     
     
@@ -375,7 +745,12 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
 	
         
             <section id="resource_network-graph" class="resource">
-                 <div class= "header" ><h3 id="h-resource_network-graph">Network Graph [/networkGraph]</h3> </div>
+                 <div class= "header" >
+                 
+                    <h3 id="h-resource_network-graph">Network Graph</h3>
+                    <span class="extra-header">[/networkGraph]</span>
+                 
+                 </div>
                 
                 
                 
@@ -399,13 +774,18 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                         <div id="action_get-the-network-graph" class="action GET">
 
                         
-    <h4 id="h-action_get-the-network-graph">
-        Get the Network Graph -
-        GET
+    <div class="header">
         
-            /networkGraph
+            <h4 id="h-action_get-the-network-graph">Get the Network Graph </h4>
+            <span class="extra-header">
+		GET 
+                
+                    /networkGraph
+                
+            </span>
         
-    </h4>
+
+    </div>
 
         
                             <div id="get-the-network-graph_body" class="">
@@ -439,7 +819,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
 </div>
         	                            
                                     
-                                    
+                                    <div>
                                     <div class="goExample">
                                         <a href="#action_get-the-network-graph_examples">Go to example</a>
                                     </div>
@@ -474,6 +854,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
     </div>
 
                                     
+                                    </div>
                                 
                             </div>
                         </div>
@@ -481,7 +862,12 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
             </section>
         
             <section id="resource_tenant-filtered-network-graph" class="resource">
-                 <div class= "header" ><h3 id="h-resource_tenant-filtered-network-graph">Tenant filtered Network Graph [/networkGraph/{tenant}]</h3> </div>
+                 <div class= "header" >
+                 
+                    <h3 id="h-resource_tenant-filtered-network-graph">Tenant filtered Network Graph</h3>
+                    <span class="extra-header">[/networkGraph/{tenant}]</span>
+                 
+                 </div>
                 
                 
                 
@@ -504,8 +890,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
 	<dl>
 		
 			<dt>
-				tenant (Required, string
-				)
+				<span class="parameter-name">tenant</span> <span class="parameter-attributes">(Required, string)</span>
 			</dt>
 			<dd>
 				Name of the tenant
@@ -519,13 +904,18 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                         <div id="action_get-the-tenant-filtered-network-graph" class="action GET">
 
                         
-    <h4 id="h-action_get-the-tenant-filtered-network-graph">
-        Get the tenant filtered Network Graph -
-        GET
+    <div class="header">
         
-            /networkGraph/{tenant}
+            <h4 id="h-action_get-the-tenant-filtered-network-graph">Get the tenant filtered Network Graph </h4>
+            <span class="extra-header">
+		GET 
+                
+                    /networkGraph/{tenant}
+                
+            </span>
         
-    </h4>
+
+    </div>
 
         
                             <div id="get-the-tenant-filtered-network-graph_body" class="">
@@ -559,7 +949,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
 </div>
         	                            
                                     
-                                    
+                                    <div>
                                     <div class="goExample">
                                         <a href="#action_get-the-tenant-filtered-network-graph_examples">Go to example</a>
                                     </div>
@@ -594,6 +984,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
     </div>
 
                                     
+                                    </div>
                                 
                             </div>
                         </div>
@@ -601,7 +992,12 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
             </section>
         
             <section id="resource_tenants" class="resource">
-                 <div class= "header" ><h3 id="h-resource_tenants">Tenants [/tenant]</h3> </div>
+                 <div class= "header" >
+                 
+                    <h3 id="h-resource_tenants">Tenants</h3>
+                    <span class="extra-header">[/tenant]</span>
+                 
+                 </div>
                 
                 
                 
@@ -625,13 +1021,18 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                         <div id="action_get-all-tenants" class="action GET">
 
                         
-    <h4 id="h-action_get-all-tenants">
-        Get all tenants -
-        GET
+    <div class="header">
         
-            /tenant
+            <h4 id="h-action_get-all-tenants">Get all tenants </h4>
+            <span class="extra-header">
+		GET 
+                
+                    /tenant
+                
+            </span>
         
-    </h4>
+
+    </div>
 
         
                             <div id="get-all-tenants_body" class="">
@@ -665,7 +1066,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
 </div>
         	                            
                                     
-                                    
+                                    <div>
                                     <div class="goExample">
                                         <a href="#action_get-all-tenants_examples">Go to example</a>
                                     </div>
@@ -700,6 +1101,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
     </div>
 
                                     
+                                    </div>
                                 
                             </div>
                         </div>
@@ -707,7 +1109,12 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
             </section>
         
             <section id="resource_host-ports" class="resource">
-                 <div class= "header" ><h3 id="h-resource_host-ports">Host Ports [/hostPort]</h3> </div>
+                 <div class= "header" >
+                 
+                    <h3 id="h-resource_host-ports">Host Ports</h3>
+                    <span class="extra-header">[/hostPort]</span>
+                 
+                 </div>
                 
                 
                 
@@ -731,13 +1138,18 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                         <div id="action_get-all-host-ports" class="action GET">
 
                         
-    <h4 id="h-action_get-all-host-ports">
-        Get all Host Ports -
-        GET
+    <div class="header">
         
-            /hostPort
+            <h4 id="h-action_get-all-host-ports">Get all Host Ports </h4>
+            <span class="extra-header">
+		GET 
+                
+                    /hostPort
+                
+            </span>
         
-    </h4>
+
+    </div>
 
         
                             <div id="get-all-host-ports_body" class="">
@@ -771,7 +1183,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
 </div>
         	                            
                                     
-                                    
+                                    <div>
                                     <div class="goExample">
                                         <a href="#action_get-all-host-ports_examples">Go to example</a>
                                     </div>
@@ -806,6 +1218,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
     </div>
 
                                     
+                                    </div>
                                 
                             </div>
                         </div>
@@ -813,7 +1226,12 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
             </section>
         
             <section id="resource_network-path" class="resource">
-                 <div class= "header" ><h3 id="h-resource_network-path">Network Path [/networkPath/{src}/{dst}]</h3> </div>
+                 <div class= "header" >
+                 
+                    <h3 id="h-resource_network-path">Network Path</h3>
+                    <span class="extra-header">[/networkPath/{src}/{dst}]</span>
+                 
+                 </div>
                 
                 
                 
@@ -837,13 +1255,18 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                         <div id="action_get-a-network-path-between-source-and-destination-ports" class="action GET">
 
                         
-    <h4 id="h-action_get-a-network-path-between-source-and-destination-ports">
-        Get a Network Path between source and destination ports -
-        GET
+    <div class="header">
         
-            /networkPath/{src}/{dst}
+            <h4 id="h-action_get-a-network-path-between-source-and-destination-ports">Get a Network Path between source and destination ports </h4>
+            <span class="extra-header">
+		GET 
+                
+                    /networkPath/{src}/{dst}
+                
+            </span>
         
-    </h4>
+
+    </div>
 
         
                             <div id="get-a-network-path-between-source-and-destination-ports_body" class="">
@@ -877,7 +1300,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
 </div>
         	                            
                                     
-                                    
+                                    <div>
                                     <div class="goExample">
                                         <a href="#action_get-a-network-path-between-source-and-destination-ports_examples">Go to example</a>
                                     </div>
@@ -912,6 +1335,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
     </div>
 
                                     
+                                    </div>
                                 
                             </div>
                         </div>
@@ -919,7 +1343,12 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
             </section>
         
             <section id="resource_flow-patterns" class="resource">
-                 <div class= "header" ><h3 id="h-resource_flow-patterns">Flow Patterns [/flowPattern]</h3> </div>
+                 <div class= "header" >
+                 
+                    <h3 id="h-resource_flow-patterns">Flow Patterns</h3>
+                    <span class="extra-header">[/flowPattern]</span>
+                 
+                 </div>
                 
                 
                 
@@ -943,13 +1372,18 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                         <div id="action_get-all-flow-patterns" class="action GET">
 
                         
-    <h4 id="h-action_get-all-flow-patterns">
-        Get all flow patterns -
-        GET
+    <div class="header">
         
-            /flowPattern
+            <h4 id="h-action_get-all-flow-patterns">Get all flow patterns </h4>
+            <span class="extra-header">
+		GET 
+                
+                    /flowPattern
+                
+            </span>
         
-    </h4>
+
+    </div>
 
         
                             <div id="get-all-flow-patterns_body" class="">
@@ -983,7 +1417,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
 </div>
         	                            
                                     
-                                    
+                                    <div>
                                     <div class="goExample">
                                         <a href="#action_get-all-flow-patterns_examples">Go to example</a>
                                     </div>
@@ -1018,6 +1452,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
     </div>
 
                                     
+                                    </div>
                                 
                             </div>
                         </div>
@@ -1025,13 +1460,18 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                         <div id="action_create-a-new-flow-pattern" class="action POST">
 
                         
-    <h4 id="h-action_create-a-new-flow-pattern">
-        Create a new flow pattern -
-        POST
+    <div class="header">
         
-            /flowPattern
+            <h4 id="h-action_create-a-new-flow-pattern">Create a new flow pattern </h4>
+            <span class="extra-header">
+		POST 
+                
+                    /flowPattern
+                
+            </span>
         
-    </h4>
+
+    </div>
 
         
                             <div id="create-a-new-flow-pattern_body" class="">
@@ -1099,7 +1539,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
 </div>
         	                            
                                     
-                                    
+                                    <div>
                                     <div class="goExample">
                                         <a href="#action_create-a-new-flow-pattern_examples">Go to example</a>
                                     </div>
@@ -1134,6 +1574,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
     </div>
 
                                     
+                                    </div>
                                 
                             </div>
                         </div>
@@ -1141,7 +1582,12 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
             </section>
         
             <section id="resource_flow-pattern" class="resource">
-                 <div class= "header" ><h3 id="h-resource_flow-pattern">Flow Pattern [/flowPattern/{id}]</h3> </div>
+                 <div class= "header" >
+                 
+                    <h3 id="h-resource_flow-pattern">Flow Pattern</h3>
+                    <span class="extra-header">[/flowPattern/{id}]</span>
+                 
+                 </div>
                 
                 
                 
@@ -1165,13 +1611,18 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                         <div id="action_get-flow-pattern-by-id" class="action GET">
 
                         
-    <h4 id="h-action_get-flow-pattern-by-id">
-        Get flow pattern by id -
-        GET
+    <div class="header">
         
-            /flowPattern/{id}
+            <h4 id="h-action_get-flow-pattern-by-id">Get flow pattern by id </h4>
+            <span class="extra-header">
+		GET 
+                
+                    /flowPattern/{id}
+                
+            </span>
         
-    </h4>
+
+    </div>
 
         
                             <div id="get-flow-pattern-by-id_body" class="">
@@ -1239,7 +1690,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
 </div>
         	                            
                                     
-                                    
+                                    <div>
                                     <div class="goExample">
                                         <a href="#action_get-flow-pattern-by-id_examples">Go to example</a>
                                     </div>
@@ -1274,6 +1725,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
     </div>
 
                                     
+                                    </div>
                                 
                             </div>
                         </div>
@@ -1281,13 +1733,18 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                         <div id="action_update-flow-pattern-by-id" class="action PUT">
 
                         
-    <h4 id="h-action_update-flow-pattern-by-id">
-        Update flow pattern by id -
-        PUT
+    <div class="header">
         
-            /flowPattern/{id}
+            <h4 id="h-action_update-flow-pattern-by-id">Update flow pattern by id </h4>
+            <span class="extra-header">
+		PUT 
+                
+                    /flowPattern/{id}
+                
+            </span>
         
-    </h4>
+
+    </div>
 
         
                             <div id="update-flow-pattern-by-id_body" class="">
@@ -1389,7 +1846,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
 </div>
         	                            
                                     
-                                    
+                                    <div>
                                     <div class="goExample">
                                         <a href="#action_update-flow-pattern-by-id_examples">Go to example</a>
                                     </div>
@@ -1424,6 +1881,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
     </div>
 
                                     
+                                    </div>
                                 
                             </div>
                         </div>
@@ -1431,13 +1889,18 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                         <div id="action_delete-flow-pattern-by-id" class="action DELETE">
 
                         
-    <h4 id="h-action_delete-flow-pattern-by-id">
-        Delete flow pattern by id -
-        DELETE
+    <div class="header">
         
-            /flowPattern/{id}
+            <h4 id="h-action_delete-flow-pattern-by-id">Delete flow pattern by id </h4>
+            <span class="extra-header">
+		DELETE 
+                
+                    /flowPattern/{id}
+                
+            </span>
         
-    </h4>
+
+    </div>
 
         
                             <div id="delete-flow-pattern-by-id_body" class="">
@@ -1505,7 +1968,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
 </div>
         	                            
                                     
-                                    
+                                    <div>
                                     <div class="goExample">
                                         <a href="#action_delete-flow-pattern-by-id_examples">Go to example</a>
                                     </div>
@@ -1540,6 +2003,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
     </div>
 
                                     
+                                    </div>
                                 
                             </div>
                         </div>
@@ -1547,7 +2011,12 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
             </section>
         
             <section id="resource_install-and-delete-flow-patterns-on-network-paths" class="resource">
-                 <div class= "header" ><h3 id="h-resource_install-and-delete-flow-patterns-on-network-paths">Install and delete Flow Patterns on Network Paths [/flowPattern/{id}/{src}/{dst}]</h3> </div>
+                 <div class= "header" >
+                 
+                    <h3 id="h-resource_install-and-delete-flow-patterns-on-network-paths">Install and delete Flow Patterns on Network Paths</h3>
+                    <span class="extra-header">[/flowPattern/{id}/{src}/{dst}]</span>
+                 
+                 </div>
                 
                 
                 
@@ -1571,13 +2040,18 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                         <div id="action_post-a-flow-pattern-onto-a-network-path" class="action POST">
 
                         
-    <h4 id="h-action_post-a-flow-pattern-onto-a-network-path">
-        Post a flow pattern onto a network path -
-        POST
+    <div class="header">
         
-            /flowPattern/{id}/{src}/{dst}
+            <h4 id="h-action_post-a-flow-pattern-onto-a-network-path">Post a flow pattern onto a network path </h4>
+            <span class="extra-header">
+		POST 
+                
+                    /flowPattern/{id}/{src}/{dst}
+                
+            </span>
         
-    </h4>
+
+    </div>
 
         
                             <div id="post-a-flow-pattern-onto-a-network-path_body" class="">
@@ -1679,7 +2153,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
 </div>
         	                            
                                     
-                                    
+                                    <div>
                                     <div class="goExample">
                                         <a href="#action_post-a-flow-pattern-onto-a-network-path_examples">Go to example</a>
                                     </div>
@@ -1714,6 +2188,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
     </div>
 
                                     
+                                    </div>
                                 
                             </div>
                         </div>
@@ -1721,13 +2196,18 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                         <div id="action_delete-a-flow-pattern-on-a-network-path" class="action DELETE">
 
                         
-    <h4 id="h-action_delete-a-flow-pattern-on-a-network-path">
-        Delete a flow pattern on a network path -
-        DELETE
+    <div class="header">
         
-            /flowPattern/{id}/{src}/{dst}
+            <h4 id="h-action_delete-a-flow-pattern-on-a-network-path">Delete a flow pattern on a network path </h4>
+            <span class="extra-header">
+		DELETE 
+                
+                    /flowPattern/{id}/{src}/{dst}
+                
+            </span>
         
-    </h4>
+
+    </div>
 
         
                             <div id="delete-a-flow-pattern-on-a-network-path_body" class="">
@@ -1812,7 +2292,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
 </div>
         	                            
                                     
-                                    
+                                    <div>
                                     <div class="goExample">
                                         <a href="#action_delete-a-flow-pattern-on-a-network-path_examples">Go to example</a>
                                     </div>
@@ -1847,6 +2327,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
     </div>
 
                                     
+                                    </div>
                                 
                             </div>
                         </div>
@@ -1865,37 +2346,46 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
 
                 
                     <section id="resource_network-graph_example" class="resourceExample">
-                         <div class= "header" ><h4 id="h-resource_network-graph_example">Network Graph [/networkGraph]</h4></div>
-                            
-                            
-                            
+                         <div class= "header" >
+                         
+                            <h4 id="h-resource_network-graph_example">Network Graph</h4>
+                            <span class="extra-header">[/networkGraph]</span>
+                         
+                         </div>
 
                             
                             
                             
 
                             
+                            
+                            
 
+                           
 
                             
                                 <div id="action_get-the-network-graph_examples" class="actionExample GET">
 
                                     
-    <h4 id="h-action_get-the-network-graph_examples">
-        Get the Network Graph -
-        GET
+    <div class="header">
         
-            /networkGraph
+            <h5 id="h-action_get-the-network-graph_examples">Get the Network Graph </h5>
+            <span class="extra-header">
+		GET 
+                
+                    /networkGraph
+                
+            </span>
         
-    </h4>
+
+    </div>
 
                 
                                     <div id="action_get-the-network-graph_body" class=""> 
                                         
                                         
                                         
-                                        
-         
+                                                 
                                         
                                             
                                             
@@ -1967,51 +2457,46 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                     </section>
             
                     <section id="resource_tenant-filtered-network-graph_example" class="resourceExample">
-                         <div class= "header" ><h4 id="h-resource_tenant-filtered-network-graph_example">Tenant filtered Network Graph [/networkGraph/{tenant}]</h4></div>
-                            
-                            
-                            
+                         <div class= "header" >
+                         
+                            <h4 id="h-resource_tenant-filtered-network-graph_example">Tenant filtered Network Graph</h4>
+                            <span class="extra-header">[/networkGraph/{tenant}]</span>
+                         
+                         </div>
 
                             
                             
                             
 
                             
+                            
+                            
 
-	<span class="parameters-title">Parameters</span>
-	<dl>
-		
-			<dt>
-				tenant (Required, string
-				)
-			</dt>
-			<dd>
-				Name of the tenant
-				
-			</dd>
-		
-	</dl>
-
+                           
 
                             
                                 <div id="action_get-the-tenant-filtered-network-graph_examples" class="actionExample GET">
 
                                     
-    <h4 id="h-action_get-the-tenant-filtered-network-graph_examples">
-        Get the tenant filtered Network Graph -
-        GET
+    <div class="header">
         
-            /networkGraph/{tenant}
+            <h5 id="h-action_get-the-tenant-filtered-network-graph_examples">Get the tenant filtered Network Graph </h5>
+            <span class="extra-header">
+		GET 
+                
+                    /networkGraph/{tenant}
+                
+            </span>
         
-    </h4>
+
+    </div>
 
                 
                                     <div id="action_get-the-tenant-filtered-network-graph_body" class=""> 
                                         
                                         
                                         
-                                        
-         
+                                                 
                                         
                                             
                                             
@@ -2087,37 +2572,46 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                     </section>
             
                     <section id="resource_tenants_example" class="resourceExample">
-                         <div class= "header" ><h4 id="h-resource_tenants_example">Tenants [/tenant]</h4></div>
-                            
-                            
-                            
+                         <div class= "header" >
+                         
+                            <h4 id="h-resource_tenants_example">Tenants</h4>
+                            <span class="extra-header">[/tenant]</span>
+                         
+                         </div>
 
                             
                             
                             
 
                             
+                            
+                            
 
+                           
 
                             
                                 <div id="action_get-all-tenants_examples" class="actionExample GET">
 
                                     
-    <h4 id="h-action_get-all-tenants_examples">
-        Get all tenants -
-        GET
+    <div class="header">
         
-            /tenant
+            <h5 id="h-action_get-all-tenants_examples">Get all tenants </h5>
+            <span class="extra-header">
+		GET 
+                
+                    /tenant
+                
+            </span>
         
-    </h4>
+
+    </div>
 
                 
                                     <div id="action_get-all-tenants_body" class=""> 
                                         
                                         
                                         
-                                        
-         
+                                                 
                                         
                                             
                                             
@@ -2185,37 +2679,46 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                     </section>
             
                     <section id="resource_host-ports_example" class="resourceExample">
-                         <div class= "header" ><h4 id="h-resource_host-ports_example">Host Ports [/hostPort]</h4></div>
-                            
-                            
-                            
+                         <div class= "header" >
+                         
+                            <h4 id="h-resource_host-ports_example">Host Ports</h4>
+                            <span class="extra-header">[/hostPort]</span>
+                         
+                         </div>
 
                             
                             
                             
 
                             
+                            
+                            
 
+                           
 
                             
                                 <div id="action_get-all-host-ports_examples" class="actionExample GET">
 
                                     
-    <h4 id="h-action_get-all-host-ports_examples">
-        Get all Host Ports -
-        GET
+    <div class="header">
         
-            /hostPort
+            <h5 id="h-action_get-all-host-ports_examples">Get all Host Ports </h5>
+            <span class="extra-header">
+		GET 
+                
+                    /hostPort
+                
+            </span>
         
-    </h4>
+
+    </div>
 
                 
                                     <div id="action_get-all-host-ports_body" class=""> 
                                         
                                         
                                         
-                                        
-         
+                                                 
                                         
                                             
                                             
@@ -2290,37 +2793,46 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                     </section>
             
                     <section id="resource_network-path_example" class="resourceExample">
-                         <div class= "header" ><h4 id="h-resource_network-path_example">Network Path [/networkPath/{src}/{dst}]</h4></div>
-                            
-                            
-                            
+                         <div class= "header" >
+                         
+                            <h4 id="h-resource_network-path_example">Network Path</h4>
+                            <span class="extra-header">[/networkPath/{src}/{dst}]</span>
+                         
+                         </div>
 
                             
                             
                             
 
                             
+                            
+                            
 
+                           
 
                             
                                 <div id="action_get-a-network-path-between-source-and-destination-ports_examples" class="actionExample GET">
 
                                     
-    <h4 id="h-action_get-a-network-path-between-source-and-destination-ports_examples">
-        Get a Network Path between source and destination ports -
-        GET
+    <div class="header">
         
-            /networkPath/{src}/{dst}
+            <h5 id="h-action_get-a-network-path-between-source-and-destination-ports_examples">Get a Network Path between source and destination ports </h5>
+            <span class="extra-header">
+		GET 
+                
+                    /networkPath/{src}/{dst}
+                
+            </span>
         
-    </h4>
+
+    </div>
 
                 
                                     <div id="action_get-a-network-path-between-source-and-destination-ports_body" class=""> 
                                         
                                         
                                         
-                                        
-         
+                                                 
                                         
                                             
                                             
@@ -2423,37 +2935,46 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                     </section>
             
                     <section id="resource_flow-patterns_example" class="resourceExample">
-                         <div class= "header" ><h4 id="h-resource_flow-patterns_example">Flow Patterns [/flowPattern]</h4></div>
-                            
-                            
-                            
+                         <div class= "header" >
+                         
+                            <h4 id="h-resource_flow-patterns_example">Flow Patterns</h4>
+                            <span class="extra-header">[/flowPattern]</span>
+                         
+                         </div>
 
                             
                             
                             
 
                             
+                            
+                            
 
+                           
 
                             
                                 <div id="action_get-all-flow-patterns_examples" class="actionExample GET">
 
                                     
-    <h4 id="h-action_get-all-flow-patterns_examples">
-        Get all flow patterns -
-        GET
+    <div class="header">
         
-            /flowPattern
+            <h5 id="h-action_get-all-flow-patterns_examples">Get all flow patterns </h5>
+            <span class="extra-header">
+		GET 
+                
+                    /flowPattern
+                
+            </span>
         
-    </h4>
+
+    </div>
 
                 
                                     <div id="action_get-all-flow-patterns_body" class=""> 
                                         
                                         
                                         
-                                        
-         
+                                                 
                                         
                                             
                                             
@@ -2554,21 +3075,25 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                                 <div id="action_create-a-new-flow-pattern_examples" class="actionExample POST">
 
                                     
-    <h4 id="h-action_create-a-new-flow-pattern_examples">
-        Create a new flow pattern -
-        POST
+    <div class="header">
         
-            /flowPattern
+            <h5 id="h-action_create-a-new-flow-pattern_examples">Create a new flow pattern </h5>
+            <span class="extra-header">
+		POST 
+                
+                    /flowPattern
+                
+            </span>
         
-    </h4>
+
+    </div>
 
                 
                                     <div id="action_create-a-new-flow-pattern_body" class=""> 
                                         
                                         
                                         
-                                        
-         
+                                                 
                                         
                                             
                                             
@@ -2761,37 +3286,46 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                     </section>
             
                     <section id="resource_flow-pattern_example" class="resourceExample">
-                         <div class= "header" ><h4 id="h-resource_flow-pattern_example">Flow Pattern [/flowPattern/{id}]</h4></div>
-                            
-                            
-                            
+                         <div class= "header" >
+                         
+                            <h4 id="h-resource_flow-pattern_example">Flow Pattern</h4>
+                            <span class="extra-header">[/flowPattern/{id}]</span>
+                         
+                         </div>
 
                             
                             
                             
 
                             
+                            
+                            
 
+                           
 
                             
                                 <div id="action_get-flow-pattern-by-id_examples" class="actionExample GET">
 
                                     
-    <h4 id="h-action_get-flow-pattern-by-id_examples">
-        Get flow pattern by id -
-        GET
+    <div class="header">
         
-            /flowPattern/{id}
+            <h5 id="h-action_get-flow-pattern-by-id_examples">Get flow pattern by id </h5>
+            <span class="extra-header">
+		GET 
+                
+                    /flowPattern/{id}
+                
+            </span>
         
-    </h4>
+
+    </div>
 
                 
                                     <div id="action_get-flow-pattern-by-id_body" class=""> 
                                         
                                         
                                         
-                                        
-         
+                                                 
                                         
                                             
                                             
@@ -2986,21 +3520,25 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                                 <div id="action_update-flow-pattern-by-id_examples" class="actionExample PUT">
 
                                     
-    <h4 id="h-action_update-flow-pattern-by-id_examples">
-        Update flow pattern by id -
-        PUT
+    <div class="header">
         
-            /flowPattern/{id}
+            <h5 id="h-action_update-flow-pattern-by-id_examples">Update flow pattern by id </h5>
+            <span class="extra-header">
+		PUT 
+                
+                    /flowPattern/{id}
+                
+            </span>
         
-    </h4>
+
+    </div>
 
                 
                                     <div id="action_update-flow-pattern-by-id_body" class=""> 
                                         
                                         
                                         
-                                        
-         
+                                                 
                                         
                                             
                                             
@@ -3288,21 +3826,25 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                                 <div id="action_delete-flow-pattern-by-id_examples" class="actionExample DELETE">
 
                                     
-    <h4 id="h-action_delete-flow-pattern-by-id_examples">
-        Delete flow pattern by id -
-        DELETE
+    <div class="header">
         
-            /flowPattern/{id}
+            <h5 id="h-action_delete-flow-pattern-by-id_examples">Delete flow pattern by id </h5>
+            <span class="extra-header">
+		DELETE 
+                
+                    /flowPattern/{id}
+                
+            </span>
         
-    </h4>
+
+    </div>
 
                 
                                     <div id="action_delete-flow-pattern-by-id_body" class=""> 
                                         
                                         
                                         
-                                        
-         
+                                                 
                                         
                                             
                                             
@@ -3467,37 +4009,46 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                     </section>
             
                     <section id="resource_install-and-delete-flow-patterns-on-network-paths_example" class="resourceExample">
-                         <div class= "header" ><h4 id="h-resource_install-and-delete-flow-patterns-on-network-paths_example">Install and delete Flow Patterns on Network Paths [/flowPattern/{id}/{src}/{dst}]</h4></div>
-                            
-                            
-                            
+                         <div class= "header" >
+                         
+                            <h4 id="h-resource_install-and-delete-flow-patterns-on-network-paths_example">Install and delete Flow Patterns on Network Paths</h4>
+                            <span class="extra-header">[/flowPattern/{id}/{src}/{dst}]</span>
+                         
+                         </div>
 
                             
                             
                             
 
                             
+                            
+                            
 
+                           
 
                             
                                 <div id="action_post-a-flow-pattern-onto-a-network-path_examples" class="actionExample POST">
 
                                     
-    <h4 id="h-action_post-a-flow-pattern-onto-a-network-path_examples">
-        Post a flow pattern onto a network path -
-        POST
+    <div class="header">
         
-            /flowPattern/{id}/{src}/{dst}
+            <h5 id="h-action_post-a-flow-pattern-onto-a-network-path_examples">Post a flow pattern onto a network path </h5>
+            <span class="extra-header">
+		POST 
+                
+                    /flowPattern/{id}/{src}/{dst}
+                
+            </span>
         
-    </h4>
+
+    </div>
 
                 
                                     <div id="action_post-a-flow-pattern-onto-a-network-path_body" class=""> 
                                         
                                         
                                         
-                                        
-         
+                                                 
                                         
                                             
                                             
@@ -3754,21 +4305,25 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
                                 <div id="action_delete-a-flow-pattern-on-a-network-path_examples" class="actionExample DELETE">
 
                                     
-    <h4 id="h-action_delete-a-flow-pattern-on-a-network-path_examples">
-        Delete a flow pattern on a network path -
-        DELETE
+    <div class="header">
         
-            /flowPattern/{id}/{src}/{dst}
+            <h5 id="h-action_delete-a-flow-pattern-on-a-network-path_examples">Delete a flow pattern on a network path </h5>
+            <span class="extra-header">
+		DELETE 
+                
+                    /flowPattern/{id}/{src}/{dst}
+                
+            </span>
         
-    </h4>
+
+    </div>
 
                 
                                     <div id="action_delete-a-flow-pattern-on-a-network-path_body" class=""> 
                                         
                                         
                                         
-                                        
-         
+                                                 
                                         
                                             
                                             
@@ -4001,7 +4556,7 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
       <h1>References</h1>
           <ul>
               
-                  <li><a href="http://forge.fiware.org/plugins/mediawiki/wiki/fiware/index.php/FI-WARE_Open_Specification_Legal_Notice_%28implicit_patents_license%29">FIWARE Open Specification License</a></li>
+                  <li><a href="http://forge.fiware.org/plugins/mediawiki/wiki/fiware/index.php/FI-WARE_Open_Specification_Legal_Notice_%28essential_patents_license%29">FIWARE Open Specification License</a></li>
               
           </ul>
       </section>
@@ -4009,4 +4564,5 @@ This specification is licensed under the <a href="http://forge.fiware.org/plugin
   </div>
 </div>
 </body>
+
 </html>
