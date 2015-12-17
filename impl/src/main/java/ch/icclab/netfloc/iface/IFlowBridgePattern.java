@@ -10,7 +10,9 @@ package ch.icclab.netfloc.iface;
 import ch.icclab.netfloc.iface.IBridgeOperator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 
+import java.util.List;
+
 public interface IFlowBridgePattern {
 
-	public Flow apply(IBridgeOperator bo);
+	public List<Flow> apply(IBridgeOperator bo);
 }

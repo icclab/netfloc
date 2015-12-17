@@ -72,16 +72,18 @@ public class FlowConnectionManager implements INetworkPathListener {
 		// TODO: decide which pattern
 		final IFlowPathPattern pattern = this.flowPathPatterns.get(0);
 
-		for (Map.Entry<IBridgeOperator, Flow> flowEntry : pattern.apply(np).entrySet()) {
-			flowprogrammer.programFlow(flowEntry.getValue(), flowEntry.getKey(), new FutureCallback<Void>() {
-				public void onSuccess(Void result) {
-					programSuccess.put(np, pattern);
-				}
+		for (Map.Entry<IBridgeOperator, List<Flow>> flowEntry : pattern.apply(np).entrySet()) {
+			for (Flow flow : flowEntry.getKey()) {
+				flowprogrammer.programFlow(flowEntry.getValue(), flow, new FutureCallback<Void>() {
+					public void onSuccess(Void result) {
+						programSuccess.put(np, pattern);
+					}
 
-				public void onFailure(Throwable t) {
-					programFailure.put(np, pattern);
-				}
-			});
+					public void onFailure(Throwable t) {
+						programFailure.put(np, pattern);
+					}
+				});
+			}
 		}
 	}
 
@@ -90,28 +92,32 @@ public class FlowConnectionManager implements INetworkPathListener {
 		// TODO: decide which pattern
 		final IFlowPathPattern pattern = this.flowPathPatterns.get(0);
 
-		for (Map.Entry<IBridgeOperator, Flow> flowEntry : pattern.apply(oldNp).entrySet()) {
-			flowprogrammer.deleteFlow(flowEntry.getValue(), flowEntry.getKey(), new FutureCallback<Void>() {
-				public void onSuccess(Void result) {
-					programSuccess.put(oldNp, pattern);
-				}
+		for (Map.Entry<IBridgeOperator, List<Flow>> flowEntry : pattern.apply(oldNp).entrySet()) {
+			for (Flow flow : flowEntry.getKey()) {
+				flowprogrammer.deleteFlow(flowEntry.getValue(), flow, new FutureCallback<Void>() {
+					public void onSuccess(Void result) {
+						programSuccess.put(oldNp, pattern);
+					}
 
-				public void onFailure(Throwable t) {
-					programFailure.put(oldNp, pattern);
-				}
-			});
+					public void onFailure(Throwable t) {
+						programFailure.put(oldNp, pattern);
+					}
+				});
+			}
 		}
 
-		for (Map.Entry<IBridgeOperator, Flow> flowEntry : pattern.apply(nNp).entrySet()) {
-			flowprogrammer.programFlow(flowEntry.getValue(), flowEntry.getKey(), new FutureCallback<Void>() {
-				public void onSuccess(Void result) {
-					programSuccess.put(nNp, pattern);
-				}
+		for (Map.Entry<IBridgeOperator, List<Flow>> flowEntry : pattern.apply(nNp).entrySet()) {
+			for (Flow flow : flowEntry.getKey()) {
+				flowprogrammer.programFlow(flowEntry.getValue(), flow, new FutureCallback<Void>() {
+					public void onSuccess(Void result) {
+						programSuccess.put(nNp, pattern);
+					}
 
-				public void onFailure(Throwable t) {
-					programFailure.put(nNp, pattern);
-				}
-			});
+					public void onFailure(Throwable t) {
+						programFailure.put(nNp, pattern);
+					}
+				});
+			}
 		}
 	}
 	
@@ -120,16 +126,18 @@ public class FlowConnectionManager implements INetworkPathListener {
 		// TODO: decide which pattern
 		final IFlowPathPattern pattern = this.flowPathPatterns.get(0);
 
-		for (Map.Entry<IBridgeOperator, Flow> flowEntry : pattern.apply(np).entrySet()) {
-			flowprogrammer.deleteFlow(flowEntry.getValue(), flowEntry.getKey(), new FutureCallback<Void>() {
-				public void onSuccess(Void result) {
-					programSuccess.put(np, pattern);
-				}
+		for (Map.Entry<IBridgeOperator, List<Flow>> flowEntry : pattern.apply(np).entrySet()) {
+			for (Flow flow : flowEntry.getKey()) {
+				flowprogrammer.deleteFlow(flowEntry.getValue(), flow, new FutureCallback<Void>() {
+					public void onSuccess(Void result) {
+						programSuccess.put(np, pattern);
+					}
 
-				public void onFailure(Throwable t) {
-					programFailure.put(np, pattern);
-				}
-			});
+					public void onFailure(Throwable t) {
+						programFailure.put(np, pattern);
+					}
+				});
+			}
 		}
 	}
 

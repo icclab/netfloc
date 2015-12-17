@@ -10,8 +10,9 @@ package ch.icclab.netfloc.iface;
 import ch.icclab.netfloc.iface.INetworkPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import java.util.Map;
+import java.util.List;
 
 public interface IFlowPathPattern {
 
-	public Map<IBridgeOperator, Flow> apply(INetworkPath path);
+	public Map<IBridgeOperator, List<Flow>> apply(INetworkPath path);
 }
