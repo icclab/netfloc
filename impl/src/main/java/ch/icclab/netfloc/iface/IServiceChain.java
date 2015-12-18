@@ -12,10 +12,11 @@ import java.util.Map;
 
 public interface IServiceChain {
 
+	public int getChainId();
 	public INetworkPath getBegin();
 	public INetworkPath getEnd();
-	public INetworkPath getPrevious();
-	public INetworkPath getNext();
+	public INetworkPath getPrevious(INetworkPath np);
+	public INetworkPath getNext(INetworkPath np);
 	public void append(INetworkPath np);
 	public void addPaths(List<INetworkPath> nps);
 	public boolean isEqualConnectionChain(IServiceChain sc);

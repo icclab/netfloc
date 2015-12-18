@@ -5,14 +5,20 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package ch.icclab.netfloc.iface;
+package ch.icclab.netfloc.impl;
 
+import ch.icclab.netfloc.iface.IBridgeOperator;
+import ch.icclab.netfloc.iface.IFlowBridgePattern;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 
 import java.util.List;
-import java.util.Map;
+import java.util.LinkedList;
 
-public interface IFlowChainPattern {
+public class FlowBridgePattern implements IFlowBridgePattern {
 
-	public List<Map<IBridgeOperator, List<Flow>>> apply(IServiceChain sc);
+	public List<Flow> apply(IBridgeOperator bo) {
+		List<Flow> flows = new LinkedList<Flow>();
+
+		return flows;
+	}
 }

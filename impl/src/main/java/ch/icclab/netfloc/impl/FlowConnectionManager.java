@@ -73,8 +73,8 @@ public class FlowConnectionManager implements INetworkPathListener {
 		final IFlowPathPattern pattern = this.flowPathPatterns.get(0);
 
 		for (Map.Entry<IBridgeOperator, List<Flow>> flowEntry : pattern.apply(np).entrySet()) {
-			for (Flow flow : flowEntry.getKey()) {
-				flowprogrammer.programFlow(flowEntry.getValue(), flow, new FutureCallback<Void>() {
+			for (Flow flow : flowEntry.getValue()) {
+				flowprogrammer.programFlow(flow, flowEntry.getKey(), new FutureCallback<Void>() {
 					public void onSuccess(Void result) {
 						programSuccess.put(np, pattern);
 					}
@@ -93,8 +93,8 @@ public class FlowConnectionManager implements INetworkPathListener {
 		final IFlowPathPattern pattern = this.flowPathPatterns.get(0);
 
 		for (Map.Entry<IBridgeOperator, List<Flow>> flowEntry : pattern.apply(oldNp).entrySet()) {
-			for (Flow flow : flowEntry.getKey()) {
-				flowprogrammer.deleteFlow(flowEntry.getValue(), flow, new FutureCallback<Void>() {
+			for (Flow flow : flowEntry.getValue()) {
+				flowprogrammer.deleteFlow(flow, flowEntry.getKey(), new FutureCallback<Void>() {
 					public void onSuccess(Void result) {
 						programSuccess.put(oldNp, pattern);
 					}
@@ -107,8 +107,8 @@ public class FlowConnectionManager implements INetworkPathListener {
 		}
 
 		for (Map.Entry<IBridgeOperator, List<Flow>> flowEntry : pattern.apply(nNp).entrySet()) {
-			for (Flow flow : flowEntry.getKey()) {
-				flowprogrammer.programFlow(flowEntry.getValue(), flow, new FutureCallback<Void>() {
+			for (Flow flow : flowEntry.getValue()) {
+				flowprogrammer.programFlow(flow, flowEntry.getKey(), new FutureCallback<Void>() {
 					public void onSuccess(Void result) {
 						programSuccess.put(nNp, pattern);
 					}
@@ -127,8 +127,8 @@ public class FlowConnectionManager implements INetworkPathListener {
 		final IFlowPathPattern pattern = this.flowPathPatterns.get(0);
 
 		for (Map.Entry<IBridgeOperator, List<Flow>> flowEntry : pattern.apply(np).entrySet()) {
-			for (Flow flow : flowEntry.getKey()) {
-				flowprogrammer.deleteFlow(flowEntry.getValue(), flow, new FutureCallback<Void>() {
+			for (Flow flow : flowEntry.getValue()) {
+				flowprogrammer.deleteFlow(flow, flowEntry.getKey(), new FutureCallback<Void>() {
 					public void onSuccess(Void result) {
 						programSuccess.put(np, pattern);
 					}
