@@ -6,6 +6,8 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package ch.icclab.netfloc.impl;
+import ch.icclab.netfloc.iface.IFlowPathPattern;
+import ch.icclab.netfloc.iface.IFlowprogrammer;
 
 import java.util.Dictionary;
 import java.util.ArrayList;
@@ -35,7 +37,12 @@ public class ConfigActivator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
 		LOG.info("ConfigActivator start");
 
+		IFlowPathPattern pathPattern = new FlowPathPattern();
+		IFlowprogrammer flowProgrammer = new Flowprogrammer(providerContext.getSALService(DataBroker.class));
+		FlowConnectionManager flowManager = new FlowConnectionManager(flowProgrammer);
+		flowManager.registerPathPattern(pathPattern);
 		NetworkGraph graph = new NetworkGraph();
+		graph.registerNetworkPathListener(flowManager);
 		NetflocManager manager = new NetflocManager(graph);
 
 		Dictionary<String, Object> floatingIPHandlerProperties = new Hashtable<>();

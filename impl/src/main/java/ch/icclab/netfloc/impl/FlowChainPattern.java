@@ -11,6 +11,7 @@ import ch.icclab.netfloc.iface.IFlowChainPattern;
 import ch.icclab.netfloc.iface.IServiceChain;
 import ch.icclab.netfloc.iface.IBridgeOperator;
 import ch.icclab.netfloc.iface.IPortOperator;
+import ch.icclab.netfloc.iface.IHostPort;
 import ch.icclab.netfloc.iface.INetworkPath;
 
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
@@ -18,6 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlDstActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.dst.action._case.SetDlDstActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
@@ -59,39 +62,94 @@ public class FlowChainPattern implements IFlowChainPattern {
 
 		INetworkPath beginPath = sc.getBegin();
 		int hop = 0;
-		flows.add(this.createPathFlows(beginPath, sc.getChainId(), hop));
+		flows.add(this.createForwardPathFlows(beginPath, sc.getChainId(), hop));
 		INetworkPath endPath = sc.getEnd();
 
 		INetworkPath path = sc.getNext(beginPath);
 		while (path != null && !path.equals(endPath)) {
 			hop++;
-			flows.add(this.createPathFlows(path, sc.getChainId(), hop));
+			flows.add(this.createRewritePathFlows(path, sc.getChainId(), hop));
 			path = sc.getNext(path);
 		}
 
-		flows.add(this.createPathFlows(endPath, sc.getChainId(), hop));
+		flows.add(this.createEndRewritePathFlows(endPath, sc.getChainId(), hop));
 
 		return flows;
 	}
 
-	private Map<IBridgeOperator, List<Flow>> createPathFlows(INetworkPath path, int chainId, int hop) {
+	private Map<IBridgeOperator, List<Flow>> createForwardPathFlows(INetworkPath path, int chainId, int hop) {
 		Map<IBridgeOperator, List<Flow>> flows = new HashMap<IBridgeOperator, List<Flow>>();
 
 		IBridgeOperator beginBridge = path.getBegin();
-		flows.put(beginBridge, createBridgeFlows(beginBridge, chainId, hop, path.getBeginPort(), path.getNextLink(beginBridge), CHAIN_PRIORITY));
+		flows.put(beginBridge, createAggregationBridgeFlows(beginBridge, chainId, hop, path.getBeginPort(), path.getNextLink(beginBridge), CHAIN_PRIORITY));
 		IBridgeOperator endBridge = path.getEnd();
-		flows.put(endBridge, createBridgeFlows(endBridge, chainId, hop, path.getPreviousLink(endBridge), path.getEndPort(), CHAIN_PRIORITY));
+		flows.put(endBridge, createAggregationBridgeFlows(endBridge, chainId, hop, path.getPreviousLink(endBridge), path.getEndPort(), CHAIN_PRIORITY));
 
 		IBridgeOperator bridge = path.getNext(beginBridge);
 		while (bridge != null && !bridge.equals(endBridge)) {
-			flows.put(bridge, createBridgeFlows(bridge, chainId, hop, path.getPreviousLink(bridge), path.getNextLink(bridge), CHAIN_PRIORITY));
+			flows.put(bridge, createAggregationBridgeFlows(bridge, chainId, hop, path.getPreviousLink(bridge), path.getNextLink(bridge), CHAIN_PRIORITY));
 		}
 
 		return flows;
 	}
 
-	private List<Flow> createBridgeFlows(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
+	private Map<IBridgeOperator, List<Flow>> createRewritePathFlows(INetworkPath path, int chainId, int hop) {
+		Map<IBridgeOperator, List<Flow>> flows = new HashMap<IBridgeOperator, List<Flow>>();
+
+		IBridgeOperator beginBridge = path.getBegin();
+		flows.put(beginBridge, createBeginBridgeFlows(beginBridge, chainId, hop, path.getBeginPort(), path.getNextLink(beginBridge), CHAIN_PRIORITY));
+		IBridgeOperator endBridge = path.getEnd();
+		flows.put(endBridge, createAggregationBridgeFlows(endBridge, chainId, hop, path.getPreviousLink(endBridge), path.getEndPort(), CHAIN_PRIORITY));
+
+		IBridgeOperator bridge = path.getNext(beginBridge);
+		while (bridge != null && !bridge.equals(endBridge)) {
+			flows.put(bridge, createAggregationBridgeFlows(bridge, chainId, hop, path.getPreviousLink(bridge), path.getNextLink(bridge), CHAIN_PRIORITY));
+		}
+
+		return flows;
+	}
+
+	private Map<IBridgeOperator, List<Flow>> createEndRewritePathFlows(INetworkPath path, int chainId, int hop) {
+		Map<IBridgeOperator, List<Flow>> flows = new HashMap<IBridgeOperator, List<Flow>>();
+
+		IBridgeOperator beginBridge = path.getBegin();
+		flows.put(beginBridge, createBeginBridgeFlows(beginBridge, chainId, hop, path.getBeginPort(), path.getNextLink(beginBridge), CHAIN_PRIORITY));
+		IBridgeOperator endBridge = path.getEnd();
+		flows.put(endBridge, createEndBridgeFlows(endBridge, chainId, hop, path.getPreviousLink(endBridge), path.getEndPort(), CHAIN_PRIORITY));
+
+		IBridgeOperator bridge = path.getNext(beginBridge);
+		while (bridge != null && !bridge.equals(endBridge)) {
+			flows.put(bridge, createAggregationBridgeFlows(bridge, chainId, hop, path.getPreviousLink(bridge), path.getNextLink(bridge), CHAIN_PRIORITY));
+		}
+
+		return flows;
+	}
+
+	private List<Flow> createAggregationBridgeFlows(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
 		List<Flow> flows = new LinkedList<Flow>();
+
+		flows.add(this.createChainForwardFlow(bridge, chainId, hop, inPort, outPort, priority));
+
+		return flows;
+	}
+
+	private List<Flow> createBeginBridgeFlows(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
+		List<Flow> flows = new LinkedList<Flow>();
+
+		flows.add(this.createHopRewriteFlow(bridge, chainId, hop, inPort, outPort, priority));
+
+		return flows;
+	}
+
+	private List<Flow> createEndBridgeFlows(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
+		List<Flow> flows = new LinkedList<Flow>();
+
+		flows.add(this.createEndRewriteFlow(bridge, chainId, hop, inPort, outPort, priority));
+
+		return flows;
+	}
+
+	private Flow createChainForwardFlow(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
 
 		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" + bridge.getDatapathId() + ":" + outPort.getOfport());
 		MatchBuilder matchBuilder = new MatchBuilder();
@@ -135,7 +193,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		flowBuilder.setMatch(matchBuilder.build());
 
 		// TODO generate flow id
-		String flowId = "ServiceCHain_" + chainId + "_" + hop + "_" + bridge.getDatapathId();
+		String flowId = "ServiceChainForward_" + chainId + "_" + hop + "_" + bridge.getDatapathId();
 		flowBuilder.setId(new FlowId(flowId));
 		FlowKey key = new FlowKey(new FlowId(flowId));
 
@@ -147,8 +205,147 @@ public class FlowChainPattern implements IFlowChainPattern {
 		flowBuilder.setHardTimeout(0);
 		flowBuilder.setIdleTimeout(0);
 
-		flows.add(flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build());
+		return flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build();
+	}
 
-		return flows;
+	private Flow createHopRewriteFlow(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
+
+		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" + bridge.getDatapathId() + ":" + outPort.getOfport());
+		MatchBuilder matchBuilder = new MatchBuilder();
+		EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
+		EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
+		ethDestinationBuilder.setAddress(new MacAddress(chainId + ":" + (hop - 1) + ":ff:ff:ff:ff"));
+		ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
+		matchBuilder.setEthernetMatch(ethernetMatch.build());
+
+		matchBuilder.setInPort(ncidIn);
+
+		// Prepare Instruction
+		InstructionsBuilder isb = new InstructionsBuilder();
+		List<Instruction> instructions = new LinkedList<Instruction>();
+		InstructionBuilder ib = new InstructionBuilder();
+		ApplyActionsBuilder aab = new ApplyActionsBuilder();
+		ActionBuilder abOutput = new ActionBuilder();
+		ActionBuilder abRewrite = new ActionBuilder();
+		List<Action> actionList = new LinkedList<Action>();
+
+		// Rewrite Action
+		SetDlDstActionBuilder rewrite = new SetDlDstActionBuilder();
+		rewrite.setAddress(new MacAddress(chainId + ":" + hop + ":ff:ff:ff:ff"));
+
+		abRewrite.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(rewrite.build()).build());
+		abRewrite.setOrder(0);
+		abRewrite.setKey(new ActionKey(0));
+		actionList.add(abRewrite.build());
+
+		// Output Action
+		OutputActionBuilder output = new OutputActionBuilder();
+
+		NodeConnectorId ncidOut = new NodeConnectorId("openflow:" + bridge.getDatapathId() + ":" + outPort.getOfport());
+		output.setOutputNodeConnector(ncidOut);
+
+		output.setMaxLength(65535);
+
+		abOutput.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+		abOutput.setOrder(1);
+		abOutput.setKey(new ActionKey(1));
+		actionList.add(abOutput.build());
+
+		// Apply Actions Instruction
+		aab.setAction(actionList);
+		ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+		ib.setOrder(0);
+		ib.setKey(new InstructionKey(0));
+		instructions.add(ib.build());
+
+		// Create Flow
+		FlowBuilder flowBuilder = new FlowBuilder();
+		flowBuilder.setMatch(matchBuilder.build());
+
+		// TODO generate flow id
+		String flowId = "ServiceChainRewrite_" + chainId + "_" + hop + "_" + bridge.getDatapathId();
+		flowBuilder.setId(new FlowId(flowId));
+		FlowKey key = new FlowKey(new FlowId(flowId));
+
+		flowBuilder.setBarrier(true);
+		flowBuilder.setTableId((short)0);
+		flowBuilder.setKey(key);
+		flowBuilder.setPriority(priority);
+		flowBuilder.setFlowName(flowId);
+		flowBuilder.setHardTimeout(0);
+		flowBuilder.setIdleTimeout(0);
+
+		return flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build();
+	}
+
+	private Flow createEndRewriteFlow(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
+
+		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" + bridge.getDatapathId() + ":" + outPort.getOfport());
+		MatchBuilder matchBuilder = new MatchBuilder();
+		EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
+		EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
+		ethDestinationBuilder.setAddress(new MacAddress(chainId + ":" + (hop - 1) + ":ff:ff:ff:ff"));
+		ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
+		matchBuilder.setEthernetMatch(ethernetMatch.build());
+
+		matchBuilder.setInPort(ncidIn);
+
+		// Prepare Instruction
+		InstructionsBuilder isb = new InstructionsBuilder();
+		List<Instruction> instructions = new LinkedList<Instruction>();
+		InstructionBuilder ib = new InstructionBuilder();
+		ApplyActionsBuilder aab = new ApplyActionsBuilder();
+		ActionBuilder abOutput = new ActionBuilder();
+		ActionBuilder abRewrite = new ActionBuilder();
+		List<Action> actionList = new LinkedList<Action>();
+
+		// Rewrite Action
+		SetDlDstActionBuilder rewrite = new SetDlDstActionBuilder();
+		IHostPort hostPort = (IHostPort)outPort;
+		rewrite.setAddress(new MacAddress(hostPort.getMacAddress()));
+
+		abRewrite.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(rewrite.build()).build());
+		abRewrite.setOrder(0);
+		abRewrite.setKey(new ActionKey(0));
+		actionList.add(abRewrite.build());
+
+		// Output Action
+		OutputActionBuilder output = new OutputActionBuilder();
+
+		NodeConnectorId ncidOut = new NodeConnectorId("openflow:" + bridge.getDatapathId() + ":" + outPort.getOfport());
+		output.setOutputNodeConnector(ncidOut);
+
+		output.setMaxLength(65535);
+
+		abOutput.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+		abOutput.setOrder(1);
+		abOutput.setKey(new ActionKey(1));
+		actionList.add(abOutput.build());
+
+		// Apply Actions Instruction
+		aab.setAction(actionList);
+		ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+		ib.setOrder(0);
+		ib.setKey(new InstructionKey(0));
+		instructions.add(ib.build());
+
+		// Create Flow
+		FlowBuilder flowBuilder = new FlowBuilder();
+		flowBuilder.setMatch(matchBuilder.build());
+
+		// TODO generate flow id
+		String flowId = "ServiceChainEndRewrite_" + chainId + "_" + hop + "_" + bridge.getDatapathId();
+		flowBuilder.setId(new FlowId(flowId));
+		FlowKey key = new FlowKey(new FlowId(flowId));
+
+		flowBuilder.setBarrier(true);
+		flowBuilder.setTableId((short)0);
+		flowBuilder.setKey(key);
+		flowBuilder.setPriority(priority);
+		flowBuilder.setFlowName(flowId);
+		flowBuilder.setHardTimeout(0);
+		flowBuilder.setIdleTimeout(0);
+
+		return flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build();
 	}
 }

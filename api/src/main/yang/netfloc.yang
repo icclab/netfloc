@@ -6,4 +6,41 @@ module netfloc {
     revision "2015-01-05" {
         description "Initial revision of netfloc model";
     }
+
+    grouping service-chain {
+    	leaf service-chain-id {
+    		type string;
+    	}
+
+    	leaf-list neutron-ports {
+    		type string;
+    	}
+    }
+
+    rpc create-service-chain {
+    	description "Create a Service Chain";
+
+    	input {
+    		leaf-list neutron-ports {
+    			type string;
+    			description "Neutron Port IDs";
+    		}
+    	}
+
+    	output {
+    		leaf service-chain-id {
+    			type string;
+    		}
+    	}
+    }
+
+	rpc delete-service-chain {
+		description "Delete a Service Chain";
+
+		input {
+			leaf service-chain-id {
+				type string;
+			}
+		}
+	}
 }
