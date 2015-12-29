@@ -2,6 +2,10 @@
 
 NETwork FLOws for Clouds (Netfloc) is a framework for datacenter network programming. It is comprised of set of tools and libraries packed as Java bundles that interoperate with the OpenDaylight controller. Netfloc exposes REST API abstractions and Java interfaces for network programmers to enable optimal integration in cloud datacenters and fully SDN-enabled end-to-end management of OpenFlow enabled switches. 
 
+A more extensive documentation can be found here:
+
+[Installation and Administration Guide](http://netfloc.readthedocs.org/en/latest/installation_and_administration_guide/)
+[User and Programmers Guide](http://netfloc.readthedocs.org/en/latest/user_and_programmers_guide/)
  
 ## Why OpenDaylight as SDN controller?
 
