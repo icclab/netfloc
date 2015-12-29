@@ -239,7 +239,7 @@ public class NetworkGraph implements
 	}
 
 	// concurrency issue: links that are not established through LLDP
-	private List<IHostPort> getHostPorts() {
+	private List<IHostPort> getLinkedHostPorts() {
 		IBridgeIterator<List<IHostPort>> iterator = new IBridgeIterator<List<IHostPort>>() {
 			
 			private List<IHostPort> hostPorts = new LinkedList<IHostPort>();
@@ -255,6 +255,14 @@ public class NetworkGraph implements
 		};
 		this.traverse(iterator);
 		return iterator.getResult();
+	}
+
+	private List<IHostPort> getHostPorts() {
+		List<IHostPort> hostPorts = new LinkedList<IHostPort>();
+		for (IBridgeOperator bridge : this.getBridges()) {
+			hostPorts.addAll(bridge.getHostPorts());
+		}
+		return hostPorts;
 	}
 
 	private void checkNewConnections(IHostPort srcPort) {
