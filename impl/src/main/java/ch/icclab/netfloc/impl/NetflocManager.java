@@ -81,6 +81,7 @@ public class NetflocManager implements
 		INodeOperator no = graph.getParentNode(node.getNodeId());
 		IBridgeOperator bo = new Bridge(no, node, ovsdbBridgeAugmentation);
 		no.addBridge(bo);
+        graph.notifyBridgeListenersCreate(bo);
 	}
 
 	@Override
