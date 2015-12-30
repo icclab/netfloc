@@ -280,6 +280,7 @@ public class NetworkGraph implements
 	private void checkNewConnections(IHostPort srcPort) {
 		for (IHostPort port : this.getHostPorts()) {
 			if (srcPort.canConnectTo(port)) {
+				logger.info("new connection found, notifying NetworkPathListener");
 				this.notifyNetworkPathListenersCreate(this.getNetworkPath(srcPort, port));
 			}
 		}

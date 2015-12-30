@@ -51,6 +51,7 @@ public class Flowprogrammer implements IFlowprogrammer {
 	}
 
 	public void programFlow(Flow flow, IBridgeOperator bridge, FutureCallback<Void> cb) {
+		logger.info("programming flow {} for {}", flow.getId(), bridge.getDatapathId());
 		WriteTransaction wt = this.dataBroker.newWriteOnlyTransaction();
 		InstanceIdentifier<Flow> flowId = buildFlowId(flow, bridge.getDatapathId());
 		wt.merge(LogicalDatastoreType.CONFIGURATION, flowId, flow, true);
@@ -58,6 +59,7 @@ public class Flowprogrammer implements IFlowprogrammer {
 	}
 
 	public void deleteFlow(Flow flow, IBridgeOperator bridge, FutureCallback<Void> cb) {
+		logger.info("deleting flow {} for {}", flow.getId(), bridge.getDatapathId());
 		WriteTransaction wt = this.dataBroker.newWriteOnlyTransaction();
 		InstanceIdentifier<Flow> flowId = buildFlowId(flow, bridge.getDatapathId());
 		wt.delete(LogicalDatastoreType.CONFIGURATION, flowId);
@@ -67,7 +69,7 @@ public class Flowprogrammer implements IFlowprogrammer {
 	private void commitWriteTransaction(final WriteTransaction wt, final FutureCallback<Void> cb, final int tries) {
         Futures.addCallback(wt.submit(), new FutureCallback<Void>() {
 			public void onSuccess(Void result) {
-				logger.debug("Transaction success after {} tries for {}", tries, wt);
+				logger.info("Transaction success after {} tries for {}", tries, wt);
 				cb.onSuccess(result);
 			}
 
