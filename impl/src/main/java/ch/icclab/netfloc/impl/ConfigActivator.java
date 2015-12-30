@@ -7,6 +7,7 @@
  */
 package ch.icclab.netfloc.impl;
 import ch.icclab.netfloc.iface.IFlowPathPattern;
+import ch.icclab.netfloc.iface.IFlowBridgePattern;
 import ch.icclab.netfloc.iface.IFlowprogrammer;
 
 import java.util.Dictionary;
