@@ -22,6 +22,7 @@ import org.opendaylight.neutron.spi.NeutronSubnet;
 import org.opendaylight.neutron.spi.NeutronNetwork;
 import org.opendaylight.neutron.spi.NeutronRouter;
 import org.opendaylight.neutron.spi.NeutronFloatingIP;
+import ch.icclab.netfloc.iface.IBridgeListener;
 import ch.icclab.netfloc.iface.IBridgeIterator;
 import ch.icclab.netfloc.iface.IBridgeOperator;
 import ch.icclab.netfloc.iface.ILinkPort;
@@ -60,9 +61,14 @@ public class NetworkGraph implements
 
 	List<INodeOperator> nodes = new LinkedList<INodeOperator>();
 	private List<INetworkPathListener> networkPathListeners = new LinkedList<INetworkPathListener>();
+	private List<IBridgeListener> bridgeListeners = new LinkedList<IBridgeListener>();
 
 	public void registerNetworkPathListener(INetworkPathListener npl) {
 		this.networkPathListeners.add(npl);
+	}
+
+	public void registerBridgeListener(IBridgeListener bl) {
+		this.bridgeListeners.add(bl);
 	}
 
 	public void notifyNetworkPathListenersCreate(INetworkPath networkPath) {
@@ -80,6 +86,12 @@ public class NetworkGraph implements
 	public void notifyNetworkPathListenersUpdate(INetworkPath oldPath, INetworkPath newPath) {
 		for (INetworkPathListener npl : this.networkPathListeners) {
 			npl.networkPathUpdated(oldPath, newPath);
+		}
+	}
+
+	public void notifyBridgeListenersCreate(IBridgeOperator bo) {
+		for (IBridgeListener bl : this.bridgeListeners) {
+			bl.bridgeCreated(bo);
 		}
 	}
 

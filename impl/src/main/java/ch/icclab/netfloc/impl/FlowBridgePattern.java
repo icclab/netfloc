@@ -19,6 +19,9 @@ public class FlowBridgePattern implements IFlowBridgePattern {
 	public List<Flow> apply(IBridgeOperator bo) {
 		List<Flow> flows = new LinkedList<Flow>();
 
+		flows.add(OpenFlowUtil.createNormalFlow(bo, 0));
+		flows.add(OpenFlowUtil.createLLDPFlow(bo, 10));
+
 		return flows;
 	}
 }

@@ -43,6 +43,7 @@ public class ConfigActivator implements BundleActivator {
 		flowManager.registerPathPattern(pathPattern);
 		NetworkGraph graph = new NetworkGraph();
 		graph.registerNetworkPathListener(flowManager);
+		graph.registerBridgeListener(flowManager);
 		NetflocManager manager = new NetflocManager(graph);
 
 		Dictionary<String, Object> floatingIPHandlerProperties = new Hashtable<>();

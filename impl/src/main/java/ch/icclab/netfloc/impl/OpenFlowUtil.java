@@ -19,6 +19,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.ControllerActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.controller.action._case.ControllerActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.HwPathActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.hw.path.action._case.HwPathActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -47,6 +51,109 @@ import java.util.List;
 import java.util.LinkedList;
 
 public class OpenFlowUtil {
+
+	public static final long LLDP_LONG = (long) 0x88CC;
+
+	public static Flow createLLDPFlow(IBridgeOperator bridge, int priority) {
+
+		MatchBuilder matchBuilder = new MatchBuilder();
+
+		matchBuilder.setEthernetMatch(OpenFlowUtil.ethernetMatch(
+			null,
+			null,
+			LLDP_LONG));
+
+		// Prepare Instuction
+		InstructionsBuilder isb = new InstructionsBuilder();
+		List<Instruction> instructions = new LinkedList<Instruction>();
+		InstructionBuilder ib = new InstructionBuilder();
+		ApplyActionsBuilder aab = new ApplyActionsBuilder();
+		ActionBuilder ab = new ActionBuilder();
+		List<Action> actionList = new LinkedList<Action>();
+
+		// Controller Action
+		ControllerActionBuilder toCtrl = new ControllerActionBuilder();
+
+		toCtrl.setMaxLength(65535);
+		ab.setAction(new ControllerActionCaseBuilder().setControllerAction(toCtrl.build()).build());
+		ab.setOrder(0);
+		ab.setKey(new ActionKey(0));
+		actionList.add(ab.build());
+
+		// Apply Actions Instruction
+		aab.setAction(actionList);
+		ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+		ib.setOrder(0);
+		ib.setKey(new InstructionKey(0));
+		instructions.add(ib.build());
+
+		// Create Flow
+		FlowBuilder flowBuilder = new FlowBuilder();
+		flowBuilder.setMatch(matchBuilder.build());
+
+		// TODO generate flow id
+		String flowId = "LLDP_" + bridge.getDatapathId();
+		flowBuilder.setId(new FlowId(flowId));
+		FlowKey key = new FlowKey(new FlowId(flowId));
+
+		flowBuilder.setBarrier(true);
+		flowBuilder.setTableId((short)0);
+		flowBuilder.setKey(key);
+		flowBuilder.setPriority(priority);
+		flowBuilder.setFlowName(flowId);
+		flowBuilder.setHardTimeout(0);
+		flowBuilder.setIdleTimeout(0);
+
+		return flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build();
+	}
+
+	public static Flow createNormalFlow(IBridgeOperator bridge, int priority) {
+
+		// empty match
+		MatchBuilder matchBuilder = new MatchBuilder();
+
+		// Prepare Instuction
+		InstructionsBuilder isb = new InstructionsBuilder();
+		List<Instruction> instructions = new LinkedList<Instruction>();
+		InstructionBuilder ib = new InstructionBuilder();
+		ApplyActionsBuilder aab = new ApplyActionsBuilder();
+		ActionBuilder ab = new ActionBuilder();
+		List<Action> actionList = new LinkedList<Action>();
+
+		// Normal Action
+		HwPathActionBuilder normal = new HwPathActionBuilder();
+
+		ab.setAction(new HwPathActionCaseBuilder().setHwPathAction(normal.build()).build());
+		ab.setOrder(0);
+		ab.setKey(new ActionKey(0));
+		actionList.add(ab.build());
+
+		// Apply Actions Instruction
+		aab.setAction(actionList);
+		ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+		ib.setOrder(0);
+		ib.setKey(new InstructionKey(0));
+		instructions.add(ib.build());
+
+		// Create Flow
+		FlowBuilder flowBuilder = new FlowBuilder();
+		flowBuilder.setMatch(matchBuilder.build());
+
+		// TODO generate flow id
+		String flowId = "NORMAL_" + bridge.getDatapathId();
+		flowBuilder.setId(new FlowId(flowId));
+		FlowKey key = new FlowKey(new FlowId(flowId));
+
+		flowBuilder.setBarrier(true);
+		flowBuilder.setTableId((short)0);
+		flowBuilder.setKey(key);
+		flowBuilder.setPriority(priority);
+		flowBuilder.setFlowName(flowId);
+		flowBuilder.setHardTimeout(0);
+		flowBuilder.setIdleTimeout(0);
+
+		return flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build();
+	}
 
 	public static Flow createBroadcastFlow(IBridgeOperator bridge, IPortOperator inPort, List<IPortOperator> outPorts, String srcMac, int priority) {
 		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" + bridge.getDatapathId() + ":" + inPort.getOfport());
@@ -121,7 +228,7 @@ public class OpenFlowUtil {
 			new MacAddress(srcMac),
 			new MacAddress(dstMac),
 			null));
-		 matchBuilder.setInPort(ncidIn);
+		matchBuilder.setInPort(ncidIn);
 
 		// Prepare Instuction
 		InstructionsBuilder isb = new InstructionsBuilder();

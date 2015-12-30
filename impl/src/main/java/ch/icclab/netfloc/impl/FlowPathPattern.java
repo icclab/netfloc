@@ -32,6 +32,12 @@ public class FlowPathPattern implements IFlowPathPattern {
 		// begin & end bridges
 		IBridgeOperator begin = path.getBegin();
 		IBridgeOperator end = path.getEnd();
+
+		if (begin.equals(end)) {
+			flows.put(begin, this.createBidirectionalFlows(begin, path.getBeginPort(), path.getEndPort(), path.getBeginPort().getMacAddress(), path.getEndPort().getMacAddress()));
+			return flows;
+		}
+
 		flows.put(begin, this.createBidirectionalFlows(begin, path.getBeginPort(), path.getNextLink(begin), path.getBeginPort().getMacAddress(), path.getEndPort().getMacAddress()));
 		flows.put(end, this.createBidirectionalFlows(end, path.getPreviousLink(end), path.getEndPort(), path.getBeginPort().getMacAddress(), path.getEndPort().getMacAddress()));
 
@@ -44,7 +50,6 @@ public class FlowPathPattern implements IFlowPathPattern {
 		}
 
 		flows.put(bridge, flowList);
-
 		return flows;
 	}
 
