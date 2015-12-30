@@ -156,7 +156,7 @@ public class OpenFlowUtil {
 	}
 
 	public static Flow createBroadcastFlow(IBridgeOperator bridge, IPortOperator inPort, List<IPortOperator> outPorts, String srcMac, int priority) {
-		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId()) + ":" + inPort.getOfport());
+		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId(), 16) + ":" + inPort.getOfport());
 		MatchBuilder matchBuilder = new MatchBuilder();
 
 		EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
@@ -181,7 +181,7 @@ public class OpenFlowUtil {
 		for (IPortOperator outPort : outPorts) {
 			ActionBuilder ab = new ActionBuilder();
 			OutputActionBuilder output = new OutputActionBuilder();
-			NodeConnectorId ncidOut = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId()) + ":" + outPort.getOfport());
+			NodeConnectorId ncidOut = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId(), 16) + ":" + outPort.getOfport());
 			output.setOutputNodeConnector(ncidOut);
 			output.setMaxLength(65535);
 			ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
@@ -222,7 +222,7 @@ public class OpenFlowUtil {
 		
 		// Match src & dst MAC
 		// TODO do we need inport matching?
-		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId()) + ":" + outPort.getOfport());
+		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId(), 16) + ":" + outPort.getOfport());
 		MatchBuilder matchBuilder = new MatchBuilder();
 		matchBuilder.setEthernetMatch(OpenFlowUtil.ethernetMatch(
 			new MacAddress(srcMac),
@@ -241,7 +241,7 @@ public class OpenFlowUtil {
 		// Output Action
 		OutputActionBuilder output = new OutputActionBuilder();
 
-		NodeConnectorId ncidOut = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId()) + ":" + outPort.getOfport());
+		NodeConnectorId ncidOut = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId(), 16) + ":" + outPort.getOfport());
 		output.setOutputNodeConnector(ncidOut);
 
 		output.setMaxLength(65535);
