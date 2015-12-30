@@ -101,7 +101,7 @@ public class Flowprogrammer implements IFlowprogrammer {
 
 	private InstanceIdentifier<Flow> buildFlowId(Flow flow, String datapathId) {
 		return InstanceIdentifier.builder(Nodes.class)
-			.child(Node.class, new NodeKey(buildNode("openflow:" + datapathId).getKey()))
+			.child(Node.class, new NodeKey(buildNode("openflow:" + Long.parseLong(datapathId)).getKey()))
 			.augmentation(FlowCapableNode.class)
 			.child(Table.class, new TableKey(flow.getTableId()))
 			.child(Flow.class, flow.getKey())
