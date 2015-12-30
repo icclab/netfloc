@@ -37,10 +37,12 @@ public class ConfigActivator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
 		LOG.info("ConfigActivator start");
 
+		IFlowBridgePattern bridgePattern = new FlowBridgePattern();
 		IFlowPathPattern pathPattern = new FlowPathPattern();
 		IFlowprogrammer flowProgrammer = new Flowprogrammer(providerContext.getSALService(DataBroker.class));
 		FlowConnectionManager flowManager = new FlowConnectionManager(flowProgrammer);
 		flowManager.registerPathPattern(pathPattern);
+		flowManager.registerBridgePattern(bridgePattern);
 		NetworkGraph graph = new NetworkGraph();
 		graph.registerNetworkPathListener(flowManager);
 		graph.registerBridgeListener(flowManager);
