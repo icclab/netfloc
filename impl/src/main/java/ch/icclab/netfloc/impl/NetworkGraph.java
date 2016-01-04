@@ -388,7 +388,9 @@ public class NetworkGraph implements
 		IPortOperator po = bo.getPort(tpa.getPortUuid());
 		po.update(tp, tpa);
 
-		// todo test connections
+		if (po instanceof IHostPort) {
+			this.checkNewConnections(po);
+		}
 	}
 
 	// needs to be tested with ovs

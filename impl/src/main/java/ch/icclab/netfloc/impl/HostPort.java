@@ -16,10 +16,15 @@ import org.opendaylight.neutron.spi.NeutronFloatingIP;
 import ch.icclab.netfloc.iface.IBridgeOperator;
 import ch.icclab.netfloc.iface.IHostPort;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.LinkedList;
 
 public class HostPort extends Port implements IHostPort {
+
+	static final Logger logger = LoggerFactory.getLogger(HostPort.class);
 
 	private NeutronPort neutronPort;
 	private NeutronFloatingIP neutronFloatingIP;
@@ -63,10 +68,12 @@ public class HostPort extends Port implements IHostPort {
 
 	public boolean canConnectTo(IHostPort dst) {
 		if (dst == null || this.equals(dst)) {
+			logger.info("cannot connect {}, {} is null/equal", this, dst);
 			return false;
 		}
 
 		if (this.getOfport() == null || dst.getOfport() == null || this.getOfport().equals(dst.getOfport())) {
+			logger.info("cannot connect OF port {}, {} is null/equal", this.getOfport(), dst.getOfport());
 			return false;
 		}
 
@@ -77,9 +84,11 @@ public class HostPort extends Port implements IHostPort {
 
 		for (Neutron_IPs ip : this.getNeutronPort().getFixedIPs()) {
 			if (dstSubnets.contains(ip.getSubnetUUID())) {
+				logger.info("can connect ports: {}, {} in same subnet {}", this.getOfport(), dst.getOfport(), ip.getSubnetUUID());
 				return true;
 			}
 		}
+		logger.info("cannot connect ports: {}, {} not in same subnet.", this.getOfport(), dst.getOfport());
 		return false;
 	}
 }
