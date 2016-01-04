@@ -59,11 +59,11 @@ public class FlowPathPattern implements IFlowPathPattern {
 		flows.add(OpenFlowUtil.createForwardFlow(bridge, srcPort, dstPort, srcMac, dstMac, FORWARDING_PRIORITY));
 		flows.add(OpenFlowUtil.createForwardFlow(bridge, dstPort, srcPort, dstMac, srcMac, FORWARDING_PRIORITY));
 		List<IPortOperator> bcOutSrc = new LinkedList<IPortOperator>();
-		bcOutSrc.add(dstPort);
-		flows.add(OpenFlowUtil.createBroadcastFlow(bridge, srcPort, bcOutSrc, srcMac, BROADCAST_PRIORITY));
-		List<IPortOperator> bcOutDst = new LinkedList<IPortOperator>();
-		bcOutDst.add(srcPort);
-		flows.add(OpenFlowUtil.createBroadcastFlow(bridge, dstPort, bcOutDst, dstMac, BROADCAST_PRIORITY));
+		// bcOutSrc.add(dstPort);
+		// flows.add(OpenFlowUtil.createBroadcastFlow(bridge, srcPort, bcOutSrc, srcMac, BROADCAST_PRIORITY));
+		// List<IPortOperator> bcOutDst = new LinkedList<IPortOperator>();
+		// bcOutDst.add(srcPort);
+		// flows.add(OpenFlowUtil.createBroadcastFlow(bridge, dstPort, bcOutDst, dstMac, BROADCAST_PRIORITY));
 
 		return flows;
 	}
