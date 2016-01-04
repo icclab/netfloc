@@ -164,4 +164,7 @@ public class FlowConnectionManager implements INetworkPathListener, IBridgeListe
 		// not needed?
 	}
 
+	// TODO
+	// apply FlowChainPattern to ServiceChain : for delete and for create
+
 }

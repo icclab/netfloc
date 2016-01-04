@@ -221,8 +221,7 @@ public class OpenFlowUtil {
 	public static Flow createForwardFlow(IBridgeOperator bridge, IPortOperator inPort, IPortOperator outPort, String srcMac, String dstMac, int priority) {
 		
 		// Match src & dst MAC
-		// TODO do we need inport matching?
-		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId().replace(":", ""), 16) + ":" + outPort.getOfport());
+		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId().replace(":", ""), 16) + ":" + inPort.getOfport());
 		MatchBuilder matchBuilder = new MatchBuilder();
 		matchBuilder.setEthernetMatch(OpenFlowUtil.ethernetMatch(
 			new MacAddress(srcMac),

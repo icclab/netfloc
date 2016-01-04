@@ -43,6 +43,10 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
      */
 	@Override
     public Future<RpcResult<CreateServiceChainOutput>> createServiceChain(CreateServiceChainInput input) {
+        // get the host ports based on neutron port id from the graph.getHostPorts(...)
+        // create network path between *every* hostport ... graph.getNetworkPath(...)
+        // instantiate ServiceChain
+        // send ServiceChain to flowconnectionmanager
     	return null;
     }
 
