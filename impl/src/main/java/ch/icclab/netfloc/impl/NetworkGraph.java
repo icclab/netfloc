@@ -389,7 +389,7 @@ public class NetworkGraph implements
 		po.update(tp, tpa);
 
 		if (po instanceof IHostPort) {
-			this.checkNewConnections(po);
+			this.checkNewConnections((IHostPort)po);
 		}
 	}
 
