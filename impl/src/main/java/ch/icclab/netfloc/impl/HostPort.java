@@ -62,11 +62,11 @@ public class HostPort extends Port implements IHostPort {
 	}
 
 	public boolean canConnectTo(IHostPort dst) {
-		if (dst == null) {
+		if (dst == null || this.equals(dst)) {
 			return false;
 		}
 
-		if (this.equals(dst) || this.getOfport().equals(dst.getOfport())) {
+		if (this.getOfport() == null || dst.getOfport() == null || this.getOfport().equals(dst.getOfport())) {
 			return false;
 		}
 
