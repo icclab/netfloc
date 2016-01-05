@@ -50,6 +50,7 @@ public class ConfigActivator implements BundleActivator {
 		NetworkGraph graph = new NetworkGraph();
 		graph.registerNetworkPathListener(flowManager);
 		graph.registerBridgeListener(flowManager);
+		graph.registerBroadcastListener(flowManager);
 		NetflocManager manager = new NetflocManager(graph);
 
 		Dictionary<String, Object> floatingIPHandlerProperties = new Hashtable<>();
