@@ -6,6 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package ch.icclab.netfloc.impl;
+import ch.icclab.netfloc.iface.IFlowBroadcastPattern;
 import ch.icclab.netfloc.iface.IFlowPathPattern;
 import ch.icclab.netfloc.iface.IFlowBridgePattern;
 import ch.icclab.netfloc.iface.IFlowprogrammer;
@@ -40,6 +41,7 @@ public class ConfigActivator implements BundleActivator {
 
 		IFlowBridgePattern bridgePattern = new FlowBridgePattern();
 		IFlowPathPattern pathPattern = new FlowPathPattern();
+		IFlowBroadcastPattern broadcastPattern = new FlowBroadcastPattern();
 		IFlowprogrammer flowProgrammer = new Flowprogrammer(providerContext.getSALService(DataBroker.class));
 		FlowConnectionManager flowManager = new FlowConnectionManager(flowProgrammer);
 		flowManager.registerPathPattern(pathPattern);

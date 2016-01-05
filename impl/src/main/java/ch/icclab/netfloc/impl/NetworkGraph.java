@@ -23,6 +23,7 @@ import org.opendaylight.neutron.spi.NeutronNetwork;
 import org.opendaylight.neutron.spi.NeutronRouter;
 import org.opendaylight.neutron.spi.NeutronFloatingIP;
 import ch.icclab.netfloc.iface.IBridgeListener;
+import ch.icclab.netfloc.iface.IBroadcastListener;
 import ch.icclab.netfloc.iface.IBridgeIterator;
 import ch.icclab.netfloc.iface.IBridgeOperator;
 import ch.icclab.netfloc.iface.ILinkPort;
@@ -46,10 +47,12 @@ import ch.icclab.netfloc.iface.ofhandlers.ILinkHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Set;
 import java.util.List;
 import java.util.Map;
 import java.util.LinkedList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.lang.System;
 import java.lang.IllegalStateException;
 
@@ -62,6 +65,7 @@ public class NetworkGraph implements
 	List<INodeOperator> nodes = new LinkedList<INodeOperator>();
 	private List<INetworkPathListener> networkPathListeners = new LinkedList<INetworkPathListener>();
 	private List<IBridgeListener> bridgeListeners = new LinkedList<IBridgeListener>();
+	private List<IBroadcastListener> broadcastListeners = new LinkedList<IBroadcastListener>();
 
 	public void registerNetworkPathListener(INetworkPathListener npl) {
 		this.networkPathListeners.add(npl);
@@ -69,6 +73,10 @@ public class NetworkGraph implements
 
 	public void registerBridgeListener(IBridgeListener bl) {
 		this.bridgeListeners.add(bl);
+	}
+
+	public void registerBroadcastListener(IBroadcastListener bcl) {
+		this.broadcastListeners.add(bcl);
 	}
 
 	public void notifyNetworkPathListenersCreate(INetworkPath networkPath) {
@@ -92,6 +100,12 @@ public class NetworkGraph implements
 	public void notifyBridgeListenersCreate(IBridgeOperator bo) {
 		for (IBridgeListener bl : this.bridgeListeners) {
 			bl.bridgeCreated(bo);
+		}
+	}
+
+	public void notifyBroadcastListenersCreate(Set<INetworkPath> paths) {
+		for (IBroadcastListener bcl : this.broadcastListeners) {
+			bcl.broadcastCreated(paths);
 		}
 	}
 
@@ -278,11 +292,17 @@ public class NetworkGraph implements
 	}
 
 	private void checkNewConnections(IHostPort srcPort) {
+		Set<INetworkPath> broadcastPaths = new HashSet<INetworkPath>();
 		for (IHostPort port : this.getHostPorts()) {
 			if (srcPort.canConnectTo(port)) {
 				logger.info("new connection found, notifying NetworkPathListener from {} to {}", srcPort.getOfport(), port.getOfport());
-				this.notifyNetworkPathListenersCreate(this.getNetworkPath(srcPort, port));
+				INetworkPath networkPath = this.getNetworkPath(srcPort, port);
+				broadcastPaths.add(networkPath);
+				this.notifyNetworkPathListenersCreate(networkPath);
 			}
+		}
+		if (!broadcastPaths.isEmpty()) {
+			this.notifyBroadcastListenersCreate(broadcastPaths);
 		}
 	}
 

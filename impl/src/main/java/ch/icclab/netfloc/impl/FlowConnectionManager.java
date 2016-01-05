@@ -10,28 +10,35 @@ package ch.icclab.netfloc.impl;
 import ch.icclab.netfloc.iface.INetworkPath;
 import ch.icclab.netfloc.iface.IBridgeOperator;
 import ch.icclab.netfloc.iface.IBridgeListener;
+import ch.icclab.netfloc.iface.IBroadcastListener;
+import ch.icclab.netfloc.iface.IFlowBroadcastPattern;
 import ch.icclab.netfloc.iface.IFlowPathPattern;
 import ch.icclab.netfloc.iface.IFlowBridgePattern;
 import ch.icclab.netfloc.iface.INetworkPathListener;
 import ch.icclab.netfloc.iface.IFlowprogrammer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import com.google.common.util.concurrent.FutureCallback;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
 
-public class FlowConnectionManager implements INetworkPathListener, IBridgeListener {
+public class FlowConnectionManager implements IBroadcastListener, INetworkPathListener, IBridgeListener {
 	
 	// how do we decide which pattern to map to which path?
 	private List<INetworkPath> networkPaths = new LinkedList<INetworkPath>();
 	private List<IFlowPathPattern> flowPathPatterns = new LinkedList<IFlowPathPattern>();
+	private List<IFlowBroadcastPattern> broadcastPatterns = new LinkedList<IFlowBroadcastPattern>();
 
 	// how do we decide which pattern to map to which bridge?
 	// mb reference them with strings or sth (map) ???
 	private List<IBridgeOperator> bridges = new LinkedList<IBridgeOperator>();
 	private List<IFlowBridgePattern> flowBridgePatterns = new LinkedList<IFlowBridgePattern>();
 
+	private final Map<Set<INetworkPath>, IFlowBroadcastPattern> programBroadcastSuccess = new HashMap<Set<INetworkPath>, IFlowBroadcastPattern>();
+	private final Map<Set<INetworkPath>, IFlowBroadcastPattern> programBroadcastFailure = new HashMap<Set<INetworkPath>, IFlowBroadcastPattern>();
 	private final Map<INetworkPath, IFlowPathPattern> programPathSuccess = new HashMap<INetworkPath, IFlowPathPattern>();
 	private final Map<INetworkPath, IFlowPathPattern> programPathFailure = new HashMap<INetworkPath, IFlowPathPattern>();
 	private final Map<IBridgeOperator, IFlowBridgePattern> programBridgeSuccess = new HashMap<IBridgeOperator, IFlowBridgePattern>();
@@ -62,7 +69,87 @@ public class FlowConnectionManager implements INetworkPathListener, IBridgeListe
 		this.flowBridgePatterns.add(pattern);
 	}
 
-	// Callbacks
+	public void registerBroadcastPattern(IFlowBroadcastPattern pattern) {
+		this.broadcastPatterns.add(pattern);
+	}
+
+	@Override
+	public void broadcastCreated(final Set<INetworkPath> nps) {
+		final IFlowBroadcastPattern pattern = this.broadcastPatterns.get(0);
+
+
+
+	}
+
+	private void programBroadcastFlows(final Set<INetworkPath> nps, final IFlowBroadcastPattern pattern) {
+		for (Map.Entry<IBridgeOperator, List<Flow>> flowEntry : pattern.apply(nps).entrySet()) {
+			for (Flow flow : flowEntry.getValue()) {
+				flowprogrammer.programFlow(flow, flowEntry.getKey(), new FutureCallback<Void>() {
+					public void onSuccess(Void result) {
+						programBroadcastSuccess.put(nps, pattern);
+					}
+
+					public void onFailure(Throwable t) {
+						programBroadcastFailure.put(nps, pattern);
+					}
+				});
+			}
+		}
+	}
+
+	private void deleteBroadcastFlows(final Set<INetworkPath> nps, final IFlowBroadcastPattern pattern) {
+		for (Map.Entry<IBridgeOperator, List<Flow>> flowEntry : pattern.apply(nps).entrySet()) {
+			for (Flow flow : flowEntry.getValue()) {
+				flowprogrammer.deleteFlow(flow, flowEntry.getKey(), new FutureCallback<Void>() {
+					public void onSuccess(Void result) {
+						programBroadcastSuccess.remove(nps);
+					}
+
+					public void onFailure(Throwable t) {
+						// todo
+						//deleteBroadcastFailure.put(nps, pattern);
+					}
+				});
+			}
+		}
+	}
+
+	private void updateBroadcastFlows(final Set<INetworkPath> nps, final IFlowBroadcastPattern pattern) {
+		List<Set<INetworkPath>> toDelete = new LinkedList<Set<INetworkPath>>();
+		List<Set<INetworkPath>> toProgram = new LinkedList<Set<INetworkPath>>();
+		for (Map.Entry<Set<INetworkPath>, IFlowBroadcastPattern> successEntry : this.programBroadcastSuccess.entrySet()) {
+
+			if (!successEntry.getValue().equals(pattern)) {
+				continue;
+			}
+
+			boolean found = false;
+			for (INetworkPath newPath : nps) {
+				for (INetworkPath oldPath : successEntry.getKey()) {
+					if (oldPath.getBeginPort().equals(newPath.getEndPort())) {
+						toDelete.add(successEntry.getKey());
+						Set<INetworkPath> updatedSet = new HashSet<INetworkPath>(successEntry.getKey());
+						updatedSet.add(newPath);
+						toProgram.add(updatedSet);
+						found = true;
+						continue;
+					}
+				}
+				if (found) {
+					continue;
+				}
+			}
+		}
+
+		for (Set<INetworkPath> deleteSet : toDelete) {
+			this.deleteBroadcastFlows(deleteSet, pattern);
+		}
+
+		for (Set<INetworkPath> programSet : toProgram) {
+			this.programBroadcastFlows(programSet, pattern);
+		}
+	}
+
 	@Override
 	public void networkPathCreated(final INetworkPath np) {
 		// TODO: decide which pattern

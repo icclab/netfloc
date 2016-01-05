@@ -48,6 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 
 import java.util.List;
+import java.util.Set;
 import java.util.LinkedList;
 
 public class OpenFlowUtil {
@@ -155,7 +156,7 @@ public class OpenFlowUtil {
 		return flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build();
 	}
 
-	public static Flow createBroadcastFlow(IBridgeOperator bridge, IPortOperator inPort, List<IPortOperator> outPorts, String srcMac, int priority) {
+	public static Flow createBroadcastFlow(IBridgeOperator bridge, IPortOperator inPort, Set<IPortOperator> outPorts, String srcMac, int priority) {
 		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId().replace(":", ""), 16) + ":" + inPort.getOfport());
 		MatchBuilder matchBuilder = new MatchBuilder();
 
