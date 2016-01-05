@@ -77,8 +77,8 @@ public class FlowConnectionManager implements IBroadcastListener, INetworkPathLi
 	public void broadcastCreated(final Set<INetworkPath> nps) {
 		final IFlowBroadcastPattern pattern = this.broadcastPatterns.get(0);
 
-
-
+		this.programBroadcastFlows(nps, pattern);
+		this.updateBroadcastFlows(nps, pattern);
 	}
 
 	private void programBroadcastFlows(final Set<INetworkPath> nps, final IFlowBroadcastPattern pattern) {

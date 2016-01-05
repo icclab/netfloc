@@ -302,6 +302,7 @@ public class NetworkGraph implements
 			}
 		}
 		if (!broadcastPaths.isEmpty()) {
+			logger.info("notifying BroadcastListener");
 			this.notifyBroadcastListenersCreate(broadcastPaths);
 		}
 	}
