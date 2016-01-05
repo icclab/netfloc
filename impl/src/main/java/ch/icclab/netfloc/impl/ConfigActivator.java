@@ -44,6 +44,7 @@ public class ConfigActivator implements BundleActivator {
 		IFlowBroadcastPattern broadcastPattern = new FlowBroadcastPattern();
 		IFlowprogrammer flowProgrammer = new Flowprogrammer(providerContext.getSALService(DataBroker.class));
 		FlowConnectionManager flowManager = new FlowConnectionManager(flowProgrammer);
+		flowManager.registerBroadcastPattern(broadcastPattern);
 		flowManager.registerPathPattern(pathPattern);
 		flowManager.registerBridgePattern(bridgePattern);
 		NetworkGraph graph = new NetworkGraph();
