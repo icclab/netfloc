@@ -15,6 +15,7 @@ import ch.icclab.netfloc.iface.INetworkPath;
 import ch.icclab.netfloc.iface.IHostPort;
 
 import java.util.LinkedList;
+import java.util.Collections;
 
 public class NetworkPath implements INetworkPath {
 
@@ -38,6 +39,21 @@ public class NetworkPath implements INetworkPath {
 
 	public int getLength() {
 		return bridges.size();
+	}
+
+	public INetworkPath getReversePath() {
+		IHostPort newEndPort = this.getBeginPort();
+		IHostPort newBeginPort = this.getEndPort();
+
+		INetworkPath reversePath = new NetworkPath(newBeginPort, newEndPort);
+
+		List<IBridgeOperator> originBridges = this.getBridges();
+		List<IBridgeOperator> bridges = (LinkedList)((LinkedList)originBridges).clone();
+		Collections.reverse(bridges);
+
+		reversePath.addBridges(bridges);
+
+		return reversePath;
 	}
 
 	public IBridgeOperator getBegin() {

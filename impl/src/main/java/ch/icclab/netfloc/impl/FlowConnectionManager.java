@@ -129,7 +129,7 @@ public class FlowConnectionManager implements IBroadcastListener, INetworkPathLi
 					if (oldPath.getBeginPort().equals(newPath.getEndPort())) {
 						toDelete.add(successEntry.getKey());
 						Set<INetworkPath> updatedSet = new HashSet<INetworkPath>(successEntry.getKey());
-						updatedSet.add(newPath);
+						updatedSet.add(newPath.getReversePath());
 						toProgram.add(updatedSet);
 						found = true;
 						continue;

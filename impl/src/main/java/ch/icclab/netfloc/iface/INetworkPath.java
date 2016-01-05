@@ -22,6 +22,7 @@ public interface INetworkPath {
 	public IHostPort getEndPort();
 
 	public boolean isEqualConnection(INetworkPath np);
+	public INetworkPath getReversePath();
 
 	public void append(IBridgeOperator bridge);
 	public void addBridges(List<IBridgeOperator> bridges);
