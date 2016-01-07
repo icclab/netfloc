@@ -153,7 +153,7 @@ public class NetworkGraph implements
 	public List<ITraversableBridge> getAdjacentBridges(ITraversableBridge br) {
 		List<ITraversableBridge> adjacentBridges = new LinkedList<ITraversableBridge>();
 		for (IPortOperator port : br.getBridge().getPorts()) {
-			if (port instanceof ILinkPort) {
+			if (port instanceof ILinkPort && ((ILinkPort)port).getLinkedPort() != null) {
 				adjacentBridges.add(new TraversableBridge(((ILinkPort)port).getLinkedPort().getBridge(), br));
 			}
 		}
@@ -298,6 +298,7 @@ public class NetworkGraph implements
 				logger.info("new connection found, notifying NetworkPathListener from {} to {}", srcPort.getOfport(), port.getOfport());
 				INetworkPath networkPath = this.getNetworkPath(srcPort, port);
 				broadcastPaths.add(networkPath);
+				broadcastPaths.add(networkPath.getReversePath());
 				this.notifyNetworkPathListenersCreate(networkPath);
 			}
 		}
