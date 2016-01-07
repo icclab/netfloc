@@ -14,10 +14,15 @@ import ch.icclab.netfloc.iface.ILinkPort;
 import ch.icclab.netfloc.iface.INetworkPath;
 import ch.icclab.netfloc.iface.IHostPort;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.LinkedList;
 import java.util.Collections;
 
 public class NetworkPath implements INetworkPath {
+
+	static final Logger logger = LoggerFactory.getLogger(NetworkPath.class);
 
 	private List<IBridgeOperator> bridges = new LinkedList<IBridgeOperator>();
 	private IHostPort beginPort;
@@ -93,6 +98,7 @@ public class NetworkPath implements INetworkPath {
 	}
 
 	public ILinkPort getPreviousLink(IBridgeOperator bridge) {
+		logger.info("searching previous link for {} in {}", bridge.getDatapathId(), this.toString());
 		IBridgeOperator previousBridge = this.getPrevious(bridge);
 		List<ILinkPort> possiblyLinkedPorts = previousBridge.getLinkPorts(); 
 		for (ILinkPort port : bridge.getLinkPorts()) {
