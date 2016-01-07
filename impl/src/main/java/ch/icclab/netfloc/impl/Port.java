@@ -97,7 +97,7 @@ public class Port implements IPortOperator {
 		return tpid.getValue().equals(this.getOFTpIdValue());
 	}
 
-	private String getOFTpIdValue() {
+	public String getOFTpIdValue() {
 		return "openflow:" + Long.parseLong(this.bridge.getDatapathId().replace(":", ""), 16) + ":" + this.getOfport();
 	}
 }
