@@ -43,13 +43,11 @@ public class FlowPathPattern implements IFlowPathPattern {
 
 		// aggregation bridges
 		IBridgeOperator bridge = path.getNext(begin);
-		List<Flow> flowList = new LinkedList<Flow>();
 		while (bridge != null && !bridge.equals(end)) {
-			flowList.addAll(this.createBidirectionalFlows(bridge, path.getPreviousLink(bridge), path.getNextLink(bridge), path.getBeginPort().getMacAddress(), path.getEndPort().getMacAddress()));
+			flows.put(bridge, this.createBidirectionalFlows(bridge, path.getPreviousLink(bridge), path.getNextLink(bridge), path.getBeginPort().getMacAddress(), path.getEndPort().getMacAddress()));
 			bridge = path.getNext(bridge);
 		}
 
-		flows.put(bridge, flowList);
 		return flows;
 	}
 
@@ -59,11 +57,6 @@ public class FlowPathPattern implements IFlowPathPattern {
 		flows.add(OpenFlowUtil.createForwardFlow(bridge, srcPort, dstPort, srcMac, dstMac, FORWARDING_PRIORITY));
 		flows.add(OpenFlowUtil.createForwardFlow(bridge, dstPort, srcPort, dstMac, srcMac, FORWARDING_PRIORITY));
 		List<IPortOperator> bcOutSrc = new LinkedList<IPortOperator>();
-		// bcOutSrc.add(dstPort);
-		// flows.add(OpenFlowUtil.createBroadcastFlow(bridge, srcPort, bcOutSrc, srcMac, BROADCAST_PRIORITY));
-		// List<IPortOperator> bcOutDst = new LinkedList<IPortOperator>();
-		// bcOutDst.add(srcPort);
-		// flows.add(OpenFlowUtil.createBroadcastFlow(bridge, dstPort, bcOutDst, dstMac, BROADCAST_PRIORITY));
 
 		return flows;
 	}
