@@ -293,7 +293,6 @@ public class NetworkGraph implements
 
 	private void checkNewConnections(IHostPort srcPort) {
 		Set<INetworkPath> broadcastPaths = new HashSet<INetworkPath>();
-		Set<INetworkPath> broadcastPathUpdates = new HashSet<INetworkPath>();
 		for (IHostPort port : this.getHostPorts()) {
 			if (srcPort.canConnectTo(port)) {
 				logger.info("new connection found from {}/{} to {}/{}", srcPort.getBridge().getDatapathId(), srcPort.getOfport(), port.getBridge().getDatapathId(), port.getOfport());
@@ -303,14 +302,19 @@ public class NetworkGraph implements
 				}
 				logger.info("NetworkPath created: {}", networkPath.toString());
 				broadcastPaths.add(networkPath);
-				broadcastPathUpdates.add(networkPath.getReversePath());
 				this.notifyNetworkPathListenersCreate(networkPath);
 			}
 		}
 		if (!broadcastPaths.isEmpty()) {
 			logger.info("notifying BroadcastListener");
 			this.notifyBroadcastListenersCreate(broadcastPaths);
-			this.notifyBroadcastListenersCreate(broadcastPathUpdates);
+		}
+		if (broadcastPaths.size() == 1) {
+			for (INetworkPath path : broadcastPaths) {
+				Set<INetworkPath> paths = new HashSet<INetworkPath>();
+				paths.add(path.getReversePath());
+				this.notifyBroadcastListenersCreate(paths);
+			}
 		}
 	}
 
