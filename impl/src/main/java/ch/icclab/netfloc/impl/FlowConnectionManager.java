@@ -132,11 +132,11 @@ public class FlowConnectionManager implements IBroadcastListener, INetworkPathLi
 						updatedSet.add(newPath.getReversePath());
 						toProgram.add(updatedSet);
 						found = true;
-						continue;
+						break;
 					}
 				}
 				if (found) {
-					continue;
+					break;
 				}
 			}
 		}

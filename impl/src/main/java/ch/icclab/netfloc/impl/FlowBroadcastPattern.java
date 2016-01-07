@@ -63,6 +63,9 @@ public class FlowBroadcastPattern implements IFlowBroadcastPattern {
 		IPortOperator inPort = null;
 		// the in ports have to be the same for every path
 		for (INetworkPath path : paths) {
+			if (!path.getBridges().contains(bridge)) {
+				continue;
+			}
 			IPortOperator pathInPort = null;
 			if (bridge.equals(path.getBegin())) {
 				pathInPort = path.getBeginPort();
