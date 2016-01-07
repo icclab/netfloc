@@ -113,6 +113,9 @@ public class NetworkPath implements INetworkPath {
 		IBridgeOperator nextBridge = this.getNext(bridge);
 		List<ILinkPort> possiblyLinkedPorts = nextBridge.getLinkPorts(); 
 		for (ILinkPort port : bridge.getLinkPorts()) {
+			if (port.getLinkedPort() == null) {
+				continue;
+			}
 			for (ILinkPort otherPort : possiblyLinkedPorts) {
 				if (otherPort.getOFTpIdValue().equals(port.getLinkedPort().getOFTpIdValue())) {
 					return port;
