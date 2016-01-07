@@ -293,19 +293,24 @@ public class NetworkGraph implements
 
 	private void checkNewConnections(IHostPort srcPort) {
 		Set<INetworkPath> broadcastPaths = new HashSet<INetworkPath>();
+		Set<INetworkPath> broadcastPathUpdates = new HashSet<INetworkPath>();
 		for (IHostPort port : this.getHostPorts()) {
 			if (srcPort.canConnectTo(port)) {
 				logger.info("new connection found from {}/{} to {}/{}", srcPort.getBridge().getDatapathId(), srcPort.getOfport(), port.getBridge().getDatapathId(), port.getOfport());
 				INetworkPath networkPath = this.getNetworkPath(srcPort, port);
+				if (networkPath == null) {
+					throw new IllegalStateException("NetworkPath is not closed. The bridges on the connection are not linked.")
+				}
 				logger.info("NetworkPath created: {}", networkPath.toString());
 				broadcastPaths.add(networkPath);
-				broadcastPaths.add(networkPath.getReversePath());
+				broadcastPathUpdates.add(networkPath.getReversePath());
 				this.notifyNetworkPathListenersCreate(networkPath);
 			}
 		}
 		if (!broadcastPaths.isEmpty()) {
 			logger.info("notifying BroadcastListener");
 			this.notifyBroadcastListenersCreate(broadcastPaths);
+			this.notifyBroadcastListenersCreate(broadcastPathUpdates);
 		}
 	}
 
