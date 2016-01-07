@@ -298,7 +298,7 @@ public class NetworkGraph implements
 				logger.info("new connection found from {}/{} to {}/{}", srcPort.getBridge().getDatapathId(), srcPort.getOfport(), port.getBridge().getDatapathId(), port.getOfport());
 				INetworkPath networkPath = this.getNetworkPath(srcPort, port);
 				if (networkPath == null) {
-					throw new IllegalStateException("NetworkPath is not closed. The bridges on the connection are not linked.")
+					throw new IllegalStateException("NetworkPath is not closed. The bridges on the connection are not linked.");
 				}
 				logger.info("NetworkPath created: {}", networkPath.toString());
 				broadcastPaths.add(networkPath);
