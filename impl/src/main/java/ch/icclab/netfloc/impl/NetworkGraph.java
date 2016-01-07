@@ -295,8 +295,9 @@ public class NetworkGraph implements
 		Set<INetworkPath> broadcastPaths = new HashSet<INetworkPath>();
 		for (IHostPort port : this.getHostPorts()) {
 			if (srcPort.canConnectTo(port)) {
-				logger.info("new connection found, notifying NetworkPathListener from {} to {}", srcPort.getOfport(), port.getOfport());
+				logger.info("new connection found from {}/{} to {}/{}", srcPort.getBridge().getDatapathId(), srcPort.getOfport(), port.getBridge().getDatapathId(), port.getOfport());
 				INetworkPath networkPath = this.getNetworkPath(srcPort, port);
+				logger.info("NetworkPath created: {}", networkPath.toString());
 				broadcastPaths.add(networkPath);
 				broadcastPaths.add(networkPath.getReversePath());
 				this.notifyNetworkPathListenersCreate(networkPath);

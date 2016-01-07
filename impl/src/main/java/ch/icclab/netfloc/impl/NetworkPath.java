@@ -179,4 +179,24 @@ public class NetworkPath implements INetworkPath {
 			this.getEndPort().hashCode() +
 			this.getBridges().hashCode());
 	}
+
+	public String toString() {
+		String str = "";
+		for (IBridgeOperator bridge : this.getBridges()) {
+			String inPort = ""; String outPort = "";
+			if (bridge.equals(this.getBegin())) {
+				inPort = this.getBeginPort().getOfport().toString();
+			} else {
+				inPort = this.getPreviousLink(bridge).getOfport().toString();
+			}
+			if (bridge.equals(this.getEnd())) {
+				outPort = this.getEndPort().getOfport().toString();
+			} else {
+				outPort = this.getNextLink(bridge).getOfport().toString();
+			}
+
+			str += "=[" + inPort + "]->(" + bridge.getDatapathId() + ")->[" + outPort + "]=";
+		}
+		return str;
+	}
 }
