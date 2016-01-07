@@ -117,6 +117,7 @@ public class NetworkPath implements INetworkPath {
 				return port;
 			}
 		}
+		logger.info("compared link ports {} and {}", possiblyLinkedPorts, bridge.getLinkPorts());
 		return null;
 	}
 
