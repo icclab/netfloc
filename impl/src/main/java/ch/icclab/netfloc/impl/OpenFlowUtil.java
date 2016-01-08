@@ -9,6 +9,7 @@ package ch.icclab.netfloc.impl;
 
 import ch.icclab.netfloc.iface.*;
 
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
@@ -73,13 +74,14 @@ public class OpenFlowUtil {
 		List<Action> actionList = new LinkedList<Action>();
 
 		// Controller Action
-		ControllerActionBuilder toCtrl = new ControllerActionBuilder();
-
-		toCtrl.setMaxLength(65535);
-		ab.setAction(new ControllerActionCaseBuilder().setControllerAction(toCtrl.build()).build());
-		ab.setOrder(0);
-		ab.setKey(new ActionKey(0));
-		actionList.add(ab.build());
+		OutputActionBuilder output = new OutputActionBuilder();
+        output.setMaxLength(0xffff);
+        Uri value = new Uri("CONTROLLER");
+        output.setOutputNodeConnector(value);
+        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+        ab.setOrder(0);
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
 
 		// Apply Actions Instruction
 		aab.setAction(actionList);
@@ -122,12 +124,13 @@ public class OpenFlowUtil {
 		List<Action> actionList = new LinkedList<Action>();
 
 		// Normal Action
-		HwPathActionBuilder normal = new HwPathActionBuilder();
-
-		ab.setAction(new HwPathActionCaseBuilder().setHwPathAction(normal.build()).build());
-		ab.setOrder(0);
-		ab.setKey(new ActionKey(0));
-		actionList.add(ab.build());
+        OutputActionBuilder output = new OutputActionBuilder();
+        Uri value = new Uri("NORMAL");
+        output.setOutputNodeConnector(value);
+        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+        ab.setOrder(0);
+        ab.setKey(new ActionKey(0));
+        actionList.add(ab.build());
 
 		// Apply Actions Instruction
 		aab.setAction(actionList);

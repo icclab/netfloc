@@ -26,7 +26,7 @@ import java.util.HashMap;
 
 public class FlowBroadcastPattern implements IFlowBroadcastPattern {
 
-	static final Logger logger = LoggerFactory.getLogger(NetworkGraph.class);
+	static final Logger logger = LoggerFactory.getLogger(FlowBroadcastPattern.class);
 	// TODO... this should be managed by the flow connection manager
 	private static final int BROADCAST_PRIORITY = 10;
 

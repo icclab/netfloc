@@ -11,4 +11,5 @@ import java.util.Set;
 
 public interface IBroadcastListener {
 	public void broadcastCreated(Set<INetworkPath> np);
+	public void broadcastDeleted(Set<INetworkPath> np);
 }
