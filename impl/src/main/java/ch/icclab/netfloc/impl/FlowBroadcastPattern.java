@@ -14,6 +14,9 @@ import ch.icclab.netfloc.iface.IPortOperator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +26,7 @@ import java.util.HashMap;
 
 public class FlowBroadcastPattern implements IFlowBroadcastPattern {
 
+	static final Logger logger = LoggerFactory.getLogger(FlowBroadcastPattern.class);
 	// TODO... this should be managed by the flow connection manager
 	private static final int BROADCAST_PRIORITY = 10;
 
@@ -63,6 +67,9 @@ public class FlowBroadcastPattern implements IFlowBroadcastPattern {
 		IPortOperator inPort = null;
 		// the in ports have to be the same for every path
 		for (INetworkPath path : paths) {
+			if (!path.getBridges().contains(bridge)) {
+				continue;
+			}
 			IPortOperator pathInPort = null;
 			if (bridge.equals(path.getBegin())) {
 				pathInPort = path.getBeginPort();
@@ -82,10 +89,14 @@ public class FlowBroadcastPattern implements IFlowBroadcastPattern {
 
 	private Set<IPortOperator> getDstPorts(IBridgeOperator bridge, Set<INetworkPath> paths) {
 		Set<IPortOperator> dstPorts = new HashSet<IPortOperator>();
+		logger.info("finding destination ports for {}", bridge.getDatapathId());
 		for (INetworkPath path : paths) {
+			if (!path.getBridges().contains(bridge)) {
+				continue;
+			}
 			IBridgeOperator begin = path.getBegin();
 			IBridgeOperator end = path.getEnd();
-			
+			logger.info("finding destination port for {}", path);
 			if (bridge.equals(end)) {
 				dstPorts.add(path.getEndPort());
 			} else {

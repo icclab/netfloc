@@ -22,4 +22,5 @@ public interface IPortOperator {
 	public void update(TerminationPoint tp, OvsdbTerminationPointAugmentation changes);
 	public java.lang.Long getOfport();
 	public void relateSouthbound(IBridgeOperator bridge, TerminationPoint tp, OvsdbTerminationPointAugmentation ovsdbTerminationPointAugmentation);
+	public String getOFTpIdValue();
 }

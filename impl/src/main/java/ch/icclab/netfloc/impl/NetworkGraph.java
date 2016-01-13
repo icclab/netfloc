@@ -110,6 +110,12 @@ public class NetworkGraph implements
 		}
 	}
 
+	public void notifyBroadcastListenersDelete(Set<INetworkPath> paths) {
+		for (IBroadcastListener bcl : this.broadcastListeners) {
+			bcl.broadcastDeleted(paths);
+		}
+	}
+
 	public void traverse(IBridgeIterator bridgeIterator) {
 		List<ITraversableBridge> bridgesToVisit = new LinkedList<ITraversableBridge>();
 		bridgesToVisit.add(new TraversableBridge(this.getBridges().get(0)));
@@ -154,7 +160,7 @@ public class NetworkGraph implements
 	public List<ITraversableBridge> getAdjacentBridges(ITraversableBridge br) {
 		List<ITraversableBridge> adjacentBridges = new LinkedList<ITraversableBridge>();
 		for (IPortOperator port : br.getBridge().getPorts()) {
-			if (port instanceof ILinkPort) {
+			if (port instanceof ILinkPort && ((ILinkPort)port).getLinkedPort() != null) {
 				adjacentBridges.add(new TraversableBridge(((ILinkPort)port).getLinkedPort().getBridge(), br));
 			}
 		}
@@ -292,19 +298,41 @@ public class NetworkGraph implements
 		return hostPorts;
 	}
 
-	private void checkNewConnections(IHostPort srcPort) {
-		Set<INetworkPath> broadcastPaths = new HashSet<INetworkPath>();
+	private Set<INetworkPath> checkNewConnections(IHostPort srcPort) {
+		Set<INetworkPath> paths = new HashSet<INetworkPath>();
 		for (IHostPort port : this.getHostPorts()) {
 			if (srcPort.canConnectTo(port)) {
-				logger.info("new connection found, notifying NetworkPathListener from {} to {}", srcPort.getOfport(), port.getOfport());
 				INetworkPath networkPath = this.getNetworkPath(srcPort, port);
-				broadcastPaths.add(networkPath);
-				this.notifyNetworkPathListenersCreate(networkPath);
+				if (networkPath == null) {
+					throw new IllegalStateException("NetworkPath is not closed. The bridges on the connection are not linked.");
+				}
+				paths.add(networkPath);
 			}
 		}
-		if (!broadcastPaths.isEmpty()) {
-			logger.info("notifying BroadcastListener");
-			this.notifyBroadcastListenersCreate(broadcastPaths);
+		return paths;
+	}
+
+	private void notifyNewConnections(Set<INetworkPath> paths) {
+		logger.info("notifying for new network paths.");
+		for (INetworkPath path : paths) {
+			logger.info("NetworkPath created: {}", path.toString());
+			this.notifyNetworkPathListenersCreate(path);
+		}
+		if (!paths.isEmpty()) {
+			logger.info("notifying BroadcastListener for deletion.");
+			this.notifyBroadcastListenersDelete(paths);
+			this.notifyBroadcastListenersCreate(paths);
+			for (INetworkPath path : paths) {
+				Set<INetworkPath> bcUpdatePaths = checkNewConnections(path.getEndPort());
+				this.notifyBroadcastListenersCreate(bcUpdatePaths);
+			}
+		}
+		if (paths.size() == 1) {
+			for (INetworkPath path : paths) {
+				Set<INetworkPath> rpaths = new HashSet<INetworkPath>();
+				rpaths.add(path.getReversePath());
+				this.notifyBroadcastListenersCreate(rpaths);
+			}
 		}
 	}
 
@@ -388,7 +416,8 @@ public class NetworkGraph implements
 		logger.info("is a neutron port");
 		IHostPort port = new HostPort(bo, tp, tpa, neutronPort);
 		bo.addPort(port);
-		this.checkNewConnections(port);
+		Set<INetworkPath> paths = this.checkNewConnections(port);
+		this.notifyNewConnections(paths);
 	}
 
 	public void removePort(Node node, OvsdbTerminationPointAugmentation tpa) {
@@ -411,7 +440,8 @@ public class NetworkGraph implements
 		po.update(tp, tpa);
 
 		if (po instanceof IHostPort) {
-			this.checkNewConnections((IHostPort)po);
+			Set<INetworkPath> paths = this.checkNewConnections((IHostPort)po);
+			this.notifyNewConnections(paths);
 		}
 	}
 

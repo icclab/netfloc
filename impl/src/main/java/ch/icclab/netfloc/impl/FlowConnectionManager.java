@@ -96,7 +96,13 @@ public class FlowConnectionManager implements IBroadcastListener, INetworkPathLi
 		final IFlowBroadcastPattern pattern = this.broadcastPatterns.get(0);
 
 		this.programBroadcastFlows(nps, pattern);
-		this.updateBroadcastFlows(nps, pattern);
+	}
+
+	@Override
+	public void broadcastDeleted(final Set<INetworkPath> nps) {
+		final IFlowBroadcastPattern pattern = this.broadcastPatterns.get(0);
+
+		this.checkBroadcastFlowsDelete(nps, pattern);
 	}
 
 
@@ -133,9 +139,8 @@ public class FlowConnectionManager implements IBroadcastListener, INetworkPathLi
 		}
 	}
 
-	private void updateBroadcastFlows(final Set<INetworkPath> nps, final IFlowBroadcastPattern pattern) {
+	private void checkBroadcastFlowsDelete(final Set<INetworkPath> nps, final IFlowBroadcastPattern pattern) {
 		List<Set<INetworkPath>> toDelete = new LinkedList<Set<INetworkPath>>();
-		List<Set<INetworkPath>> toProgram = new LinkedList<Set<INetworkPath>>();
 		for (Map.Entry<Set<INetworkPath>, IFlowBroadcastPattern> successEntry : this.programBroadcastSuccess.entrySet()) {
 
 			if (!successEntry.getValue().equals(pattern)) {
@@ -147,25 +152,18 @@ public class FlowConnectionManager implements IBroadcastListener, INetworkPathLi
 				for (INetworkPath oldPath : successEntry.getKey()) {
 					if (oldPath.getBeginPort().equals(newPath.getEndPort())) {
 						toDelete.add(successEntry.getKey());
-						Set<INetworkPath> updatedSet = new HashSet<INetworkPath>(successEntry.getKey());
-						updatedSet.add(newPath.getReversePath());
-						toProgram.add(updatedSet);
 						found = true;
-						continue;
+						break;
 					}
 				}
 				if (found) {
-					continue;
+					break;
 				}
 			}
 		}
 
 		for (Set<INetworkPath> deleteSet : toDelete) {
 			this.deleteBroadcastFlows(deleteSet, pattern);
-		}
-
-		for (Set<INetworkPath> programSet : toProgram) {
-			this.programBroadcastFlows(programSet, pattern);
 		}
 	}
 

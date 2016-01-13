@@ -14,10 +14,15 @@ import ch.icclab.netfloc.iface.ILinkPort;
 import ch.icclab.netfloc.iface.INetworkPath;
 import ch.icclab.netfloc.iface.IHostPort;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.LinkedList;
 import java.util.Collections;
 
 public class NetworkPath implements INetworkPath {
+
+	static final Logger logger = LoggerFactory.getLogger(NetworkPath.class);
 
 	private List<IBridgeOperator> bridges = new LinkedList<IBridgeOperator>();
 	private IHostPort beginPort;
@@ -93,6 +98,7 @@ public class NetworkPath implements INetworkPath {
 	}
 
 	public ILinkPort getPreviousLink(IBridgeOperator bridge) {
+		logger.info("searching previous link for {} between {} and {}", bridge.getDatapathId(), this.getBegin().getDatapathId(), this.getEnd().getDatapathId());
 		IBridgeOperator previousBridge = this.getPrevious(bridge);
 		List<ILinkPort> possiblyLinkedPorts = previousBridge.getLinkPorts(); 
 		for (ILinkPort port : bridge.getLinkPorts()) {
@@ -107,10 +113,16 @@ public class NetworkPath implements INetworkPath {
 		IBridgeOperator nextBridge = this.getNext(bridge);
 		List<ILinkPort> possiblyLinkedPorts = nextBridge.getLinkPorts(); 
 		for (ILinkPort port : bridge.getLinkPorts()) {
-			if (possiblyLinkedPorts.contains(port.getLinkedPort())) {
-				return port;
+			if (port.getLinkedPort() == null) {
+				continue;
+			}
+			for (ILinkPort otherPort : possiblyLinkedPorts) {
+				if (otherPort.getOFTpIdValue().equals(port.getLinkedPort().getOFTpIdValue())) {
+					return port;
+				}
 			}
 		}
+		logger.info("compared link ports {} and {}", possiblyLinkedPorts, bridge.getLinkPorts());
 		return null;
 	}
 
@@ -178,5 +190,25 @@ public class NetworkPath implements INetworkPath {
 		return 13 * (this.getBeginPort().hashCode() +
 			this.getEndPort().hashCode() +
 			this.getBridges().hashCode());
+	}
+
+	public String toString() {
+		String str = "";
+		for (IBridgeOperator bridge : this.getBridges()) {
+			String inPort = ""; String outPort = "";
+			if (bridge.equals(this.getBegin())) {
+				inPort = this.getBeginPort().getOfport().toString();
+			} else {
+				inPort = this.getPreviousLink(bridge).getOfport().toString();
+			}
+			if (bridge.equals(this.getEnd())) {
+				outPort = this.getEndPort().getOfport().toString();
+			} else {
+				outPort = this.getNextLink(bridge).getOfport().toString();
+			}
+
+			str += "=[" + inPort + "]->(" + bridge.getDatapathId() + ")->[" + outPort + "]=";
+		}
+		return str;
 	}
 }
