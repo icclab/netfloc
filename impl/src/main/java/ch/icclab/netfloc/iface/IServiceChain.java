@@ -20,4 +20,6 @@ public interface IServiceChain {
 	public void append(INetworkPath np);
 	public void addPaths(List<INetworkPath> nps);
 	public boolean isEqualConnectionChain(IServiceChain sc);
+	public IHostPort getNext(IHostPort np);
+	public IHostPort getLast();
 }

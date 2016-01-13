@@ -35,6 +35,7 @@ import ch.icclab.netfloc.iface.IPortOperator;
 import ch.icclab.netfloc.iface.IHostPort;
 import ch.icclab.netfloc.iface.ITraversableBridge;
 import ch.icclab.netfloc.iface.INetworkPathListener;
+import ch.icclab.netfloc.iface.IServiceChainListener;
 import ch.icclab.netfloc.iface.nbhandlers.INeutronPortHandler;
 import ch.icclab.netfloc.iface.nbhandlers.INeutronSubnetHandler;
 import ch.icclab.netfloc.iface.nbhandlers.INeutronNetworkHandler;
@@ -283,7 +284,7 @@ public class NetworkGraph implements
 		return iterator.getResult();
 	}
 
-	private List<IHostPort> getHostPorts() {
+	public List<IHostPort> getHostPorts() {
 		List<IHostPort> hostPorts = new LinkedList<IHostPort>();
 		for (IBridgeOperator bridge : this.getBridges()) {
 			hostPorts.addAll(bridge.getHostPorts());
