@@ -60,7 +60,7 @@ public class OpenFlowUtil {
 
 		MatchBuilder matchBuilder = new MatchBuilder();
 
-		matchBuilder.setEthernetMatch(OpenFlowUtil.ethernetMatch(
+		matchBuilder.setEthernetMatch(ethernetMatch(
 			null,
 			null,
 			LLDP_LONG));
@@ -70,18 +70,9 @@ public class OpenFlowUtil {
 		List<Instruction> instructions = new LinkedList<Instruction>();
 		InstructionBuilder ib = new InstructionBuilder();
 		ApplyActionsBuilder aab = new ApplyActionsBuilder();
-		ActionBuilder ab = new ActionBuilder();
 		List<Action> actionList = new LinkedList<Action>();
-
-		// Controller Action
-		OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(0xffff);
-        Uri value = new Uri("CONTROLLER");
-        output.setOutputNodeConnector(value);
-        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.setOrder(0);
-        ab.setKey(new ActionKey(0));
-        actionList.add(ab.build());
+		
+        actionList.add(createControllerAction());
 
 		// Apply Actions Instruction
 		aab.setAction(actionList);
@@ -94,7 +85,6 @@ public class OpenFlowUtil {
 		FlowBuilder flowBuilder = new FlowBuilder();
 		flowBuilder.setMatch(matchBuilder.build());
 
-		// TODO generate flow id
 		String flowId = "LLDP_" + bridge.getDatapathId();
 		flowBuilder.setId(new FlowId(flowId));
 		FlowKey key = new FlowKey(new FlowId(flowId));
@@ -110,6 +100,18 @@ public class OpenFlowUtil {
 		return flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build();
 	}
 
+	private static Action createControllerAction() {
+		ActionBuilder ab = new ActionBuilder();
+		OutputActionBuilder output = new OutputActionBuilder();
+        output.setMaxLength(0xffff);
+        Uri value = new Uri("CONTROLLER");
+        output.setOutputNodeConnector(value);
+        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+        ab.setOrder(0);
+        ab.setKey(new ActionKey(0));
+		return ab.build();
+	}
+
 	public static Flow createNormalFlow(IBridgeOperator bridge, int priority) {
 
 		// empty match
@@ -120,17 +122,9 @@ public class OpenFlowUtil {
 		List<Instruction> instructions = new LinkedList<Instruction>();
 		InstructionBuilder ib = new InstructionBuilder();
 		ApplyActionsBuilder aab = new ApplyActionsBuilder();
-		ActionBuilder ab = new ActionBuilder();
 		List<Action> actionList = new LinkedList<Action>();
 
-		// Normal Action
-        OutputActionBuilder output = new OutputActionBuilder();
-        Uri value = new Uri("NORMAL");
-        output.setOutputNodeConnector(value);
-        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.setOrder(0);
-        ab.setKey(new ActionKey(0));
-        actionList.add(ab.build());
+        actionList.add(createNormalAction());
 
 		// Apply Actions Instruction
 		aab.setAction(actionList);
@@ -143,7 +137,6 @@ public class OpenFlowUtil {
 		FlowBuilder flowBuilder = new FlowBuilder();
 		flowBuilder.setMatch(matchBuilder.build());
 
-		// TODO generate flow id
 		String flowId = "NORMAL_" + bridge.getDatapathId();
 		flowBuilder.setId(new FlowId(flowId));
 		FlowKey key = new FlowKey(new FlowId(flowId));
@@ -157,6 +150,17 @@ public class OpenFlowUtil {
 		flowBuilder.setIdleTimeout(0);
 
 		return flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build();
+	}
+
+	private static Action createNormalAction() {
+		ActionBuilder ab = new ActionBuilder();
+		OutputActionBuilder output = new OutputActionBuilder();
+        Uri value = new Uri("NORMAL");
+        output.setOutputNodeConnector(value);
+        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+        ab.setOrder(0);
+        ab.setKey(new ActionKey(0));
+        return ab.build();
 	}
 
 	public static Flow createBroadcastFlow(IBridgeOperator bridge, IPortOperator inPort, Set<IPortOperator> outPorts, String srcMac, int priority) {
@@ -206,7 +210,6 @@ public class OpenFlowUtil {
 		FlowBuilder flowBuilder = new FlowBuilder();
 		flowBuilder.setMatch(matchBuilder.build());
 
-		// TODO generate flow id
 		String flowId = "Broadcast_" + inPort + "_" + srcMac + "_" + bridge.getDatapathId();
 		flowBuilder.setId(new FlowId(flowId));
 		FlowKey key = new FlowKey(new FlowId(flowId));
@@ -264,7 +267,6 @@ public class OpenFlowUtil {
 		FlowBuilder flowBuilder = new FlowBuilder();
 		flowBuilder.setMatch(matchBuilder.build());
 
-		// TODO generate flow id
 		String flowId = "NetworkPath_" + srcMac + "_" + dstMac + "_" + bridge.getDatapathId();
 		flowBuilder.setId(new FlowId(flowId));
 		FlowKey key = new FlowKey(new FlowId(flowId));
