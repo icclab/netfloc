@@ -492,6 +492,10 @@ public class NetworkGraph implements
 		ILinkPort portSrc = this.getLinkPort(tpIdSrc);
 		ILinkPort portDst = this.getLinkPort(tpIdDst);
 
+		if (portSrc == null || portDst == null) {
+			logger.error("Link is null for <{}>, <{}>", portSrc, portDst);
+		}
+
 		portSrc.setLinkedPort(portDst);
 
 		// todo: update network paths?
@@ -507,6 +511,10 @@ public class NetworkGraph implements
 
 		ILinkPort portSrc = this.getLinkPort(tpIdSrc);
 		ILinkPort portDst = this.getLinkPort(tpIdDst);
+
+		if (portSrc == null || portDst == null) {
+			logger.error("Link is null for <{}>, <{}>", portSrc, portDst);
+		}
 
 		// old paths
 		List<INetworkPath> oldPaths = this.getConnectableNetworkPaths(this.getHostPorts());
