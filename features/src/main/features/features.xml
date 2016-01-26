@@ -19,6 +19,9 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <!--<repository>mvn:org.opendaylight.ovsdb/ovsdb-features/1.1.0-SNAPSHOT/xml/features</repository>-->
   <feature name='odl-netfloc-api' version='${project.version}' description='OpenDaylight :: netfloc :: api'>
     <feature version='${yangtools.feature.version}'>odl-yangtools-models</feature>
+    <!--<feature version='${yangtools.feature.version}'>odl-yangtools-common</feature>
+    <feature version='${yangtools.version}'>odl-yangtools-binding</feature>
+    <feature version="${mdsal.version}">odl-restconf</feature>-->
     <bundle>mvn:ch.icclab.netfloc/netfloc-api/${project.version}</bundle>
   </feature>
   <feature name='odl-netfloc' version='${project.version}' description='OpenDaylight :: netfloc'>

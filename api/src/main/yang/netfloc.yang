@@ -17,6 +17,14 @@ module netfloc {
     	}
     }
 
+    /* Example: For leaf-list definition
+    * leaf-list foo {
+    *   type uint8;
+    * }
+    * the following is a valid JSON-encoded instance:
+    * "foo": [123, 0]   
+    */
+
     rpc create-service-chain {
     	description "Create a Service Chain";
 

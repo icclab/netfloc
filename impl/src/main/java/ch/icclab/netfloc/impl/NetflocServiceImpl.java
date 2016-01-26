@@ -25,9 +25,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.List;
 import java.util.LinkedList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class NetflocServiceImpl implements NetflocService, AutoCloseable {
-
+    private static final Logger LOG = LoggerFactory.getLogger(OvsdbDataChangeListener.class);
 	private final ExecutorService executor;
     private List<IServiceChainListener> serviceChainListeners = new LinkedList<IServiceChainListener>();
     private NetworkGraph graph = new NetworkGraph();
@@ -35,6 +38,7 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
     private INetworkPath networkPath;
     private List<INetworkPath> chainNetworkPaths = new LinkedList<INetworkPath>();
     private int chainID = 0;
+    private Future<RpcResult<CreateServiceChainOutput>> result;
 
 
 	public NetflocServiceImpl() {
@@ -48,13 +52,20 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
     public void registerServiceChainListener(IServiceChainListener nsl) {
         this.serviceChainListeners.add(nsl);
     }
-	/**
-     * Create a Service Chain
-     *
-     */
+	/*
+    * RestConf RPC call implemented from the NetflocService interface. Creates a service chain.
+    * In Postman: to get the current SFC config: 
+    * GET http://localhost:8181/restconf/config/netfloc:netfloc [not yet implemented]
+    * To create new service chain:
+    * POST http://localhost:8181/restconf/operations/netfloc:create-service-chain
+    * { "input" : { "chainList" : ["2a6f9ea7-dd2f-4ce1-8030-d999856fb558","5ec846bb-faf3-4f4e-83c1-fe253ff75ccb", ...] } 
+    * { "output: {"chainID"} }
+    */
+
 	@Override
     public Future<RpcResult<CreateServiceChainOutput>> createServiceChain(CreateServiceChainInput input) {
         // get the host ports based on neutron port id from the graph.getHostPorts(...)
+        LOG.info("createServiceChain: {}", input);
         for (String portID : input.getNeutronPorts()) {
             for (IHostPort port : graph.getHostPorts()) {
                 if (portID == port.getNeutronUuid()) {
@@ -75,10 +86,13 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
         // instantiate ServiceChain
         chainID = chainID+1;
         ServiceChain chainInstance = new ServiceChain(chainNetworkPaths, chainID);
+        //result = new ServiceChain(chainNetworkPaths, chainID);
+        LOG.info("chainID: {}", chainID);
 
         for (IServiceChainListener scl : this.serviceChainListeners) {
             scl.serviceChainCreated(chainInstance);
         }
+        //return chainID;
         return null;
     }    
 
