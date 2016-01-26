@@ -524,13 +524,17 @@ public class NetworkGraph implements
 
 					if (!oldPath.equals(newPath)) {
 						// link is broken but connection can be recovered
+						portSrc.setLinkedPort(portDst);
 						this.notifyNetworkPathListenersUpdate(oldPath, newPath);
+						portSrc.removeLinkedPort(portDst);
 					}
 				}
 			}
 			if (!found) {
 				// this is a broken link and connection cannot be recovered
+				portSrc.setLinkedPort(portDst);
 				this.notifyNetworkPathListenersDelete(oldPath);
+				portSrc.removeLinkedPort(portDst);
 			}
 		}
 	}
