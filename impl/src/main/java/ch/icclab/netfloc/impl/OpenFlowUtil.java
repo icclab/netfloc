@@ -47,12 +47,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Set;
 import java.util.LinkedList;
 
 public class OpenFlowUtil {
+
+	static final Logger logger = LoggerFactory.getLogger(OpenFlowUtil.class);
 
 	public static final long LLDP_LONG = (long) 0x88CC;
 
@@ -226,6 +230,8 @@ public class OpenFlowUtil {
 	}
 
 	public static Flow createForwardFlow(IBridgeOperator bridge, IPortOperator inPort, IPortOperator outPort, String srcMac, String dstMac, int priority) {
+
+		logger.info("create forward flow: in {}, out {}, src {}, dst {}", inPort, outPort, srcMac, dstMac);
 		
 		// Match src & dst MAC
 		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId().replace(":", ""), 16) + ":" + inPort.getOfport());

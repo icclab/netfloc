@@ -138,6 +138,7 @@ public class NetflocManager implements
 
 	@Override
 	public void handlePortDelete(Node node, OvsdbTerminationPointAugmentation tpa) {
+        logger.info("delete port {}", tpa);
 		graph.removePort(node, tpa);
 	}
 	
@@ -153,6 +154,7 @@ public class NetflocManager implements
 
 	@Override
 	public void handleLinkDelete(Link link) {
+        logger.info("delete link {}", link);
 		graph.deleteLink(link);
 	}
 

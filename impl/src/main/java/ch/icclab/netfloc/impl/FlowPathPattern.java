@@ -13,6 +13,8 @@ import ch.icclab.netfloc.iface.INetworkPath;
 import ch.icclab.netfloc.iface.IPortOperator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -20,6 +22,8 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class FlowPathPattern implements IFlowPathPattern {
+
+	static final Logger logger = LoggerFactory.getLogger(FlowPathPattern.class);
 
 	// TODO... this should be managed by the flow connection manager
 	private static final int FORWARDING_PRIORITY = 10;
@@ -38,12 +42,15 @@ public class FlowPathPattern implements IFlowPathPattern {
 			return flows;
 		}
 
+		logger.info("adding begin bridge flow");
 		flows.put(begin, this.createBidirectionalFlows(begin, path.getBeginPort(), path.getNextLink(begin), path.getBeginPort().getMacAddress(), path.getEndPort().getMacAddress()));
+		logger.info("adding end bridge flow");
 		flows.put(end, this.createBidirectionalFlows(end, path.getPreviousLink(end), path.getEndPort(), path.getBeginPort().getMacAddress(), path.getEndPort().getMacAddress()));
 
 		// aggregation bridges
 		IBridgeOperator bridge = path.getNext(begin);
 		while (bridge != null && !bridge.equals(end)) {
+			logger.info("adding aggregation bridge flow");
 			flows.put(bridge, this.createBidirectionalFlows(bridge, path.getPreviousLink(bridge), path.getNextLink(bridge), path.getBeginPort().getMacAddress(), path.getEndPort().getMacAddress()));
 			bridge = path.getNext(bridge);
 		}
@@ -56,7 +63,6 @@ public class FlowPathPattern implements IFlowPathPattern {
 
 		flows.add(OpenFlowUtil.createForwardFlow(bridge, srcPort, dstPort, srcMac, dstMac, FORWARDING_PRIORITY));
 		flows.add(OpenFlowUtil.createForwardFlow(bridge, dstPort, srcPort, dstMac, srcMac, FORWARDING_PRIORITY));
-		List<IPortOperator> bcOutSrc = new LinkedList<IPortOperator>();
 
 		return flows;
 	}
