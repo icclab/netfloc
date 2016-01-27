@@ -14,17 +14,23 @@ import ch.icclab.netfloc.iface.ILinkPort;
 import ch.icclab.netfloc.iface.INetworkPath;
 import ch.icclab.netfloc.iface.IServiceChain;
 import ch.icclab.netfloc.iface.IHostPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 
 public class ServiceChain implements IServiceChain {
 
 	private List<INetworkPath> paths;
+	private List<IHostPort> ports;
 	private int chainId;
+	private static final Logger LOG = LoggerFactory.getLogger(ServiceChain.class);
 
 	public ServiceChain(List<INetworkPath> paths, int chainId) {
 		this.paths = paths;
 		this.chainId = chainId;
+		LOG.info("ServiceChain chainID: {}", chainId);
+		LOG.info("ServiceChain paths: {}", paths);
 	}
 
 	public int getChainId() {
@@ -65,6 +71,18 @@ public class ServiceChain implements IServiceChain {
 
 	public boolean isEqualConnectionChain(IServiceChain sc) {
 		return sc.getChainId() == this.getChainId();
+	}
+
+	public IHostPort getNext(IHostPort np) {
+		int index = ports.lastIndexOf(np);
+		if (index < ports.size() - 1) {
+			return ports.get(index + 1);
+		}
+		return null;
+	}
+
+	public IHostPort getLast() {
+		return ports.get(ports.size()-1);
 	}
 
 }

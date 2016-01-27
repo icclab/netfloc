@@ -6,7 +6,6 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package ch.icclab.netfloc.iface;
-
 import ch.icclab.netfloc.iface.INetworkPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import java.util.Map;
