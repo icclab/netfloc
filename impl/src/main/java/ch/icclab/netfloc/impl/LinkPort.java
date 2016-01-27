@@ -34,6 +34,9 @@ public class LinkPort extends Port implements ILinkPort {
 
 	public void removeLinkedPort(ILinkPort linkedPort) {
 		this.linkedPort = null;
+		if (linkedPort == null) {
+			return;
+		}
 		if (linkedPort.getLinkedPort() != null) {
 			linkedPort.removeLinkedPort(this);
 		}

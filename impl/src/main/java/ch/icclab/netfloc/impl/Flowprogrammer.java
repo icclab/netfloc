@@ -55,7 +55,7 @@ public class Flowprogrammer implements IFlowprogrammer {
 		WriteTransaction wt = this.dataBroker.newWriteOnlyTransaction();
 		InstanceIdentifier<Flow> flowId = buildFlowId(flow, bridge.getDatapathId());
 		wt.merge(LogicalDatastoreType.CONFIGURATION, flowId, flow, true);
-        commitWriteTransaction(wt, cb, 3);
+        commitWriteTransaction(wt, cb, 3, 3);
 	}
 
 	public void deleteFlow(Flow flow, IBridgeOperator bridge, FutureCallback<Void> cb) {
@@ -63,21 +63,21 @@ public class Flowprogrammer implements IFlowprogrammer {
 		WriteTransaction wt = this.dataBroker.newWriteOnlyTransaction();
 		InstanceIdentifier<Flow> flowId = buildFlowId(flow, bridge.getDatapathId());
 		wt.delete(LogicalDatastoreType.CONFIGURATION, flowId);
-		commitWriteTransaction(wt, cb, 3);
+		commitWriteTransaction(wt, cb, 3, 3);
 	}
 
-	private void commitWriteTransaction(final WriteTransaction wt, final FutureCallback<Void> cb, final int tries) {
+	private void commitWriteTransaction(final WriteTransaction wt, final FutureCallback<Void> cb, final int totalTries, final int tries) {
         Futures.addCallback(wt.submit(), new FutureCallback<Void>() {
 			public void onSuccess(Void result) {
-				logger.info("Transaction success after {} tries for {}", tries, wt);
+				logger.info("Transaction success after {} tries for {}", totalTries - tries + 1, wt);
 				cb.onSuccess(result);
 			}
 
 			public void onFailure(Throwable t) {
 				if (t instanceof OptimisticLockFailedException) {
 					if((tries - 1) > 0) {
-						logger.warn("Transaction retry {} for {}", tries, wt);
-						commitWriteTransaction(wt, cb, tries - 1);
+						logger.warn("Transaction retry {} for {}", totalTries - tries + 1, wt);
+						commitWriteTransaction(wt, cb, totalTries, tries - 1);
 					} else {
 						logger.error("Transaction out of retries: ", wt);
 						cb.onFailure(t);

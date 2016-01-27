@@ -303,9 +303,10 @@ public class NetworkGraph implements
 			if (srcPort.canConnectTo(port)) {
 				INetworkPath networkPath = this.getNetworkPath(srcPort, port);
 				if (networkPath == null) {
-					throw new IllegalStateException("NetworkPath is not closed. The bridges on the connection are not linked.");
+					logger.info("Network Path is not closed for {}, {}", srcPort, port);
+				} else {
+					paths.add(networkPath);
 				}
-				paths.add(networkPath);
 			}
 		}
 		return paths;
