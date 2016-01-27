@@ -207,11 +207,12 @@ public class Bridge implements IBridgeOperator{
 	public void removeLinkPort(ILinkPort linkPort) {
 		this.linkPorts.remove(linkPort);
 	}
-	
+
 	public boolean equals(Object o) {
 		if (!(o instanceof Bridge)) {
 			return false;
 		}
+
 		assert ((Bridge)o).getNodeId() != null : "node id cannot be null";
 		assert ((Bridge)o).getNodeId().getValue() != null : "node id value cannot be null";
 		assert this.getNodeId() != null : "node id cannot be null";

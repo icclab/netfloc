@@ -178,6 +178,21 @@ public class NetworkPath implements INetworkPath {
 			this.getEndPort().equals(np.getBeginPort()));
 	}
 
+	public boolean hasLinkPort(ILinkPort link) {
+		for (IBridgeOperator bridge : this.getBridges()) {
+			ILinkPort checkLinkNext = this.getNextLink(bridge);
+			if (checkLinkNext != null && checkLinkNext.equals(link)) {
+				return true;
+			}
+
+			ILinkPort checkLinkPrev = this.getPreviousLink(bridge);
+			if (checkLinkPrev != null && checkLinkPrev.equals(link)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean equals(Object o) {
 		if (!(o instanceof NetworkPath)) {
 			return false;

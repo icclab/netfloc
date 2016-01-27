@@ -17,11 +17,16 @@ import ch.icclab.netfloc.iface.INodeOperator;
 import ch.icclab.netfloc.iface.IPortOperator;
 import ch.icclab.netfloc.iface.IHostPort;
 import ch.icclab.netfloc.iface.ITraversableBridge;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.DatapathId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbBridgeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbTerminationPointAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.ovsdb.rev150105.OvsdbNodeAugmentation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.Source;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.Destination;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.neutron.spi.Neutron_IPs;
 
@@ -67,6 +72,9 @@ public class NetworkGraphTest {
 			when(topologyNodeBridge.getNodeId()).thenReturn(new NodeId("node:" + i + ":bridge:" + i));
 
 			OvsdbBridgeAugmentation bridgeAugmentation = mock(OvsdbBridgeAugmentation.class);
+			DatapathId dpId = mock(DatapathId.class);
+			when(dpId.getValue()).thenReturn("00:00:00:00:0" + i);
+			when(bridgeAugmentation.getDatapathId()).thenReturn(dpId);
 			IBridgeOperator bridge = new Bridge(node, topologyNodeBridge, bridgeAugmentation);
 			node.addBridge(bridge);
 
@@ -74,12 +82,14 @@ public class NetworkGraphTest {
 			for (int j = 0; j < 5; j++) {
 				NeutronPort neutronPort = mock(NeutronPort.class);
 				OvsdbTerminationPointAugmentation terminationPointAugmentation1 = mock(OvsdbTerminationPointAugmentation.class);
+				when(terminationPointAugmentation1.getOfport()).thenReturn(new Long(j));
 				IHostPort vmPort = new HostPort(bridge, mock(TerminationPoint.class), terminationPointAugmentation1, neutronPort);
 				bridge.addHostPort(vmPort);
 				vmPorts.add(vmPort);
 			}
 			// add a link port
 			OvsdbTerminationPointAugmentation terminationPointAugmentation2 = mock(OvsdbTerminationPointAugmentation.class);
+			when(terminationPointAugmentation2.getOfport()).thenReturn(new Long(i));
 			IPortOperator linkPort = new LinkPort(bridge, mock(TerminationPoint.class), terminationPointAugmentation2);
 			bridge.addPort(linkPort);
 
@@ -97,12 +107,16 @@ public class NetworkGraphTest {
 		network.addNode(node);
 
 		OvsdbBridgeAugmentation bridgeAugmentation = mock(OvsdbBridgeAugmentation.class);
+		DatapathId dpId = mock(DatapathId.class);
+		when(dpId.getValue()).thenReturn("00:00:10:10:10");
+		when(bridgeAugmentation.getDatapathId()).thenReturn(dpId);
 		aggregationBridge = new Bridge(node, topologyNode, bridgeAugmentation);
 		node.addBridge(aggregationBridge);
 
 		// add link ports to aggregation bridge
 		for (int i = 0; i < 3; i++) {
 			OvsdbTerminationPointAugmentation terminationPointAugmentation = mock(OvsdbTerminationPointAugmentation.class);
+			when(terminationPointAugmentation.getOfport()).thenReturn(new Long(i));
 			ILinkPort linkPort = new LinkPort(aggregationBridge, mock(TerminationPoint.class), terminationPointAugmentation);
 			aggregationBridge.addPort(linkPort);
 			IPortOperator linkedPort = linkPorts.get(i);
@@ -237,6 +251,8 @@ public class NetworkGraphTest {
 		Neutron_IPs nip_BC = mock(Neutron_IPs.class);
 		when(nip_BC.getSubnetUUID()).thenReturn("idBC");
 
+		assertTrue(network.getHostPorts().size() == 15);
+
 		// PORT A
 		NeutronPort np_A = mock(NeutronPort.class);
 		List<Neutron_IPs> nipList_A = new LinkedList<Neutron_IPs>();
@@ -244,6 +260,7 @@ public class NetworkGraphTest {
 		when(np_A.getFixedIPs()).thenReturn(nipList_A);
 
 		OvsdbTerminationPointAugmentation otpa_A = mock(OvsdbTerminationPointAugmentation.class);
+		when(otpa_A.getOfport()).thenReturn(11L);
 		TerminationPoint tp_A = mock(TerminationPoint.class);
 
 		network.addPort(bridgeNode1, tp_A, otpa_A, np_A);
@@ -256,6 +273,7 @@ public class NetworkGraphTest {
 		when(np_B.getFixedIPs()).thenReturn(nipList_B);
 
 		OvsdbTerminationPointAugmentation otpa_B = mock(OvsdbTerminationPointAugmentation.class);
+		when(otpa_B.getOfport()).thenReturn(12L);
 		TerminationPoint tp_B = mock(TerminationPoint.class);
 
 		network.addPort(bridgeNode1, tp_B, otpa_B, np_B);
@@ -267,11 +285,13 @@ public class NetworkGraphTest {
 		when(np_C.getFixedIPs()).thenReturn(nipList_C);
 
 		OvsdbTerminationPointAugmentation otpa_C = mock(OvsdbTerminationPointAugmentation.class);
+		when(otpa_C.getOfport()).thenReturn(13L);
 		TerminationPoint tp_C = mock(TerminationPoint.class);
 
 		network.addPort(bridgeNode2, tp_C, otpa_C, np_C);
 
 		// check if listener was called exactly 2 times for A <-> B and B <-> C
+		assertTrue("there should be 18 host ports at this point", network.getHostPorts().size() == 18);
 		verify(nplm, times(2)).networkPathCreated(any(INetworkPath.class));
 
 		// examine the paths
@@ -285,5 +305,57 @@ public class NetworkGraphTest {
 		assertTrue(np_AB.getBegin().equals(hostBridges.get(0)));
 		assertTrue(np_AB.getEnd().equals(hostBridges.get(0)));
 		assertTrue(np_BC.getBegin().equals(hostBridges.get(0)) && np_BC.getEnd().equals(hostBridges.get(1)) || np_BC.getBegin().equals(hostBridges.get(1)) && np_BC.getEnd().equals(hostBridges.get(0)));
+	}
+
+	@Test
+	public void testDeleteLink() {
+		Link link = mock(Link.class);
+		Source src = mock(Source.class);
+		TpId srcTpId = mock(TpId.class);
+		Destination dst = mock(Destination.class);
+		TpId dstTpId = mock(TpId.class);
+
+		when(srcTpId.getValue()).thenReturn("openflow:" + Long.parseLong("00:00:10:10:10".replace(":", ""), 16) + ":" + 1L);
+		when(dstTpId.getValue()).thenReturn("openflow:" + Long.parseLong("00:00:00:00:01".replace(":", ""), 16) + ":" + 1L);
+		when(src.getSourceTp()).thenReturn(srcTpId);
+		when(dst.getDestTp()).thenReturn(dstTpId);
+		when(link.getSource()).thenReturn(src);
+		when(link.getDestination()).thenReturn(dst);
+
+		List<INetworkPath> paths = new LinkedList<INetworkPath>();
+		for (IHostPort srcPort : network.getHostPorts()) {
+			for (IHostPort dstPort : network.getHostPorts()) {
+				if (!srcPort.equals(dstPort)) {
+					INetworkPath path = network.getNetworkPath(srcPort, dstPort);
+					if (path != null) {
+						paths.add(path);
+					}
+				}
+			}
+		}
+		assertTrue("path number should be 210 instead of " + paths.size(), paths.size() == 210);
+
+		network.deleteLink(link);
+
+		List<ITraversableBridge> adjacentBridges = network.getAdjacentBridges(new TraversableBridge(aggregationBridge));
+		assertTrue("adjacentBridges should be 2 instead of " + adjacentBridges.size(), adjacentBridges.size() == 2);
+
+		List<INetworkPath> paths2 = new LinkedList<INetworkPath>();
+		for (IHostPort srcPort : network.getHostPorts()) {
+			for (IHostPort dstPort : network.getHostPorts()) {
+				if (!srcPort.equals(dstPort)) {
+					INetworkPath path = network.getNetworkPath(srcPort, dstPort);
+					if (path != null) {
+						paths2.add(path);
+					}
+				}
+			}
+		}
+		assertTrue("path number should be 90 instead of " + paths2.size(), paths2.size() == 110);
+
+		network.createLink(link);
+
+		List<ITraversableBridge> adjacentBridges2 = network.getAdjacentBridges(new TraversableBridge(aggregationBridge));
+		assertTrue("adjacentBridges should be 3 instead of " + adjacentBridges2.size(), adjacentBridges2.size() == 3);
 	}
 }

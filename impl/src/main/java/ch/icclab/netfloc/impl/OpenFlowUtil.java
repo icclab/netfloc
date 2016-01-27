@@ -89,7 +89,7 @@ public class OpenFlowUtil {
 		FlowBuilder flowBuilder = new FlowBuilder();
 		flowBuilder.setMatch(matchBuilder.build());
 
-		String flowId = "LLDP_" + bridge.getDatapathId();
+		String flowId = OpenFlowUtil.createLLDPFlowId(bridge);
 		flowBuilder.setId(new FlowId(flowId));
 		FlowKey key = new FlowKey(new FlowId(flowId));
 
@@ -102,6 +102,10 @@ public class OpenFlowUtil {
 		flowBuilder.setIdleTimeout(0);
 
 		return flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build();
+	}
+
+	public static String createLLDPFlowId(IBridgeOperator bridge) {
+		return "LLDP_" + bridge.getDatapathId();
 	}
 
 	private static Action createControllerAction() {
@@ -141,7 +145,7 @@ public class OpenFlowUtil {
 		FlowBuilder flowBuilder = new FlowBuilder();
 		flowBuilder.setMatch(matchBuilder.build());
 
-		String flowId = "NORMAL_" + bridge.getDatapathId();
+		String flowId = OpenFlowUtil.createNormalFlowId(bridge);
 		flowBuilder.setId(new FlowId(flowId));
 		FlowKey key = new FlowKey(new FlowId(flowId));
 
@@ -154,6 +158,10 @@ public class OpenFlowUtil {
 		flowBuilder.setIdleTimeout(0);
 
 		return flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build();
+	}
+
+	public static String createNormalFlowId(IBridgeOperator bridge) {
+		return "NORMAL_" + bridge.getDatapathId();
 	}
 
 	private static Action createNormalAction() {
@@ -214,7 +222,7 @@ public class OpenFlowUtil {
 		FlowBuilder flowBuilder = new FlowBuilder();
 		flowBuilder.setMatch(matchBuilder.build());
 
-		String flowId = "Broadcast_" + inPort + "_" + srcMac + "_" + bridge.getDatapathId();
+		String flowId = OpenFlowUtil.createBroadcastFlowId(bridge, inPort, srcMac);
 		flowBuilder.setId(new FlowId(flowId));
 		FlowKey key = new FlowKey(new FlowId(flowId));
 
@@ -227,6 +235,10 @@ public class OpenFlowUtil {
 		flowBuilder.setIdleTimeout(0);
 
 		return flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build();
+	}
+
+	public static String createBroadcastFlowId(IBridgeOperator bridge, IPortOperator inPort, String srcMac) {
+		return "Broadcast_" + inPort + "_" + srcMac + "_" + bridge.getDatapathId();
 	}
 
 	public static Flow createForwardFlow(IBridgeOperator bridge, IPortOperator inPort, IPortOperator outPort, String srcMac, String dstMac, int priority) {
@@ -273,7 +285,7 @@ public class OpenFlowUtil {
 		FlowBuilder flowBuilder = new FlowBuilder();
 		flowBuilder.setMatch(matchBuilder.build());
 
-		String flowId = "NetworkPath_" + srcMac + "_" + dstMac + "_" + bridge.getDatapathId();
+		String flowId = OpenFlowUtil.createForwardFlowId(bridge, srcMac, dstMac);
 		flowBuilder.setId(new FlowId(flowId));
 		FlowKey key = new FlowKey(new FlowId(flowId));
 
@@ -286,6 +298,10 @@ public class OpenFlowUtil {
 		flowBuilder.setIdleTimeout(0);
 
 		return flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build();
+	}
+
+	public static String createForwardFlowId(IBridgeOperator bridge, String srcMac, String dstMac) {
+		return "NetworkPath_" + srcMac + "_" + dstMac + "_" + bridge.getDatapathId();
 	}
 
 	public static EthernetMatch ethernetMatch(MacAddress srcMac,

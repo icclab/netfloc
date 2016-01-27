@@ -289,7 +289,7 @@ public class NetworkGraph implements
 		return iterator.getResult();
 	}
 
-	private List<IHostPort> getHostPorts() {
+	public List<IHostPort> getHostPorts() {
 		List<IHostPort> hostPorts = new LinkedList<IHostPort>();
 		for (IBridgeOperator bridge : this.getBridges()) {
 			hostPorts.addAll(bridge.getHostPorts());
@@ -516,33 +516,25 @@ public class NetworkGraph implements
 			logger.error("Link is null for <{}>, <{}>", portSrc, portDst);
 		}
 
-		// old paths
-		List<INetworkPath> oldPaths = this.getConnectableNetworkPaths(this.getHostPorts());
-
-		portSrc.removeLinkedPort(portDst);
-		
-		// notify network path listeners by comparing old to new path list
-		List<INetworkPath> newPaths = this.getConnectableNetworkPaths(this.getHostPorts());
-		
-		for (INetworkPath oldPath : oldPaths) {
-			boolean found = false;
-			for (INetworkPath newPath : newPaths) {
-				if (oldPath.isEqualConnection(newPath)) {
-					found = true;
-
-					if (!oldPath.equals(newPath)) {
-						// link is broken but connection can be recovered
-						portSrc.setLinkedPort(portDst);
-						this.notifyNetworkPathListenersUpdate(oldPath, newPath);
-						portSrc.removeLinkedPort(portDst);
-					}
-				}
+		// delete old paths with broken link
+		LinkedList<INetworkPath> updateablePaths = new LinkedList<INetworkPath>();
+		for (INetworkPath path : this.getConnectableNetworkPaths(this.getHostPorts())) {
+			if (path.hasLinkPort(portSrc) || path.hasLinkPort(portDst)) {
+				logger.info("Delete Path {}", path);
+				updateablePaths.add(path);
+				this.notifyNetworkPathListenersDelete(path);
 			}
-			if (!found) {
-				// this is a broken link and connection cannot be recovered
-				portSrc.setLinkedPort(portDst);
-				this.notifyNetworkPathListenersDelete(oldPath);
-				portSrc.removeLinkedPort(portDst);
+		}
+
+		// create new paths if possible
+		portSrc.removeLinkedPort(portDst);
+		for (INetworkPath path : updateablePaths) {
+			INetworkPath newPath = this.getNetworkPath(path.getBeginPort(), path.getEndPort());
+			if (newPath != null) {
+				logger.info("New Path {} found for {}", newPath, path);
+				this.notifyNetworkPathListenersCreate(newPath);
+			} else {
+				logger.warn("New Path not found for {}", path);
 			}
 		}
 	}

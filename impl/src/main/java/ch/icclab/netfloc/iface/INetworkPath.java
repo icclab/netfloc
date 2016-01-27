@@ -30,4 +30,5 @@ public interface INetworkPath {
 
 	public void close();
 	public boolean isClosed();
+	public boolean hasLinkPort(ILinkPort linkPort);
 }
