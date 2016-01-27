@@ -27,9 +27,12 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FlowConnectionManager implements IBroadcastListener, INetworkPathListener, IBridgeListener, IServiceChainListener {
 	
+	private static final Logger LOG = LoggerFactory.getLogger(FlowConnectionManager.class);
 	// how do we decide which pattern to map to which path?
 	private List<INetworkPath> networkPaths = new LinkedList<INetworkPath>();
 	private List<IFlowPathPattern> flowPathPatterns = new LinkedList<IFlowPathPattern>();
@@ -245,6 +248,9 @@ public class FlowConnectionManager implements IBroadcastListener, INetworkPathLi
 	public void serviceChainCreated(final IServiceChain sc) {
 
 		final IFlowChainPattern pattern = this.flowChainPatterns.get(0);
+
+		LOG.info("Chain in FlowConnectionManager: {}", sc);
+		LOG.info("Pattern FlowConnectionManager: {}", pattern);
 
 		for (Map<IBridgeOperator, List<Flow>> map : pattern.apply(sc)) {
 

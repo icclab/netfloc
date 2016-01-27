@@ -14,6 +14,8 @@ import ch.icclab.netfloc.iface.ILinkPort;
 import ch.icclab.netfloc.iface.INetworkPath;
 import ch.icclab.netfloc.iface.IServiceChain;
 import ch.icclab.netfloc.iface.IHostPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 
@@ -22,10 +24,13 @@ public class ServiceChain implements IServiceChain {
 	private List<INetworkPath> paths;
 	private List<IHostPort> ports;
 	private int chainId;
+	private static final Logger LOG = LoggerFactory.getLogger(ServiceChain.class);
 
 	public ServiceChain(List<INetworkPath> paths, int chainId) {
 		this.paths = paths;
 		this.chainId = chainId;
+		LOG.info("ServiceChain chainID: {}", chainId);
+		LOG.info("ServiceChain paths: {}", paths);
 	}
 
 	public int getChainId() {

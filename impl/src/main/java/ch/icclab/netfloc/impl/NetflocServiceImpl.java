@@ -68,12 +68,13 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
         LOG.info("createServiceChain: {}", input);
         for (String portID : input.getNeutronPorts()) {
             for (IHostPort port : graph.getHostPorts()) {
-                if (portID == port.getNeutronUuid()) {
+                if (portID.equals(port.getNeutronUuid())) {
                     chainPorts.add(port);
                     break;
                 }
             }
         }
+        LOG.info("NetflocServiceImpl chainNetworkPorts: {}", chainPorts);
         int lastIndex = chainPorts.size() - 1;
         for (IHostPort port : chainPorts) {
             if (chainPorts.lastIndexOf(port) == lastIndex) {
@@ -81,6 +82,7 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
                 networkPath = graph.getNetworkPath(port, chainPorts.get(chainPorts.lastIndexOf(port) + 1));
                 // add each network path in list
                 chainNetworkPaths.add(networkPath);
+                LOG.info("NetflocServiceImpl chainNetworkPaths: {}", chainNetworkPaths);
             }
         }
         // instantiate ServiceChain

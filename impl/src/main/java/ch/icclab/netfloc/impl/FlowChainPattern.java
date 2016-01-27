@@ -51,11 +51,15 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.HashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FlowChainPattern implements IFlowChainPattern {
 
 	// TODO manage this somewhere, possibly in the flowconneciton manager
 	private static final int CHAIN_PRIORITY = 10;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(FlowChainPattern.class);
 
 	public List<Map<IBridgeOperator, List<Flow>>> apply(IServiceChain sc) {
 		List<Map<IBridgeOperator, List<Flow>>> flows = new LinkedList<Map<IBridgeOperator, List<Flow>>>();
@@ -73,6 +77,8 @@ public class FlowChainPattern implements IFlowChainPattern {
 		}
 
 		flows.add(this.createEndRewritePathFlows(endPath, sc.getChainId(), hop));
+
+		LOG.info("FlowChainPattern apply flows: {}", flows);
 
 		return flows;
 	}
