@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 
 public class NetflocServiceImpl implements NetflocService, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(OvsdbDataChangeListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NetflocServiceImpl.class);
 	private final ExecutorService executor;
     private List<IServiceChainListener> serviceChainListeners = new LinkedList<IServiceChainListener>();
     private NetworkGraph graph = new NetworkGraph();
@@ -58,7 +58,7 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
     * GET http://localhost:8181/restconf/config/netfloc:netfloc [not yet implemented]
     * To create new service chain:
     * POST http://localhost:8181/restconf/operations/netfloc:create-service-chain
-    * { "input" : { "chainList" : ["2a6f9ea7-dd2f-4ce1-8030-d999856fb558","5ec846bb-faf3-4f4e-83c1-fe253ff75ccb", ...] } 
+    * { "input" : { "neutron-ports" : ["2a6f9ea7-dd2f-4ce1-8030-d999856fb558","5ec846bb-faf3-4f4e-83c1-fe253ff75ccb", ...] } 
     * { "output: {"chainID"} }
     */
 
