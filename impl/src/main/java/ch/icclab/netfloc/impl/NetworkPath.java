@@ -100,6 +100,9 @@ public class NetworkPath implements INetworkPath {
 	public ILinkPort getPreviousLink(IBridgeOperator bridge) {
 		logger.info("searching previous link for {} between {} and {}", bridge.getDatapathId(), this.getBegin().getDatapathId(), this.getEnd().getDatapathId());
 		IBridgeOperator previousBridge = this.getPrevious(bridge);
+		if (previousBridge == null) {
+			return null;
+		}
 		List<ILinkPort> possiblyLinkedPorts = previousBridge.getLinkPorts(); 
 		for (ILinkPort port : bridge.getLinkPorts()) {
 			if (possiblyLinkedPorts.contains(port.getLinkedPort())) {
