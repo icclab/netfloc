@@ -10,6 +10,7 @@ package ch.icclab.netfloc.impl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.NetflocService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.CreateServiceChainInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.CreateServiceChainOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.CreateServiceChainOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.DeleteServiceChainInput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
@@ -20,9 +21,15 @@ import ch.icclab.netfloc.iface.IServiceChain;
 import ch.icclab.netfloc.iface.IHostPort;
 import ch.icclab.netfloc.iface.IServiceChainListener;
 
+import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import com.google.common.util.concurrent.Futures;
 import java.util.List;
 import java.util.LinkedList;
 import org.slf4j.Logger;
@@ -49,6 +56,22 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
     public void registerServiceChainListener(IServiceChainListener nsl) {
         this.serviceChainListeners.add(nsl);
     }
+
+    private RpcError wrongAmoutOfPortsError() {
+        return RpcResultBuilder.newError( ErrorType.APPLICATION, "input-condition",
+            "Service Chain Input cannot have an odd number of Neutron Ports", null, null, null );
+    }
+
+    private RpcError portNotFoundError() {
+        return RpcResultBuilder.newError( ErrorType.APPLICATION, "graph-state",
+            "Did not find all Neutron Ports in the Network Graph", null, null, null );
+    }
+
+    private RpcError pathNotClosedError() {
+        return RpcResultBuilder.newError( ErrorType.APPLICATION, "graph-state",
+            "Path is not closed in the Network Graph", null, null, null );
+    }
+
 	/*
     * RestConf RPC call implemented from the NetflocService interface. Creates a service chain.
     * In Postman: to get the current SFC config: 
@@ -64,6 +87,7 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
 
         if (input.getNeutronPorts().size() % 2 != 0) {
             logger.error("Service Chain Input cannot have an odd number of Neutron Ports");
+            RpcError error = wrongAmoutOfPortsError();
             return null;
         }
 
@@ -83,15 +107,16 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
         logger.info("NetflocServiceImpl chainNetworkPorts: {}", chainPorts);
 
         if (chainPorts.size() != input.getNeutronPorts().size()) {
+            RpcError error = portNotFoundError();
             logger.error("Did not find all Neutron Ports in the Network Graph");
-            return null;
+            return Futures.immediateFuture( RpcResultBuilder.<CreateServiceChainOutput> failed().withRpcError(portNotFoundError()).build() );
         }
 
         for (int i = 0; i < chainPorts.size(); i = i + 2) {
             INetworkPath path = this.graph.getNetworkPath(chainPorts.get(i), chainPorts.get(i+1));
             if (path == null) {
                 logger.error("Path is not closed between {} and {}", chainPorts.get(i), chainPorts.get(i+1));
-                return null;
+                return Futures.immediateFuture( RpcResultBuilder.<CreateServiceChainOutput> failed().withRpcError(pathNotClosedError()).build() );
             }
             logger.info("Found path between {} and {}", chainPorts.get(i), chainPorts.get(i+1));
             chainNetworkPaths.add(path);
@@ -107,7 +132,7 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
         }
 
         //return chainID;
-        return null;
+        return Futures.immediateFuture(RpcResultBuilder.<CreateServiceChainOutput> success(new CreateServiceChainOutputBuilder().setServiceChainId("" + chainID).build()).build());
     }    
 
     /**
