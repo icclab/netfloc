@@ -41,19 +41,18 @@ public class ConfigActivator implements BundleActivator {
 	@Override
 	public void start(BundleContext context) throws Exception {
 		LOG.info("ConfigActivator start");
-
+		NetworkGraph graph = new NetworkGraph();
 		IFlowBridgePattern bridgePattern = new FlowBridgePattern();
 		IFlowPathPattern pathPattern = new FlowPathPattern();
 		IFlowBroadcastPattern broadcastPattern = new FlowBroadcastPattern();
 		IFlowChainPattern chainPattern = new FlowChainPattern();
 		IFlowprogrammer flowProgrammer = new Flowprogrammer(providerContext.getSALService(DataBroker.class));
 		FlowConnectionManager flowManager = new FlowConnectionManager(flowProgrammer);
-		NetflocServiceImpl netflocService = new NetflocServiceImpl();
+		NetflocServiceImpl netflocService = new NetflocServiceImpl(graph);
 		flowManager.registerBroadcastPattern(broadcastPattern);
 		flowManager.registerPathPattern(pathPattern);
 		flowManager.registerBridgePattern(bridgePattern);
 		flowManager.registerChainPattern(chainPattern);
-		NetworkGraph graph = new NetworkGraph();
 		graph.registerNetworkPathListener(flowManager);
 		netflocService.registerServiceChainListener(flowManager);
 		graph.registerBridgeListener(flowManager);

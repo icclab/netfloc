@@ -30,23 +30,20 @@ import org.slf4j.LoggerFactory;
 
 
 public class NetflocServiceImpl implements NetflocService, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(NetflocServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(NetflocServiceImpl.class);
 	private final ExecutorService executor;
     private List<IServiceChainListener> serviceChainListeners = new LinkedList<IServiceChainListener>();
-    private NetworkGraph graph = new NetworkGraph();
-    private List<IHostPort> chainPorts = new LinkedList<IHostPort>();
-    private INetworkPath networkPath;
-    private List<INetworkPath> chainNetworkPaths = new LinkedList<INetworkPath>();
+    private NetworkGraph graph;
     private int chainID = 0;
-    private Future<RpcResult<CreateServiceChainOutput>> result;
 
 
-	public NetflocServiceImpl() {
-		executor = Executors.newFixedThreadPool(1);
+	public NetflocServiceImpl(NetworkGraph graph) {
+        this.graph = graph;
+		this.executor = Executors.newFixedThreadPool(1);
 	}
 
 	public void close() {
-		executor.shutdown();
+		this.executor.shutdown();
 	}
 
     public void registerServiceChainListener(IServiceChainListener nsl) {
@@ -64,8 +61,17 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
 
 	@Override
     public Future<RpcResult<CreateServiceChainOutput>> createServiceChain(CreateServiceChainInput input) {
+
+        if (input.getNeutronPorts().size() % 2 != 0) {
+            logger.error("Service Chain Input cannot have an odd number of Neutron Ports");
+            return null;
+        }
+
+        List<INetworkPath> chainNetworkPaths = new LinkedList<INetworkPath>();
+        List<IHostPort> chainPorts = new LinkedList<IHostPort>();
+
         // get the host ports based on neutron port id from the graph.getHostPorts(...)
-        LOG.info("createServiceChain: {}", input);
+        logger.info("createServiceChain: {}", input);
         for (String portID : input.getNeutronPorts()) {
             for (IHostPort port : graph.getHostPorts()) {
                 if (portID.equals(port.getNeutronUuid())) {
@@ -74,26 +80,32 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
                 }
             }
         }
-        LOG.info("NetflocServiceImpl chainNetworkPorts: {}", chainPorts);
-        int lastIndex = chainPorts.size() - 1;
-        for (IHostPort port : chainPorts) {
-            if (chainPorts.lastIndexOf(port) == lastIndex) {
-                // create path between *every* hostport A -> B or B -> C, etc.
-                networkPath = graph.getNetworkPath(port, chainPorts.get(chainPorts.lastIndexOf(port) + 1));
-                // add each network path in list
-                chainNetworkPaths.add(networkPath);
-                LOG.info("NetflocServiceImpl chainNetworkPaths: {}", chainNetworkPaths);
-            }
+        logger.info("NetflocServiceImpl chainNetworkPorts: {}", chainPorts);
+
+        if (chainPorts.size() != input.getNeutronPorts().size()) {
+            logger.error("Did not find all Neutron Ports in the Network Graph");
+            return null;
         }
+
+        for (int i = 0; i < chainPorts.size(); i = i + 2) {
+            INetworkPath path = this.graph.getNetworkPath(chainPorts.get(i), chainPorts.get(i+1));
+            if (path == null) {
+                logger.error("Path is not closed between {} and {}", chainPorts.get(i), chainPorts.get(i+1));
+                return null;
+            }
+            logger.info("Found path between {} and {}", chainPorts.get(i), chainPorts.get(i+1));
+            chainNetworkPaths.add(path);
+        }
+
         // instantiate ServiceChain
         chainID = chainID+1;
         ServiceChain chainInstance = new ServiceChain(chainNetworkPaths, chainID);
-        //result = new ServiceChain(chainNetworkPaths, chainID);
-        LOG.info("chainID: {}", chainID);
+        logger.info("chainID: {}", chainID);
 
         for (IServiceChainListener scl : this.serviceChainListeners) {
             scl.serviceChainCreated(chainInstance);
         }
+
         //return chainID;
         return null;
     }    
