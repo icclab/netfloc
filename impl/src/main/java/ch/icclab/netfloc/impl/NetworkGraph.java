@@ -528,7 +528,12 @@ public class NetworkGraph implements
 		}
 
 		// create new paths if possible
-		portSrc.removeLinkedPort(portDst);
+		if (portSrc != null) {
+			portSrc.removeLinkedPort(portDst);
+		} else if (portDst != null) {
+			portDst.removeLinkedPort(portSrc);
+		}
+		
 		for (INetworkPath path : updateablePaths) {
 			INetworkPath newPath = this.getNetworkPath(path.getBeginPort(), path.getEndPort());
 			if (newPath != null) {
