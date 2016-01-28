@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 public class FlowChainPattern implements IFlowChainPattern {
 
 	// TODO manage this somewhere, possibly in the flowconneciton manager
-	private static final int CHAIN_PRIORITY = 10;
+	private static final int CHAIN_PRIORITY = 20;
 	
 	private static final Logger logger = LoggerFactory.getLogger(FlowChainPattern.class);
 
@@ -98,6 +98,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		IBridgeOperator bridge = path.getNext(beginBridge);
 		while (bridge != null && !bridge.equals(endBridge)) {
 			flows.put(bridge, createAggregationBridgeFlows(bridge, chainId, hop, path.getPreviousLink(bridge), path.getNextLink(bridge), CHAIN_PRIORITY));
+			bridge = path.getNext(beginBridge);
 		}
 
 		return flows;
@@ -114,6 +115,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		IBridgeOperator bridge = path.getNext(beginBridge);
 		while (bridge != null && !bridge.equals(endBridge)) {
 			flows.put(bridge, createAggregationBridgeFlows(bridge, chainId, hop, path.getPreviousLink(bridge), path.getNextLink(bridge), CHAIN_PRIORITY));
+			bridge = path.getNext(beginBridge);
 		}
 
 		return flows;
@@ -130,6 +132,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		IBridgeOperator bridge = path.getNext(beginBridge);
 		while (bridge != null && !bridge.equals(endBridge)) {
 			flows.put(bridge, createAggregationBridgeFlows(bridge, chainId, hop, path.getPreviousLink(bridge), path.getNextLink(bridge), CHAIN_PRIORITY));
+			bridge = path.getNext(beginBridge);
 		}
 
 		return flows;
