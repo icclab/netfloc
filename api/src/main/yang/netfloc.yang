@@ -29,7 +29,7 @@ module netfloc {
     	description "Create a Service Chain";
 
     	input {
-    		leaf-list neutron-ports {
+    		leaf neutron-ports {
     			type string;
     			description "Neutron Port IDs";
     		}

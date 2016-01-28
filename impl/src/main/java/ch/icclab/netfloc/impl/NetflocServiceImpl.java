@@ -32,6 +32,7 @@ import java.util.concurrent.Future;
 import com.google.common.util.concurrent.Futures;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +86,7 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
 	@Override
     public Future<RpcResult<CreateServiceChainOutput>> createServiceChain(CreateServiceChainInput input) {
 
-        if (input.getNeutronPorts().size() % 2 != 0) {
+        if (Arrays.asList(input.getNeutronPorts().split(",")).size() % 2 != 0) {
             logger.error("Service Chain Input cannot have an odd number of Neutron Ports");
             RpcError error = wrongAmoutOfPortsError();
             return null;
@@ -96,7 +97,7 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
 
         // get the host ports based on neutron port id from the graph.getHostPorts(...)
         logger.info("createServiceChain: {}", input);
-        for (String portID : input.getNeutronPorts()) {
+        for (String portID : Arrays.asList(input.getNeutronPorts().split(","))) {
             for (IHostPort port : graph.getHostPorts()) {
                 if (portID.equals(port.getNeutronUuid())) {
                     chainPorts.add(port);
@@ -106,7 +107,7 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
         }
         logger.info("NetflocServiceImpl chainNetworkPorts: {}", chainPorts);
 
-        if (chainPorts.size() != input.getNeutronPorts().size()) {
+        if (chainPorts.size() != Arrays.asList(input.getNeutronPorts().split(",")).size()) {
             RpcError error = portNotFoundError();
             logger.error("Did not find all Neutron Ports in the Network Graph");
             return Futures.immediateFuture( RpcResultBuilder.<CreateServiceChainOutput> failed().withRpcError(portNotFoundError()).build() );

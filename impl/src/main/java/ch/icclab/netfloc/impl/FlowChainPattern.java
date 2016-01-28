@@ -201,7 +201,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" +
 			Long.parseLong(bridge.getDatapathId()
 				.replace(":", ""), 16) +
-			":" + outPort.getOfport());
+			":" + inPort.getOfport());
 		MatchBuilder matchBuilder = new MatchBuilder();
 		EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
         EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
@@ -265,7 +265,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" +
 			Long.parseLong(bridge.getDatapathId()
 				.replace(":", ""), 16) +
-			":" + outPort.getOfport());
+			":" + inPort.getOfport());
 		MatchBuilder matchBuilder = new MatchBuilder();
 		matchBuilder.setEthernetMatch(OpenFlowUtil.ethernetMatch(new MacAddress(srcMac), new MacAddress(dstMac), null));
 		matchBuilder.setInPort(ncidIn);
@@ -340,7 +340,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" +
 			Long.parseLong(bridge.getDatapathId()
 				.replace(":", ""), 16) +
-			":" + outPort.getOfport());
+			":" + inPort.getOfport());
 		MatchBuilder matchBuilder = new MatchBuilder();
 		matchBuilder.setEthernetMatch(OpenFlowUtil.ethernetMatch(null, this.getVirtualMac(chainId, hop - 1), null));
 		matchBuilder.setInPort(ncidIn);
@@ -389,7 +389,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" +
 			Long.parseLong(bridge.getDatapathId()
 				.replace(":", ""), 16) +
-			":" + outPort.getOfport());
+			":" + inPort.getOfport());
 		MatchBuilder matchBuilder = new MatchBuilder();
 		EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
 		EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
@@ -466,7 +466,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" +
 			Long.parseLong(bridge.getDatapathId()
 				.replace(":", ""), 16) +
-			":" + outPort.getOfport());
+			":" + inPort.getOfport());
 		MatchBuilder matchBuilder = new MatchBuilder();
 		EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
 		EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();

@@ -144,12 +144,7 @@ public class NetflocServiceImplTest {
 		};
 		service.registerServiceChainListener(listener);
 		CreateServiceChainInput input = mock(CreateServiceChainInput.class);
-		List<String> inputStrings = new LinkedList<String>();
-		inputStrings.add("11");
-		inputStrings.add("22"); // vnf in
-		inputStrings.add("23"); // vnf out
-		inputStrings.add("12");
-		when(input.getNeutronPorts()).thenReturn(inputStrings);
+		when(input.getNeutronPorts()).thenReturn("11,22,23,12");
 		service.createServiceChain(input);
 
 		assertTrue("Amount of chains created should be 1 instead of " + chains.size(), chains.size() == 1);
