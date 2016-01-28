@@ -98,7 +98,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		IBridgeOperator bridge = path.getNext(beginBridge);
 		while (bridge != null && !bridge.equals(endBridge)) {
 			flows.put(bridge, createAggregationBridgeFlows(bridge, chainId, hop, path.getPreviousLink(bridge), path.getNextLink(bridge), CHAIN_PRIORITY));
-			bridge = path.getNext(beginBridge);
+			bridge = path.getNext(bridge);
 		}
 
 		return flows;
@@ -115,7 +115,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		IBridgeOperator bridge = path.getNext(beginBridge);
 		while (bridge != null && !bridge.equals(endBridge)) {
 			flows.put(bridge, createAggregationBridgeFlows(bridge, chainId, hop, path.getPreviousLink(bridge), path.getNextLink(bridge), CHAIN_PRIORITY));
-			bridge = path.getNext(beginBridge);
+			bridge = path.getNext(bridge);
 		}
 
 		return flows;
@@ -132,7 +132,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		IBridgeOperator bridge = path.getNext(beginBridge);
 		while (bridge != null && !bridge.equals(endBridge)) {
 			flows.put(bridge, createAggregationBridgeFlows(bridge, chainId, hop, path.getPreviousLink(bridge), path.getNextLink(bridge), CHAIN_PRIORITY));
-			bridge = path.getNext(beginBridge);
+			bridge = path.getNext(bridge);
 		}
 
 		return flows;
