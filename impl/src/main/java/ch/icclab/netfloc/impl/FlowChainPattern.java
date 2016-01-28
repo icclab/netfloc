@@ -155,13 +155,21 @@ public class FlowChainPattern implements IFlowChainPattern {
 		return flows;
 	}
 
+	private MacAddress getVirtualMac(int chainId, int hop) {
+		String chainIdHex = Integer.toHexString(chainId);
+		String hopHex = Integer.toHexString(hop);
+		return new MacAddress(((chainIdHex.length() == 2) ? chainIdHex : "0" + chainIdHex) +
+			":" + ((hopHex.length() == 2) ? hopHex : "0" + hopHex) +
+			":ff:ff:ff:ff");
+	}
+
 	private Flow createChainForwardFlow(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
 
 		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId().replace(":", ""), 16) + ":" + outPort.getOfport());
 		MatchBuilder matchBuilder = new MatchBuilder();
 		EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
         EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
-        ethDestinationBuilder.setAddress(new MacAddress(chainId + ":" + hop + ":ff:ff:ff:ff"));
+        ethDestinationBuilder.setAddress(this.getVirtualMac(chainId, hop));
         ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
         matchBuilder.setEthernetMatch(ethernetMatch.build());
 
@@ -220,7 +228,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		MatchBuilder matchBuilder = new MatchBuilder();
 		EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
 		EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
-		ethDestinationBuilder.setAddress(new MacAddress(chainId + ":" + (hop - 1) + ":ff:ff:ff:ff"));
+		ethDestinationBuilder.setAddress(this.getVirtualMac(chainId, hop - 1));
 		ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
 		matchBuilder.setEthernetMatch(ethernetMatch.build());
 
@@ -237,7 +245,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 
 		// Rewrite Action
 		SetDlDstActionBuilder rewrite = new SetDlDstActionBuilder();
-		rewrite.setAddress(new MacAddress(chainId + ":" + hop + ":ff:ff:ff:ff"));
+		rewrite.setAddress(this.getVirtualMac(chainId, hop));
 
 		abRewrite.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(rewrite.build()).build());
 		abRewrite.setOrder(0);
@@ -290,7 +298,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		MatchBuilder matchBuilder = new MatchBuilder();
 		EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
 		EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
-		ethDestinationBuilder.setAddress(new MacAddress(chainId + ":" + (hop - 1) + ":ff:ff:ff:ff"));
+		ethDestinationBuilder.setAddress(this.getVirtualMac(chainId, hop - 1));
 		ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
 		matchBuilder.setEthernetMatch(ethernetMatch.build());
 
