@@ -59,7 +59,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 	// TODO manage this somewhere, possibly in the flowconneciton manager
 	private static final int CHAIN_PRIORITY = 10;
 	
-	private static final Logger LOG = LoggerFactory.getLogger(FlowChainPattern.class);
+	private static final Logger logger = LoggerFactory.getLogger(FlowChainPattern.class);
 
 	public List<Map<IBridgeOperator, List<Flow>>> apply(IServiceChain sc) {
 		List<Map<IBridgeOperator, List<Flow>>> flows = new LinkedList<Map<IBridgeOperator, List<Flow>>>();
@@ -68,17 +68,21 @@ public class FlowChainPattern implements IFlowChainPattern {
 		int hop = 0;
 		flows.add(this.createForwardPathFlows(beginPath, sc.getChainId(), hop));
 		INetworkPath endPath = sc.getEnd();
+		logger.info("apply to begin path {}", beginPath);
 
 		INetworkPath path = sc.getNext(beginPath);
 		while (path != null && !path.equals(endPath)) {
+			logger.info("getting next path {}", path);
 			hop++;
 			flows.add(this.createRewritePathFlows(path, sc.getChainId(), hop));
+			logger.info("apply to next path {}", path);
 			path = sc.getNext(path);
 		}
 
 		flows.add(this.createEndRewritePathFlows(endPath, sc.getChainId(), hop));
+		logger.info("apply to end path {}", endPath);
 
-		LOG.info("FlowChainPattern apply flows: {}", flows);
+		logger.info("FlowChainPattern apply flows: {}", flows);
 
 		return flows;
 	}
