@@ -78,7 +78,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 			logger.info("apply to next path {}", path);
 			path = sc.getNext(path);
 		}
-
+		hop++;
 		flows.add(this.createEndRewritePathFlows(endPath, sc.getChainId(), hop));
 		logger.info("apply to end path {}", endPath);
 
