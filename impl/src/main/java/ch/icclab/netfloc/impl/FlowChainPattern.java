@@ -64,22 +64,27 @@ public class FlowChainPattern implements IFlowChainPattern {
 	public List<Map<IBridgeOperator, List<Flow>>> apply(IServiceChain sc) {
 		List<Map<IBridgeOperator, List<Flow>>> flows = new LinkedList<Map<IBridgeOperator, List<Flow>>>();
 
-		INetworkPath beginPath = sc.getBegin();
 		int hop = 0;
-		flows.add(this.createForwardPathFlows(beginPath, sc.getChainId(), hop));
+		INetworkPath beginPath = sc.getBegin();
 		INetworkPath endPath = sc.getEnd();
+
+		if (beginPath.equals(endPath)) {
+			// makes no sense
+		}
+
+		flows.add(this.createBeginPathFlows(beginPath, sc.getChainId(), hop));
 		logger.info("apply to begin path {}", beginPath);
 
 		INetworkPath path = sc.getNext(beginPath);
 		while (path != null && !path.equals(endPath)) {
 			logger.info("getting next path {}", path);
 			hop++;
-			flows.add(this.createRewritePathFlows(path, sc.getChainId(), hop));
+			flows.add(this.createHopPathFlows(path, sc.getChainId(), hop));
 			logger.info("apply to next path {}", path);
 			path = sc.getNext(path);
 		}
 		hop++;
-		flows.add(this.createEndRewritePathFlows(endPath, sc.getChainId(), hop));
+		flows.add(this.createEndPathFlows(endPath, sc.getChainId(), hop));
 		logger.info("apply to end path {}", endPath);
 
 		logger.info("FlowChainPattern apply flows: {}", flows);
@@ -87,77 +92,98 @@ public class FlowChainPattern implements IFlowChainPattern {
 		return flows;
 	}
 
-	private Map<IBridgeOperator, List<Flow>> createForwardPathFlows(INetworkPath path, int chainId, int hop) {
+	private Map<IBridgeOperator, List<Flow>> createBeginPathFlows(INetworkPath path, int chainId, int hop) {
 		Map<IBridgeOperator, List<Flow>> flows = new HashMap<IBridgeOperator, List<Flow>>();
 
 		IBridgeOperator beginBridge = path.getBegin();
-		flows.put(beginBridge, createAggregationBridgeFlows(beginBridge, chainId, hop, path.getBeginPort(), path.getNextLink(beginBridge), CHAIN_PRIORITY));
 		IBridgeOperator endBridge = path.getEnd();
-		flows.put(endBridge, createAggregationBridgeFlows(endBridge, chainId, hop, path.getPreviousLink(endBridge), path.getEndPort(), CHAIN_PRIORITY));
+
+		if (beginBridge.equals(endBridge)) {
+			List<Flow> beginBridgeFlows = new LinkedList<Flow>();
+			beginBridgeFlows.add(createBeginBeginBridgeFlow(beginBridge, chainId, hop, path.getBeginPort(), path.getEndPort(), path.getBeginPort().getMacAddress(), path.getEndPort().getMacAddress(), CHAIN_PRIORITY));
+			flows.put(beginBridge, beginBridgeFlows);
+			return flows;
+		}
+
+		List<Flow> beginBridgeFlows = new LinkedList<Flow>();
+		beginBridgeFlows.add(createBeginBeginBridgeFlow(beginBridge, chainId, hop, path.getBeginPort(), path.getNextLink(beginBridge), path.getBeginPort().getMacAddress(), path.getEndPort().getMacAddress(), CHAIN_PRIORITY));
+		flows.put(beginBridge, beginBridgeFlows);
+
+		List<Flow> endForwardFlows = new LinkedList<Flow>();
+		endForwardFlows.add(createForwardFlow(endBridge, chainId, hop, path.getPreviousLink(endBridge), path.getEndPort(), CHAIN_PRIORITY));
+		flows.put(endBridge, endForwardFlows);
 
 		IBridgeOperator bridge = path.getNext(beginBridge);
 		while (bridge != null && !bridge.equals(endBridge)) {
-			flows.put(bridge, createAggregationBridgeFlows(bridge, chainId, hop, path.getPreviousLink(bridge), path.getNextLink(bridge), CHAIN_PRIORITY));
+			List<Flow> aggregationForwardFlows = new LinkedList<Flow>();
+			aggregationForwardFlows.add(createForwardFlow(bridge, chainId, hop, path.getPreviousLink(bridge), path.getNextLink(bridge), CHAIN_PRIORITY));
+			flows.put(bridge, aggregationForwardFlows);
 			bridge = path.getNext(bridge);
 		}
 
 		return flows;
 	}
 
-	private Map<IBridgeOperator, List<Flow>> createRewritePathFlows(INetworkPath path, int chainId, int hop) {
+	private Map<IBridgeOperator, List<Flow>> createHopPathFlows(INetworkPath path, int chainId, int hop) {
 		Map<IBridgeOperator, List<Flow>> flows = new HashMap<IBridgeOperator, List<Flow>>();
 
 		IBridgeOperator beginBridge = path.getBegin();
-		flows.put(beginBridge, createBeginBridgeFlows(beginBridge, chainId, hop, path.getBeginPort(), path.getNextLink(beginBridge), CHAIN_PRIORITY));
 		IBridgeOperator endBridge = path.getEnd();
-		flows.put(endBridge, createAggregationBridgeFlows(endBridge, chainId, hop, path.getPreviousLink(endBridge), path.getEndPort(), CHAIN_PRIORITY));
+
+		if (beginBridge.equals(endBridge)) {
+			List<Flow> beginBridgeFlows = new LinkedList<Flow>();
+			beginBridgeFlows.add(createBeginBridgeFlow(beginBridge, chainId, hop, path.getBeginPort(), path.getEndPort(), CHAIN_PRIORITY));
+			flows.put(beginBridge, beginBridgeFlows);
+			return flows;
+		}
+
+		List<Flow> beginBridgeFlows = new LinkedList<Flow>();
+		beginBridgeFlows.add(createBeginBridgeFlow(beginBridge, chainId, hop, path.getBeginPort(), path.getNextLink(beginBridge), CHAIN_PRIORITY));
+		flows.put(beginBridge, beginBridgeFlows);
+
+		List<Flow> endBridgeFlows = new LinkedList<Flow>();
+		endBridgeFlows.add(createForwardFlow(endBridge, chainId, hop, path.getPreviousLink(endBridge), path.getEndPort(), CHAIN_PRIORITY));
+		flows.put(endBridge, endBridgeFlows);
 
 		IBridgeOperator bridge = path.getNext(beginBridge);
 		while (bridge != null && !bridge.equals(endBridge)) {
-			flows.put(bridge, createAggregationBridgeFlows(bridge, chainId, hop, path.getPreviousLink(bridge), path.getNextLink(bridge), CHAIN_PRIORITY));
+			List<Flow> aggregationForwardFlows = new LinkedList<Flow>();
+			aggregationForwardFlows.add(createForwardFlow(bridge, chainId, hop, path.getPreviousLink(bridge), path.getNextLink(bridge), CHAIN_PRIORITY));
+			flows.put(bridge, aggregationForwardFlows);
 			bridge = path.getNext(bridge);
 		}
 
 		return flows;
 	}
 
-	private Map<IBridgeOperator, List<Flow>> createEndRewritePathFlows(INetworkPath path, int chainId, int hop) {
+	private Map<IBridgeOperator, List<Flow>> createEndPathFlows(INetworkPath path, int chainId, int hop) {
 		Map<IBridgeOperator, List<Flow>> flows = new HashMap<IBridgeOperator, List<Flow>>();
 
 		IBridgeOperator beginBridge = path.getBegin();
-		flows.put(beginBridge, createBeginBridgeFlows(beginBridge, chainId, hop, path.getBeginPort(), path.getNextLink(beginBridge), CHAIN_PRIORITY));
 		IBridgeOperator endBridge = path.getEnd();
-		flows.put(endBridge, createEndBridgeFlows(endBridge, chainId, hop, path.getPreviousLink(endBridge), path.getEndPort(), CHAIN_PRIORITY));
+
+		if (beginBridge.equals(endBridge)) {
+			List<Flow> endBridgeFlows = new LinkedList<Flow>();
+			endBridgeFlows.add(createBeginEndBridgeFlow(endBridge, chainId, hop, path.getBeginPort(), path.getEndPort(), CHAIN_PRIORITY));
+			flows.put(endBridge, endBridgeFlows);
+			return flows;
+		}
+
+		List<Flow> beginBridgeFlows = new LinkedList<Flow>();
+		beginBridgeFlows.add(createBeginBridgeFlow(beginBridge, chainId, hop, path.getBeginPort(), path.getNextLink(beginBridge), CHAIN_PRIORITY));
+		flows.put(beginBridge, beginBridgeFlows);
+
+		List<Flow> endBridgeFlows = new LinkedList<Flow>();
+		endBridgeFlows.add(createEndEndBridgeFlow(endBridge, chainId, hop, path.getPreviousLink(endBridge), path.getEndPort(), CHAIN_PRIORITY));
+		flows.put(endBridge, endBridgeFlows);
 
 		IBridgeOperator bridge = path.getNext(beginBridge);
 		while (bridge != null && !bridge.equals(endBridge)) {
-			flows.put(bridge, createAggregationBridgeFlows(bridge, chainId, hop, path.getPreviousLink(bridge), path.getNextLink(bridge), CHAIN_PRIORITY));
+			List<Flow> aggregationForwardFlows = new LinkedList<Flow>();
+			aggregationForwardFlows.add(createForwardFlow(bridge, chainId, hop, path.getPreviousLink(bridge), path.getNextLink(bridge), CHAIN_PRIORITY));
+			flows.put(bridge, aggregationForwardFlows);
 			bridge = path.getNext(bridge);
 		}
-
-		return flows;
-	}
-
-	private List<Flow> createAggregationBridgeFlows(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
-		List<Flow> flows = new LinkedList<Flow>();
-
-		flows.add(this.createChainForwardFlow(bridge, chainId, hop, inPort, outPort, priority));
-
-		return flows;
-	}
-
-	private List<Flow> createBeginBridgeFlows(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
-		List<Flow> flows = new LinkedList<Flow>();
-
-		flows.add(this.createHopRewriteFlow(bridge, chainId, hop, inPort, outPort, priority));
-
-		return flows;
-	}
-
-	private List<Flow> createEndBridgeFlows(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
-		List<Flow> flows = new LinkedList<Flow>();
-
-		flows.add(this.createEndRewriteFlow(bridge, chainId, hop, inPort, outPort, priority));
 
 		return flows;
 	}
@@ -170,7 +196,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 			":ff:ff:ff:ff");
 	}
 
-	private Flow createChainForwardFlow(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
+	private Flow createForwardFlow(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
 
 		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" +
 			Long.parseLong(bridge.getDatapathId()
@@ -235,7 +261,130 @@ public class FlowChainPattern implements IFlowChainPattern {
 		return flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build();
 	}
 
-	private Flow createHopRewriteFlow(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
+	private Flow createBeginBeginBridgeFlow(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, String srcMac, String dstMac, int priority) {
+		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" +
+			Long.parseLong(bridge.getDatapathId()
+				.replace(":", ""), 16) +
+			":" + outPort.getOfport());
+		MatchBuilder matchBuilder = new MatchBuilder();
+		matchBuilder.setEthernetMatch(OpenFlowUtil.ethernetMatch(new MacAddress(srcMac), new MacAddress(dstMac), null));
+		matchBuilder.setInPort(ncidIn);
+
+		// Prepare Instruction
+		InstructionsBuilder isb = new InstructionsBuilder();
+		List<Instruction> instructions = new LinkedList<Instruction>();
+		InstructionBuilder ib = new InstructionBuilder();
+		ApplyActionsBuilder aab = new ApplyActionsBuilder();
+		
+		List<Action> actionList = new LinkedList<Action>();
+		// Rewrite Action
+		actionList.add(this.createRewriteAction(chainId, hop, 0));
+		// Output Action
+		actionList.add(this.createOutputAction(bridge, outPort, 1));
+
+		// Apply Actions Instruction
+		aab.setAction(actionList);
+		ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+		ib.setOrder(0);
+		ib.setKey(new InstructionKey(0));
+		instructions.add(ib.build());
+
+		// Create Flow
+		FlowBuilder flowBuilder = new FlowBuilder();
+		flowBuilder.setMatch(matchBuilder.build());
+
+		// TODO generate flow id
+		String flowId = "ServiceChainRewrite_" + chainId + "_" + hop + "_" + bridge.getDatapathId();
+		flowBuilder.setId(new FlowId(flowId));
+		FlowKey key = new FlowKey(new FlowId(flowId));
+
+		flowBuilder.setBarrier(true);
+		flowBuilder.setTableId((short)0);
+		flowBuilder.setKey(key);
+		flowBuilder.setPriority(priority);
+		flowBuilder.setFlowName(flowId);
+		flowBuilder.setHardTimeout(0);
+		flowBuilder.setIdleTimeout(0);
+
+		return flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build();
+	}
+
+	private Action createRewriteAction(int chainId, int hop, int order) {
+		ActionBuilder abRewrite = new ActionBuilder();
+		SetDlDstActionBuilder rewrite = new SetDlDstActionBuilder();
+		rewrite.setAddress(this.getVirtualMac(chainId, hop));
+		abRewrite.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(rewrite.build()).build());
+		abRewrite.setOrder(order);
+		abRewrite.setKey(new ActionKey(order));
+		return abRewrite.build();
+	}
+
+	private Action createOutputAction(IBridgeOperator bridge, IPortOperator outPort, int order) {
+		ActionBuilder abOutput = new ActionBuilder();
+		OutputActionBuilder output = new OutputActionBuilder();
+		NodeConnectorId ncidOut = new NodeConnectorId("openflow:" +
+			Long.parseLong(bridge.getDatapathId()
+				.replace(":", ""), 16) +
+			":" + outPort.getOfport());
+
+		output.setOutputNodeConnector(ncidOut);
+		output.setMaxLength(65535);
+
+		abOutput.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+		abOutput.setOrder(order);
+		abOutput.setKey(new ActionKey(order));
+		return abOutput.build();
+	}
+
+	private Flow createBeginBridgeFlow(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
+		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" +
+			Long.parseLong(bridge.getDatapathId()
+				.replace(":", ""), 16) +
+			":" + outPort.getOfport());
+		MatchBuilder matchBuilder = new MatchBuilder();
+		matchBuilder.setEthernetMatch(OpenFlowUtil.ethernetMatch(null, this.getVirtualMac(chainId, hop - 1), null));
+		matchBuilder.setInPort(ncidIn);
+
+		// Prepare Instruction
+		InstructionsBuilder isb = new InstructionsBuilder();
+		List<Instruction> instructions = new LinkedList<Instruction>();
+		InstructionBuilder ib = new InstructionBuilder();
+		ApplyActionsBuilder aab = new ApplyActionsBuilder();
+		
+		List<Action> actionList = new LinkedList<Action>();
+		// Rewrite Action
+		actionList.add(this.createRewriteAction(chainId, hop, 0));
+		// Output Action
+		actionList.add(this.createOutputAction(bridge, outPort, 1));
+
+		// Apply Actions Instruction
+		aab.setAction(actionList);
+		ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+		ib.setOrder(0);
+		ib.setKey(new InstructionKey(0));
+		instructions.add(ib.build());
+
+		// Create Flow
+		FlowBuilder flowBuilder = new FlowBuilder();
+		flowBuilder.setMatch(matchBuilder.build());
+
+		// TODO generate flow id
+		String flowId = "ServiceChainRewrite_" + chainId + "_" + hop + "_" + bridge.getDatapathId();
+		flowBuilder.setId(new FlowId(flowId));
+		FlowKey key = new FlowKey(new FlowId(flowId));
+
+		flowBuilder.setBarrier(true);
+		flowBuilder.setTableId((short)0);
+		flowBuilder.setKey(key);
+		flowBuilder.setPriority(priority);
+		flowBuilder.setFlowName(flowId);
+		flowBuilder.setHardTimeout(0);
+		flowBuilder.setIdleTimeout(0);
+
+		return flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build();
+	}
+
+	private Flow createBeginEndBridgeFlow(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
 
 		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" +
 			Long.parseLong(bridge.getDatapathId()
@@ -261,7 +410,8 @@ public class FlowChainPattern implements IFlowChainPattern {
 
 		// Rewrite Action
 		SetDlDstActionBuilder rewrite = new SetDlDstActionBuilder();
-		rewrite.setAddress(this.getVirtualMac(chainId, hop));
+		IHostPort hostPort = (IHostPort)outPort;
+		rewrite.setAddress(new MacAddress(hostPort.getMacAddress()));
 
 		abRewrite.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(rewrite.build()).build());
 		abRewrite.setOrder(0);
@@ -296,7 +446,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		flowBuilder.setMatch(matchBuilder.build());
 
 		// TODO generate flow id
-		String flowId = "ServiceChainRewrite_" + chainId + "_" + hop + "_" + bridge.getDatapathId();
+		String flowId = "ServiceChainEndRewrite_" + chainId + "_" + hop + "_" + bridge.getDatapathId();
 		flowBuilder.setId(new FlowId(flowId));
 		FlowKey key = new FlowKey(new FlowId(flowId));
 
@@ -311,7 +461,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		return flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build();
 	}
 
-	private Flow createEndRewriteFlow(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
+	private Flow createEndEndBridgeFlow(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
 
 		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" +
 			Long.parseLong(bridge.getDatapathId()
@@ -320,7 +470,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		MatchBuilder matchBuilder = new MatchBuilder();
 		EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
 		EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
-		ethDestinationBuilder.setAddress(this.getVirtualMac(chainId, hop - 1));
+		ethDestinationBuilder.setAddress(this.getVirtualMac(chainId, hop));
 		ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
 		matchBuilder.setEthernetMatch(ethernetMatch.build());
 
