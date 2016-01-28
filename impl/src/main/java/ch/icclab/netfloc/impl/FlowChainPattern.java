@@ -169,7 +169,10 @@ public class FlowChainPattern implements IFlowChainPattern {
 
 	private Flow createChainForwardFlow(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
 
-		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId().replace(":", ""), 16) + ":" + outPort.getOfport());
+		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" +
+			Long.parseLong(bridge.getDatapathId()
+				.replace(":", ""), 16) +
+			":" + outPort.getOfport());
 		MatchBuilder matchBuilder = new MatchBuilder();
 		EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
         EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
@@ -190,7 +193,10 @@ public class FlowChainPattern implements IFlowChainPattern {
 		// Output Action
 		OutputActionBuilder output = new OutputActionBuilder();
 
-		NodeConnectorId ncidOut = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId().replace(":", ""), 16) + ":" + outPort.getOfport());
+		NodeConnectorId ncidOut = new NodeConnectorId("openflow:" +
+			Long.parseLong(bridge.getDatapathId()
+				.replace(":", ""), 16) +
+			":" + outPort.getOfport());
 		output.setOutputNodeConnector(ncidOut);
 
 		output.setMaxLength(65535);
@@ -228,7 +234,10 @@ public class FlowChainPattern implements IFlowChainPattern {
 
 	private Flow createHopRewriteFlow(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
 
-		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId().replace(":", ""), 16) + ":" + outPort.getOfport());
+		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" +
+			Long.parseLong(bridge.getDatapathId()
+				.replace(":", ""), 16) +
+			":" + outPort.getOfport());
 		MatchBuilder matchBuilder = new MatchBuilder();
 		EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
 		EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
@@ -259,7 +268,10 @@ public class FlowChainPattern implements IFlowChainPattern {
 		// Output Action
 		OutputActionBuilder output = new OutputActionBuilder();
 
-		NodeConnectorId ncidOut = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId().replace(":", ""), 16) + ":" + outPort.getOfport());
+		NodeConnectorId ncidOut = new NodeConnectorId("openflow:" +
+			Long.parseLong(bridge.getDatapathId()
+				.replace(":", ""), 16) +
+			":" + outPort.getOfport());
 		output.setOutputNodeConnector(ncidOut);
 
 		output.setMaxLength(65535);
@@ -298,7 +310,10 @@ public class FlowChainPattern implements IFlowChainPattern {
 
 	private Flow createEndRewriteFlow(IBridgeOperator bridge, int chainId, int hop, IPortOperator inPort, IPortOperator outPort, int priority) {
 
-		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId().replace(":", ""), 16) + ":" + outPort.getOfport());
+		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" +
+			Long.parseLong(bridge.getDatapathId()
+				.replace(":", ""), 16) +
+			":" + outPort.getOfport());
 		MatchBuilder matchBuilder = new MatchBuilder();
 		EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
 		EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
@@ -330,7 +345,10 @@ public class FlowChainPattern implements IFlowChainPattern {
 		// Output Action
 		OutputActionBuilder output = new OutputActionBuilder();
 
-		NodeConnectorId ncidOut = new NodeConnectorId("openflow:" + Long.parseLong(bridge.getDatapathId().replace(":", ""), 16) + ":" + outPort.getOfport());
+		NodeConnectorId ncidOut = new NodeConnectorId("openflow:" +
+			Long.parseLong(bridge.getDatapathId()
+				.replace(":", ""), 16) +
+			":" + outPort.getOfport());
 		output.setOutputNodeConnector(ncidOut);
 
 		output.setMaxLength(65535);
