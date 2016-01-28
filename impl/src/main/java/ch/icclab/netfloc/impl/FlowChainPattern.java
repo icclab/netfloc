@@ -72,7 +72,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 			// makes no sense
 		}
 
-		flows.add(this.createBeginPathFlows(beginPath, sc.getChainId(), hop));
+		flows.add(this.createBeginPathFlows(beginPath, endPath.getEndPort().getMacAddress(), sc.getChainId(), hop));
 		logger.info("apply to begin path {}", beginPath);
 
 		INetworkPath path = sc.getNext(beginPath);
@@ -92,7 +92,7 @@ public class FlowChainPattern implements IFlowChainPattern {
 		return flows;
 	}
 
-	private Map<IBridgeOperator, List<Flow>> createBeginPathFlows(INetworkPath path, int chainId, int hop) {
+	private Map<IBridgeOperator, List<Flow>> createBeginPathFlows(INetworkPath path, String dstMac, int chainId, int hop) {
 		Map<IBridgeOperator, List<Flow>> flows = new HashMap<IBridgeOperator, List<Flow>>();
 
 		IBridgeOperator beginBridge = path.getBegin();
@@ -100,13 +100,13 @@ public class FlowChainPattern implements IFlowChainPattern {
 
 		if (beginBridge.equals(endBridge)) {
 			List<Flow> beginBridgeFlows = new LinkedList<Flow>();
-			beginBridgeFlows.add(createBeginBeginBridgeFlow(beginBridge, chainId, hop, path.getBeginPort(), path.getEndPort(), path.getBeginPort().getMacAddress(), path.getEndPort().getMacAddress(), CHAIN_PRIORITY));
+			beginBridgeFlows.add(createBeginBeginBridgeFlow(beginBridge, chainId, hop, path.getBeginPort(), path.getEndPort(), path.getBeginPort().getMacAddress(), dstMac, CHAIN_PRIORITY));
 			flows.put(beginBridge, beginBridgeFlows);
 			return flows;
 		}
 
 		List<Flow> beginBridgeFlows = new LinkedList<Flow>();
-		beginBridgeFlows.add(createBeginBeginBridgeFlow(beginBridge, chainId, hop, path.getBeginPort(), path.getNextLink(beginBridge), path.getBeginPort().getMacAddress(), path.getEndPort().getMacAddress(), CHAIN_PRIORITY));
+		beginBridgeFlows.add(createBeginBeginBridgeFlow(beginBridge, chainId, hop, path.getBeginPort(), path.getNextLink(beginBridge), path.getBeginPort().getMacAddress(), dstMac, CHAIN_PRIORITY));
 		flows.put(beginBridge, beginBridgeFlows);
 
 		List<Flow> endForwardFlows = new LinkedList<Flow>();
