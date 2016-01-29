@@ -7,7 +7,7 @@
  */
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.impl.rev141210;
 
-import org.opendaylight.netfloc.impl.NetflocProvider;
+import ch.icclab.netfloc.impl.NetflocProvider;
 import org.osgi.framework.BundleContext;
 
 public class NetflocModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.impl.rev141210.AbstractNetflocModule {

@@ -12,7 +12,7 @@ import org.opendaylight.controller.config.api.DependencyResolver;
 import org.opendaylight.controller.config.api.JmxAttribute;
 import org.opendaylight.controller.config.api.ModuleIdentifier;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
-import org.opendaylight.netfloc.impl.NetflocProvider;
+import ch.icclab.netfloc.impl.NetflocProvider;
 
 import javax.management.ObjectName;
 

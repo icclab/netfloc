@@ -1,0 +1,10 @@
+neutron router-create router1
+neutron net-create private
+neutron subnet-create --name=private_subnet private 10.10.10.0/24
+neutron net-create vnf_in
+neutron subnet-create --name=vnf_in_sub vnf_in 11.11.11.0/24
+neutron net-create vnf_out
+neutron subnet-create --name=vnf_out_sub vnf_out 12.12.12.0/24
+neutron router-interface-add router1 private_subnet
+neutron router-interface-add router1 vnf_in_sub
+neutron router-interface-add router1 vnf_out_sub
