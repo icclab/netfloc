@@ -32,6 +32,8 @@ import java.util.concurrent.Future;
 import com.google.common.util.concurrent.Futures;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +42,7 @@ import org.slf4j.LoggerFactory;
 public class NetflocServiceImpl implements NetflocService, AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(NetflocServiceImpl.class);
 	private final ExecutorService executor;
+    private Map<String,IServiceChain> activeChains = new HashMap<String, IServiceChain>();
     private List<IServiceChainListener> serviceChainListeners = new LinkedList<IServiceChainListener>();
     private NetworkGraph graph;
     private int chainID = 0;
@@ -56,6 +59,11 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
 
     public void registerServiceChainListener(IServiceChainListener nsl) {
         this.serviceChainListeners.add(nsl);
+    }
+
+    private RpcError idNotFoundError() {
+        return RpcResultBuilder.newError( ErrorType.APPLICATION, "not-found",
+            "Service Chain Id not found", null, null, null );
     }
 
     private RpcError wrongAmoutOfPortsError() {
@@ -131,6 +139,7 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
         for (IServiceChainListener scl : this.serviceChainListeners) {
             scl.serviceChainCreated(chainInstance);
         }
+        this.activeChains.put("" + chainID, chainInstance);
 
         //return chainID;
         return Futures.immediateFuture(RpcResultBuilder.<CreateServiceChainOutput> success(new CreateServiceChainOutputBuilder().setServiceChainId("" + chainID).build()).build());
@@ -142,6 +151,18 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
      */
     @Override
     public Future<RpcResult<java.lang.Void>> deleteServiceChain(DeleteServiceChainInput input) {
-    	return null;
+        String id = input.getServiceChainId();
+        IServiceChain sc = activeChains.get(id);
+        if (sc == null) {
+            return Futures.immediateFuture( RpcResultBuilder.<Void> failed().withRpcError(idNotFoundError()).build() );
+        }
+
+        for (IServiceChainListener scl : this.serviceChainListeners) {
+            scl.serviceChainDeleted(sc);
+        }
+
+        activeChains.remove(id);
+
+    	return Futures.immediateFuture(RpcResultBuilder.<Void> success().build());
     }
 }
