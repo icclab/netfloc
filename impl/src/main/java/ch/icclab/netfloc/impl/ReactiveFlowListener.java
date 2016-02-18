@@ -69,6 +69,7 @@ public class ReactiveFlowListener implements PacketProcessingListener {
 		MacAddress srcMac = ReactiveFlowListener.getMacAddress(srcMacRaw);
 		MacAddress dstMac = ReactiveFlowListener.getMacAddress(dstMacRaw);
 		for (IMacLearningListener listener : this.macLearningListeners) {
+			logger.info("notification for new mac address pair");
 			listener.macAddressesLearned(ingressNodeConnectorId, srcMac, dstMac);
 		}
 	}

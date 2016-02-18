@@ -92,10 +92,11 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 
 	@Override
 	public void macAddressesLearned(NodeConnectorId inPort, MacAddress srcMac, MacAddress dstMac) {
+		logger.info("notified for new mac address pair");
 		NodeConnectorId beginPortNcId = new NodeConnectorId("openflow:" +
 			Long.parseLong(beginBridge.getDatapathId()
 				.replace(":", ""), 16) +
-			":" + endBridgeBeginPort.getOfport());
+			":" + beginBridgeBeginPort.getOfport());
 		if (!inPort.equals(beginPortNcId)) {
 			return;
 		}
