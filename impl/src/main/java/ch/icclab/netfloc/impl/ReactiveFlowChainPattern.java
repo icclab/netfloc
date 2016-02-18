@@ -56,13 +56,13 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FlowChainPattern implements IFlowChainPattern {
+public class ReactiveFlowChainPattern implements IFlowChainPattern {
 
 	// TODO manage this somewhere, possibly in the flowconneciton manager
 	private static final int CHAIN_PRIORITY = 20;
-	private static final int CHAIN_DROP_PRIORITY = 19;
+	private static final int CHAIN_CATCH_PRIORITY = 19;
 	
-	private static final Logger logger = LoggerFactory.getLogger(FlowChainPattern.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReactiveFlowChainPattern.class);
 
 	public List<Map<IBridgeOperator, List<Flow>>> apply(IServiceChain sc) {
 		List<Map<IBridgeOperator, List<Flow>>> flows = new LinkedList<Map<IBridgeOperator, List<Flow>>>();
@@ -103,18 +103,19 @@ public class FlowChainPattern implements IFlowChainPattern {
 
 		if (beginBridge.equals(endBridge)) {
 			List<Flow> beginBridgeFlows = new LinkedList<Flow>();
-			beginBridgeFlows.add(this.createDropFlow(beginBridge, path.getEndPort(), CHAIN_DROP_PRIORITY));
-			beginBridgeFlows.add(createBeginBeginBridgeFlow(beginBridge, chainId, hop, path.getBeginPort(), path.getEndPort(), path.getBeginPort().getMacAddress(), dstMac, CHAIN_PRIORITY));
+			beginBridgeFlows.add(this.createControllerFlow(beginBridge, path.getBeginPort(), CHAIN_CATCH_PRIORITY));
+			//beginBridgeFlows.add(createBeginBeginBridgeFlow(beginBridge, chainId, hop, path.getBeginPort(), path.getEndPort(), path.getBeginPort().getMacAddress(), dstMac, CHAIN_PRIORITY));
 			flows.put(beginBridge, beginBridgeFlows);
 			return flows;
 		}
 
 		List<Flow> beginBridgeFlows = new LinkedList<Flow>();
-		beginBridgeFlows.add(createBeginBeginBridgeFlow(beginBridge, chainId, hop, path.getBeginPort(), path.getNextLink(beginBridge), path.getBeginPort().getMacAddress(), dstMac, CHAIN_PRIORITY));
+		beginBridgeFlows.add(this.createControllerFlow(beginBridge, path.getBeginPort(), CHAIN_CATCH_PRIORITY));
+		//beginBridgeFlows.add(createBeginBeginBridgeFlow(beginBridge, chainId, hop, path.getBeginPort(), path.getNextLink(beginBridge), path.getBeginPort().getMacAddress(), dstMac, CHAIN_PRIORITY));
 		flows.put(beginBridge, beginBridgeFlows);
 
 		List<Flow> endBridgeFlows = new LinkedList<Flow>();
-		endBridgeFlows.add(this.createDropFlow(endBridge, path.getEndPort(), CHAIN_DROP_PRIORITY));
+		endBridgeFlows.add(this.createDropFlow(endBridge, path.getEndPort(), CHAIN_CATCH_PRIORITY));
 		endBridgeFlows.add(createForwardFlow(endBridge, chainId, hop, path.getPreviousLink(endBridge), path.getEndPort(), CHAIN_PRIORITY));
 		flows.put(endBridge, endBridgeFlows);
 
@@ -137,20 +138,20 @@ public class FlowChainPattern implements IFlowChainPattern {
 
 		if (beginBridge.equals(endBridge)) {
 			List<Flow> beginBridgeFlows = new LinkedList<Flow>();
-			beginBridgeFlows.add(this.createDropFlow(beginBridge, path.getBeginPort(), CHAIN_DROP_PRIORITY));
-			beginBridgeFlows.add(this.createDropFlow(beginBridge, path.getEndPort(), CHAIN_DROP_PRIORITY));
+			beginBridgeFlows.add(this.createDropFlow(beginBridge, path.getBeginPort(), CHAIN_CATCH_PRIORITY));
+			beginBridgeFlows.add(this.createDropFlow(beginBridge, path.getEndPort(), CHAIN_CATCH_PRIORITY));
 			beginBridgeFlows.add(createBeginBridgeFlow(beginBridge, chainId, hop, path.getBeginPort(), path.getEndPort(), CHAIN_PRIORITY));
 			flows.put(beginBridge, beginBridgeFlows);
 			return flows;
 		}
 
 		List<Flow> beginBridgeFlows = new LinkedList<Flow>();
-		beginBridgeFlows.add(this.createDropFlow(beginBridge, path.getBeginPort(), CHAIN_DROP_PRIORITY));
+		beginBridgeFlows.add(this.createDropFlow(beginBridge, path.getBeginPort(), CHAIN_CATCH_PRIORITY));
 		beginBridgeFlows.add(createBeginBridgeFlow(beginBridge, chainId, hop, path.getBeginPort(), path.getNextLink(beginBridge), CHAIN_PRIORITY));
 		flows.put(beginBridge, beginBridgeFlows);
 
 		List<Flow> endBridgeFlows = new LinkedList<Flow>();
-		endBridgeFlows.add(this.createDropFlow(endBridge, path.getEndPort(), CHAIN_DROP_PRIORITY));
+		endBridgeFlows.add(this.createDropFlow(endBridge, path.getEndPort(), CHAIN_CATCH_PRIORITY));
 		endBridgeFlows.add(createForwardFlow(endBridge, chainId, hop, path.getPreviousLink(endBridge), path.getEndPort(), CHAIN_PRIORITY));
 		flows.put(endBridge, endBridgeFlows);
 
@@ -173,19 +174,19 @@ public class FlowChainPattern implements IFlowChainPattern {
 
 		if (beginBridge.equals(endBridge)) {
 			List<Flow> endBridgeFlows = new LinkedList<Flow>();
-			endBridgeFlows.add(this.createDropFlow(endBridge, path.getBeginPort(), CHAIN_DROP_PRIORITY));
-			endBridgeFlows.add(createBeginEndBridgeFlow(endBridge, chainId, hop, path.getBeginPort(), path.getEndPort(), CHAIN_PRIORITY));
+			endBridgeFlows.add(this.createDropFlow(endBridge, path.getBeginPort(), CHAIN_CATCH_PRIORITY));
+			//endBridgeFlows.add(createBeginEndBridgeFlow(endBridge, chainId, hop, path.getBeginPort(), path.getEndPort(), CHAIN_PRIORITY));
 			flows.put(endBridge, endBridgeFlows);
 			return flows;
 		}
 
 		List<Flow> beginBridgeFlows = new LinkedList<Flow>();
-		beginBridgeFlows.add(this.createDropFlow(endBridge, path.getBeginPort(), CHAIN_DROP_PRIORITY));
+		beginBridgeFlows.add(this.createDropFlow(endBridge, path.getBeginPort(), CHAIN_CATCH_PRIORITY));
 		beginBridgeFlows.add(createBeginBridgeFlow(beginBridge, chainId, hop, path.getBeginPort(), path.getNextLink(beginBridge), CHAIN_PRIORITY));
 		flows.put(beginBridge, beginBridgeFlows);
 
 		List<Flow> endBridgeFlows = new LinkedList<Flow>();
-		endBridgeFlows.add(createEndEndBridgeFlow(endBridge, chainId, hop, path.getPreviousLink(endBridge), path.getEndPort(), CHAIN_PRIORITY));
+		//endBridgeFlows.add(createEndEndBridgeFlow(endBridge, chainId, hop, path.getPreviousLink(endBridge), path.getEndPort(), CHAIN_PRIORITY));
 		flows.put(endBridge, endBridgeFlows);
 
 		IBridgeOperator bridge = path.getNext(beginBridge);
@@ -311,6 +312,52 @@ public class FlowChainPattern implements IFlowChainPattern {
 
 		// TODO generate flow id
 		String flowId = "Drop_" + inPort.getOfport() + "_" + bridge.getDatapathId();
+		flowBuilder.setId(new FlowId(flowId));
+		FlowKey key = new FlowKey(new FlowId(flowId));
+
+		flowBuilder.setBarrier(true);
+		flowBuilder.setTableId((short)0);
+		flowBuilder.setKey(key);
+		flowBuilder.setPriority(priority);
+		flowBuilder.setFlowName(flowId);
+		flowBuilder.setHardTimeout(0);
+		flowBuilder.setIdleTimeout(0);
+
+		return flowBuilder.setInstructions(isb.setInstruction(instructions).build()).build();
+	}
+
+	private Flow createControllerFlow(IBridgeOperator bridge, IPortOperator inPort, int priority) {
+
+		NodeConnectorId ncidIn = new NodeConnectorId("openflow:" +
+			Long.parseLong(bridge.getDatapathId()
+				.replace(":", ""), 16) +
+			":" + inPort.getOfport());
+		MatchBuilder matchBuilder = new MatchBuilder();
+		matchBuilder.setInPort(ncidIn);
+
+		// Prepare Instruction
+		InstructionsBuilder isb = new InstructionsBuilder();
+		List<Instruction> instructions = new LinkedList<Instruction>();
+		InstructionBuilder ib = new InstructionBuilder();
+		ApplyActionsBuilder aab = new ApplyActionsBuilder();
+		List<Action> actionList = new LinkedList<Action>();
+
+		// packet in action
+		actionList.add(OpenFlowUtil.createControllerAction());
+
+		// Apply Actions Instruction
+		aab.setAction(actionList);
+		ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
+		ib.setOrder(0);
+		ib.setKey(new InstructionKey(0));
+		instructions.add(ib.build());
+
+		// Create Flow
+		FlowBuilder flowBuilder = new FlowBuilder();
+		flowBuilder.setMatch(matchBuilder.build());
+
+		// TODO generate flow id
+		String flowId = "Controller_" + inPort.getOfport() + "_" + bridge.getDatapathId();
 		flowBuilder.setId(new FlowId(flowId));
 		FlowKey key = new FlowKey(new FlowId(flowId));
 

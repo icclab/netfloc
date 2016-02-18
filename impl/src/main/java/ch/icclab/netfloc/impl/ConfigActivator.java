@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 public class ConfigActivator implements BundleActivator {
 
-	private static final Logger LOG = LoggerFactory.getLogger(NetflocProvider.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ConfigActivator.class);
 	private ProviderContext providerContext;
 	private List<ServiceRegistration<?>> registrations = new ArrayList<ServiceRegistration<?>>();
 
@@ -47,7 +47,7 @@ public class ConfigActivator implements BundleActivator {
 		IFlowBroadcastPattern broadcastPattern = new FlowBroadcastPattern();
 		IFlowChainPattern chainPattern = new FlowChainPattern();
 		IFlowprogrammer flowProgrammer = new Flowprogrammer(providerContext.getSALService(DataBroker.class));
-		FlowConnectionManager flowManager = new FlowConnectionManager(flowProgrammer);
+		FlowConnectionManager flowManager = new FlowConnectionManager(flowProgrammer, new ReactiveFlowListener());
 		NetflocServiceImpl netflocService = new NetflocServiceImpl(graph);
 		flowManager.registerBroadcastPattern(broadcastPattern);
 		flowManager.registerPathPattern(pathPattern);

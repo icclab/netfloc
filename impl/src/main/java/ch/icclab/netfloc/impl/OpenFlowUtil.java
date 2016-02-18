@@ -15,6 +15,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlDstActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.dst.action._case.SetDlDstActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -110,7 +112,7 @@ public class OpenFlowUtil {
 		return "LLDP_" + bridge.getDatapathId();
 	}
 
-	private static Action createControllerAction() {
+	public static Action createControllerAction() {
 		ActionBuilder ab = new ActionBuilder();
 		OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(0xffff);
@@ -324,4 +326,39 @@ public class OpenFlowUtil {
                 .build());
         return emb.build();
     }
+
+    public static Action createRewriteAction(int chainId, int hop, int order) {
+		ActionBuilder abRewrite = new ActionBuilder();
+		SetDlDstActionBuilder rewrite = new SetDlDstActionBuilder();
+		rewrite.setAddress(OpenFlowUtil.getVirtualMac(chainId, hop));
+		abRewrite.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(rewrite.build()).build());
+		abRewrite.setOrder(order);
+		abRewrite.setKey(new ActionKey(order));
+		return abRewrite.build();
+	}
+
+	public static MacAddress getVirtualMac(int chainId, int hop) {
+		String chainIdHex = Integer.toHexString(chainId);
+		String hopHex = Integer.toHexString(hop);
+		return new MacAddress(((chainIdHex.length() == 2) ? chainIdHex : "0" + chainIdHex) +
+			":" + ((hopHex.length() == 2) ? hopHex : "0" + hopHex) +
+			":ff:ff:ff:ff");
+	}
+
+	public static Action createOutputAction(IBridgeOperator bridge, IPortOperator outPort, int order) {
+		ActionBuilder abOutput = new ActionBuilder();
+		OutputActionBuilder output = new OutputActionBuilder();
+		NodeConnectorId ncidOut = new NodeConnectorId("openflow:" +
+			Long.parseLong(bridge.getDatapathId()
+				.replace(":", ""), 16) +
+			":" + outPort.getOfport());
+
+		output.setOutputNodeConnector(ncidOut);
+		output.setMaxLength(65535);
+
+		abOutput.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+		abOutput.setOrder(order);
+		abOutput.setKey(new ActionKey(order));
+		return abOutput.build();
+	}
 }

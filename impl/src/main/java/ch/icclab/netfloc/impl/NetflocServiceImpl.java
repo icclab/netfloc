@@ -143,7 +143,7 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
 
         //return chainID;
         return Futures.immediateFuture(RpcResultBuilder.<CreateServiceChainOutput> success(new CreateServiceChainOutputBuilder().setServiceChainId("" + chainID).build()).build());
-    }    
+    }
 
     /**
      * Delete a Service Chain
