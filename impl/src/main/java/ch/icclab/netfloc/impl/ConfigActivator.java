@@ -101,6 +101,9 @@ public class ConfigActivator implements BundleActivator {
         LinkDiscoveryListener linkDiscoveryListener = new LinkDiscoveryListener();
         notificationService.registerNotificationListener(linkDiscoveryListener);
 
+        ReactiveFlowListener reactiveFlowListener = new ReactiveFlowListener();
+	 	notificationService.registerNotificationListener(reactiveFlowListener);       
+
         LinkDataChangeListener linkDataChangeListener = new LinkDataChangeListener(providerContext.getSALService(DataBroker.class), manager);
         registerService(context,
                 new String[] {LinkDataChangeListener.class.getName()}, null, linkDataChangeListener);
