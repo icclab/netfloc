@@ -270,6 +270,22 @@ public class FlowConnectionManager implements IBroadcastListener, INetworkPathLi
 				}
 			}
 		}
+
+		// TODO: parameterize this and add a check or sth. this should be tied to the flow pattern somehow
+		// for now we just keep this here for testing purposee
+
+		IMacLearningListener reactiveFlowWriter = new ServiceChainMacLearningFlowWriter(
+			sc.getChainId(),
+			sc.getBegin().getBegin(),
+			sc.getEnd().getEnd(),
+			sc.getBegin().getBeginPort(),
+			sc.getBegin().getEndPort(),
+			sc.getEnd().getBeginPort(),
+			sc.getEnd().getEndPort(),
+			(sc.getEnd().getBegin().equals(sc.getEnd().getEnd())) ? sc.getNumberHops() - 1 : sc.getNumberHops(),
+			this.flowprogrammer
+			);
+		this.reactiveFlowListener.registerMacLearningListener(reactiveFlowWriter);
 		
 	}
 
@@ -294,22 +310,6 @@ public class FlowConnectionManager implements IBroadcastListener, INetworkPathLi
 				}
 			}
 		}
-
-		// TODO: parameterize this and add a check or sth. this should be tied to the flow pattern somehow
-		// for now we just keep this here for testing purposee
-
-		IMacLearningListener reactiveFlowWriter = new ServiceChainMacLearningFlowWriter(
-			sc.getChainId(),
-			sc.getBegin().getBegin(),
-			sc.getEnd().getEnd(),
-			sc.getBegin().getBeginPort(),
-			sc.getBegin().getEndPort(),
-			sc.getEnd().getBeginPort(),
-			sc.getEnd().getEndPort(),
-			(sc.getEnd().getBegin().equals(sc.getEnd().getEnd())) ? sc.getNumberHops() - 1 : sc.getNumberHops(),
-			this.flowprogrammer
-			);
-		this.reactiveFlowListener.registerMacLearningListener(reactiveFlowWriter);
 	}
 	
 	@Override	
