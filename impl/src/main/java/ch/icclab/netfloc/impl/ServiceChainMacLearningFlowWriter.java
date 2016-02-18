@@ -71,7 +71,11 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 
 	static final Logger logger = LoggerFactory.getLogger(ServiceChainMacLearningFlowWriter.class);
 
-	public ServiceChainMacLearningFlowWriter(int chainId, IBridgeOperator beginBridge, IBridgeOperator endBridge, IPortOperator beginBridgeBeginPort, IPortOperator beginBridgeEndPort, IPortOperator endBridgeBeginPort, IPortOperator endBridgeEndPort, int endBridgeHop, IFlowprogrammer flowprogrammer) {
+	public ServiceChainMacLearningFlowWriter(int chainId,
+		IBridgeOperator beginBridge, IBridgeOperator endBridge,
+		IPortOperator beginBridgeBeginPort, IPortOperator beginBridgeEndPort,
+		IPortOperator endBridgeBeginPort, IPortOperator endBridgeEndPort,
+		int endBridgeHop, IFlowprogrammer flowprogrammer) {
 		if (beginBridge == null ||
 			endBridge == null ||
 			beginBridgeEndPort == null ||

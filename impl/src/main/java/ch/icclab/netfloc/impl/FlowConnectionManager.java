@@ -274,14 +274,17 @@ public class FlowConnectionManager implements IBroadcastListener, INetworkPathLi
 
 		// TODO: parameterize this and add a check or sth. this should be tied to the flow pattern somehow
 		// for now we just keep this here for testing purposee
-
+		IPortOperator beginBridgeEndPort = (sc.getBegin().getBegin().equals(sc.getBegin().getEnd())) ? sc.getBegin().getEndPort() : sc.getBegin().getNextLink(sc.getBegin().getBegin());
+		IPortOperator endBridgeBeginPort = (sc.getEnd().getBegin().equals(sc.getEnd().getEnd())) ? sc.getEnd().getBeginPort() : sc.getEnd().getPreviousLink(sc.getEnd().getEnd());
 		IMacLearningListener reactiveFlowWriter = new ServiceChainMacLearningFlowWriter(
 			sc.getChainId(),
 			sc.getBegin().getBegin(),
 			sc.getEnd().getEnd(),
 			sc.getBegin().getBeginPort(),
-			sc.getBegin().getEndPort(),
-			sc.getEnd().getBeginPort(),
+			// bridge not path
+			beginBridgeEndPort,
+			// bridge not path
+			endBridgeBeginPort,
 			sc.getEnd().getEndPort(),
 			(sc.getEnd().getBegin().equals(sc.getEnd().getEnd())) ? sc.getNumberHops() - 1 : sc.getNumberHops(),
 			this.flowprogrammer
