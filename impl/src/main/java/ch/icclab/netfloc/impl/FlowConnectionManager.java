@@ -9,6 +9,7 @@ package ch.icclab.netfloc.impl;
 
 import ch.icclab.netfloc.iface.INetworkPath;
 import ch.icclab.netfloc.iface.IBridgeOperator;
+import ch.icclab.netfloc.iface.IPortOperator;
 import ch.icclab.netfloc.iface.IBridgeListener;
 import ch.icclab.netfloc.iface.IBroadcastListener;
 import ch.icclab.netfloc.iface.IFlowBroadcastPattern;
