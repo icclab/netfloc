@@ -48,7 +48,8 @@ public class ConfigActivator implements BundleActivator {
 		IFlowChainPattern chainPattern = new FlowChainPattern();
 		IFlowChainPattern reactiveChainPattern = new ReactiveFlowChainPattern();
 		IFlowprogrammer flowProgrammer = new Flowprogrammer(providerContext.getSALService(DataBroker.class));
-		FlowConnectionManager flowManager = new FlowConnectionManager(flowProgrammer, new ReactiveFlowListener());
+		ReactiveFlowListener reactiveFlowListener = new ReactiveFlowListener();
+		FlowConnectionManager flowManager = new FlowConnectionManager(flowProgrammer,reactiveFlowListener);
 		NetflocServiceImpl netflocService = new NetflocServiceImpl(graph);
 		flowManager.registerBroadcastPattern(broadcastPattern);
 		flowManager.registerPathPattern(pathPattern);
@@ -103,7 +104,6 @@ public class ConfigActivator implements BundleActivator {
         LinkDiscoveryListener linkDiscoveryListener = new LinkDiscoveryListener();
         notificationService.registerNotificationListener(linkDiscoveryListener);
 
-        ReactiveFlowListener reactiveFlowListener = new ReactiveFlowListener();
 	 	notificationService.registerNotificationListener(reactiveFlowListener);       
 
         LinkDataChangeListener linkDataChangeListener = new LinkDataChangeListener(providerContext.getSALService(DataBroker.class), manager);

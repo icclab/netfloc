@@ -42,6 +42,7 @@ public class ReactiveFlowListener implements PacketProcessingListener {
 	private List<IMacLearningListener> macLearningListeners = new LinkedList<IMacLearningListener>();
 
 	public void registerMacLearningListener(IMacLearningListener listener) {
+		logger.info("new mac listener added {}", listener);
 		this.macLearningListeners.add(listener);
 	}
 	
