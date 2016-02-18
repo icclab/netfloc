@@ -60,6 +60,7 @@ public class FlowConnectionManager implements IBroadcastListener, INetworkPathLi
 	// todo singleton
 	public FlowConnectionManager(IFlowprogrammer flowprogrammer, ReactiveFlowListener reactiveFlowListener) {
 		this.flowprogrammer = flowprogrammer;
+		this.reactiveFlowListener = reactiveFlowListener;
 	}
 
 	// API
