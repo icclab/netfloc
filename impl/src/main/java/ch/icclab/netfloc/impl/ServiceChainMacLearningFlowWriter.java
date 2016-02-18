@@ -84,10 +84,12 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 		this.chainId = chainId;
 		this.beginBridge = beginBridge;
 		this.endBridge = endBridge;
+		this.beginBridgeBeginPort = beginBridgeBeginPort;
 		this.beginBridgeEndPort = beginBridgeEndPort;
 		this.endBridgeBeginPort = endBridgeBeginPort;
 		this.endBridgeEndPort = endBridgeEndPort;
 		this.endBridgeHop = endBridgeHop;
+		this.flowprogrammer = flowprogrammer;
 	}
 
 	@Override
