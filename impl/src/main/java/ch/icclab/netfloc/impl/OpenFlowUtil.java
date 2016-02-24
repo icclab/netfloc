@@ -309,8 +309,8 @@ public class OpenFlowUtil {
 	}
 
 	public static EthernetMatch ethernetMatch(MacAddress srcMac,
-                                              MacAddress dstMac,
-                                              Long etherType) {
+                                            	MacAddress dstMac,
+                                            	Long etherType) {
         EthernetMatchBuilder emb = new  EthernetMatchBuilder();
         if (srcMac != null)
             emb.setEthernetSource(new EthernetSourceBuilder()
@@ -327,6 +327,29 @@ public class OpenFlowUtil {
         return emb.build();
     }
 
+    public static EthernetMatch ethernetMatchMasked(MacAddress srcMac,
+												MacAddress srcMask,
+                                            	MacAddress dstMac,
+                                            	MacAddress dstMask,
+                                            	Long etherType) {
+        EthernetMatchBuilder emb = new  EthernetMatchBuilder();
+		emb.setEthernetSource(new EthernetSourceBuilder()
+		    .setAddress(srcMac)
+		    .setMask(srcMask)
+		    .build());
+
+        emb.setEthernetDestination(new EthernetDestinationBuilder()
+			.setAddress(dstMac)
+			.setMask(dstMask)
+			.build());
+
+        if (etherType != null)
+            emb.setEthernetType(new EthernetTypeBuilder()
+                .setType(new EtherType(etherType))
+                .build());
+        return emb.build();
+    }
+
     public static Action createRewriteAction(int chainId, int hop, int order) {
 		ActionBuilder abRewrite = new ActionBuilder();
 		SetDlDstActionBuilder rewrite = new SetDlDstActionBuilder();
@@ -335,6 +358,26 @@ public class OpenFlowUtil {
 		abRewrite.setOrder(order);
 		abRewrite.setKey(new ActionKey(order));
 		return abRewrite.build();
+	}
+
+    public static Action createReactiveRewriteAction(int chainId, int hop, int connId, int order) {
+		ActionBuilder abRewrite = new ActionBuilder();
+		SetDlDstActionBuilder rewrite = new SetDlDstActionBuilder();
+		rewrite.setAddress(OpenFlowUtil.getVirtualReactiveMac(chainId, hop, connId));
+		abRewrite.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(rewrite.build()).build());
+		abRewrite.setOrder(order);
+		abRewrite.setKey(new ActionKey(order));
+		return abRewrite.build();
+	}
+
+	public static MacAddress getVirtualReactiveMac(int chainId, int hop, int connId) {
+		String chainIdHex = Integer.toHexString(chainId);
+		String hopHex = Integer.toHexString(hop);
+		String connIdHex = Integer.toHexString(connId);
+		return new MacAddress(((chainIdHex.length() == 2) ? chainIdHex : "0" + chainIdHex) +
+			":" + ((hopHex.length() == 2) ? hopHex : "0" + hopHex) +
+			":" + ((connIdHex.length() == 2) ? connIdHex : "0" + connIdHex) +
+			":ff:ff:ff");
 	}
 
 	public static MacAddress getVirtualMac(int chainId, int hop) {

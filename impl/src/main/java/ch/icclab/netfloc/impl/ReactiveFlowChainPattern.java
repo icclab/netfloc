@@ -218,6 +218,7 @@ public class ReactiveFlowChainPattern implements IFlowChainPattern {
 		EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
         EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
         ethDestinationBuilder.setAddress(this.getVirtualMac(chainId, hop));
+        ethDestinationBuilder.setMask(new MacAddress("ff:ff:00:00:00:00"));
         ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
         matchBuilder.setEthernetMatch(ethernetMatch.build());
 
@@ -426,7 +427,13 @@ public class ReactiveFlowChainPattern implements IFlowChainPattern {
 				.replace(":", ""), 16) +
 			":" + inPort.getOfport());
 		MatchBuilder matchBuilder = new MatchBuilder();
-		matchBuilder.setEthernetMatch(OpenFlowUtil.ethernetMatch(null, this.getVirtualMac(chainId, hop - 1), null));
+		//matchBuilder.setEthernetMatch(OpenFlowUtil.ethernetMatchMasked(null, this.getVirtualMac(chainId, hop - 1), null));
+		EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
+        EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
+        ethDestinationBuilder.setAddress(this.getVirtualMac(chainId, hop - 1));
+        ethDestinationBuilder.setMask(new MacAddress("ff:ff:00:00:00:00"));
+        ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
+        matchBuilder.setEthernetMatch(ethernetMatch.build());
 		matchBuilder.setInPort(ncidIn);
 
 		// Prepare Instruction

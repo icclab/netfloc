@@ -68,6 +68,7 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 	private IPortOperator endBridgeBeginPort;
 	private IPortOperator endBridgeEndPort;
 	private int endBridgeHop;
+	private int connId;
 
 	static final Logger logger = LoggerFactory.getLogger(ServiceChainMacLearningFlowWriter.class);
 
@@ -99,6 +100,7 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 	@Override
 	public void macAddressesLearned(NodeConnectorId inPort, MacAddress srcMac, MacAddress dstMac) {
 		logger.info("notified for new mac address pair");
+		connId++;
 		NodeConnectorId beginPortNcId = new NodeConnectorId("openflow:" +
 			Long.parseLong(beginBridge.getDatapathId()
 				.replace(":", ""), 16) +
@@ -142,7 +144,7 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 		
 		List<Action> actionList = new LinkedList<Action>();
 		// Rewrite Action
-		actionList.add(OpenFlowUtil.createRewriteAction(chainId, 0, 0));
+		actionList.add(OpenFlowUtil.createReactiveRewriteAction(chainId, 0, connId, 0));
 		// Output Action
 		actionList.add(OpenFlowUtil.createOutputAction(beginBridge, beginBridgeEndPort, 1));
 
@@ -177,7 +179,8 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 		MatchBuilder matchBuilder = new MatchBuilder();
 		EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
 		EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
-		ethDestinationBuilder.setAddress(OpenFlowUtil.getVirtualMac(chainId, endBridgeHop));
+		ethDestinationBuilder.setAddress(OpenFlowUtil.getVirtualReactiveMac(chainId, endBridgeHop, connId));
+		ethDestinationBuilder.setMask(new MacAddress("ff:ff:ff:00:00:00"));
 		ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
 		matchBuilder.setEthernetMatch(ethernetMatch.build());
 
