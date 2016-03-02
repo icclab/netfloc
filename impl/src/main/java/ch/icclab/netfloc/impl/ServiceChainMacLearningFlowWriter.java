@@ -68,7 +68,7 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 	private IPortOperator endBridgeBeginPort;
 	private IPortOperator endBridgeEndPort;
 	private int endBridgeHop;
-	private int connId;
+	private int connId = 0;
 
 	static final Logger logger = LoggerFactory.getLogger(ServiceChainMacLearningFlowWriter.class);
 
