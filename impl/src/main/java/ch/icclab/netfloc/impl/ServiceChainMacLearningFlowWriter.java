@@ -18,7 +18,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlDstActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.dst.action._case.SetDlDstActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.src.action._case.SetDlSrcActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
@@ -148,8 +150,10 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 		ApplyActionsBuilder aab = new ApplyActionsBuilder();
 		
 		List<Action> actionList = new LinkedList<Action>();
-		// Rewrite Action
-		actionList.add(OpenFlowUtil.createReactiveRewriteAction(chainId, 0, connId, 0));
+		// Rewrite Action Src
+		actionList.add(OpenFlowUtil.createRewriteActionSrc(chainId, connId, 0));
+		// Rewrite Action Dst
+		actionList.add(OpenFlowUtil.createRewriteAction(chainId, 0, 0));
 		// Output Action
 		actionList.add(OpenFlowUtil.createOutputAction(beginBridge, beginBridgeEndPort, 1));
 
@@ -183,10 +187,17 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 	private Flow createEndBridgeFlow(NodeConnectorId inPort, MacAddress srcMac, MacAddress dstMac) {
 		MatchBuilder matchBuilder = new MatchBuilder();
 		EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
+		
 		EthernetDestinationBuilder ethDestinationBuilder = new EthernetDestinationBuilder();
-		ethDestinationBuilder.setAddress(OpenFlowUtil.getVirtualReactiveMac(chainId, endBridgeHop, connId));
-		ethDestinationBuilder.setMask(new MacAddress("ff:ff:ff:00:00:00"));
+		ethDestinationBuilder.setAddress(OpenFlowUtil.getVirtualMac(chainId, endBridgeHop));
+		ethDestinationBuilder.setMask(new MacAddress("ff:ff:00:00:00:00"));
+
+		EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
+		ethSourceBuilder.setAddress(OpenFlowUtil.getVirtualMac(chainId, endBridgeHop));
+		ethSourceBuilder.setMask(new MacAddress("ff:ff:00:00:00:00"));		
+
 		ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
+		ethernetMatch.setEthernetSource(ethSourceBuilder.build());
 		matchBuilder.setEthernetMatch(ethernetMatch.build());
 
 		matchBuilder.setInPort(inPort);
@@ -200,13 +211,20 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 		ActionBuilder abRewrite = new ActionBuilder();
 		List<Action> actionList = new LinkedList<Action>();
 
-		// Rewrite Action
-		SetDlDstActionBuilder rewrite = new SetDlDstActionBuilder();
-		rewrite.setAddress(dstMac);
-
-		abRewrite.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(rewrite.build()).build());
+		// Rewrite Action Src
+		SetDlSrcActionBuilder rewriteSrc = new SetDlSrcActionBuilder();
+		rewriteSrc.setAddress(srcMac);
+		abRewrite.setAction(new SetDlSrcActionCaseBuilder().setSetDlSrcAction(rewriteSrc.build()).build());
 		abRewrite.setOrder(0);
 		abRewrite.setKey(new ActionKey(0));
+		actionList.add(abRewrite.build());
+
+		// Rewrite Action Dst
+		SetDlDstActionBuilder rewriteDst = new SetDlDstActionBuilder();
+		rewriteDst.setAddress(dstMac);
+		abRewrite.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(rewriteDst.build()).build());
+		abRewrite.setOrder(1);
+		abRewrite.setKey(new ActionKey(1));
 		actionList.add(abRewrite.build());
 
 		// Output Action
@@ -221,8 +239,8 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 		output.setMaxLength(65535);
 
 		abOutput.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-		abOutput.setOrder(1);
-		abOutput.setKey(new ActionKey(1));
+		abOutput.setOrder(2);
+		abOutput.setKey(new ActionKey(2));
 		actionList.add(abOutput.build());
 
 		// Apply Actions Instruction

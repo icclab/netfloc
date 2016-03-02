@@ -16,7 +16,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlDstActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.dst.action._case.SetDlDstActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.src.action._case.SetDlSrcActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -355,6 +357,16 @@ public class OpenFlowUtil {
 		SetDlDstActionBuilder rewrite = new SetDlDstActionBuilder();
 		rewrite.setAddress(OpenFlowUtil.getVirtualMac(chainId, hop));
 		abRewrite.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(rewrite.build()).build());
+		abRewrite.setOrder(order);
+		abRewrite.setKey(new ActionKey(order));
+		return abRewrite.build();
+	}
+
+	public static Action createRewriteActionSrc(int chainId, int hop, int order) {
+		ActionBuilder abRewrite = new ActionBuilder();
+		SetDlSrcActionBuilder rewrite = new SetDlSrcActionBuilder();
+		rewrite.setAddress(OpenFlowUtil.getVirtualMac(chainId, hop));
+		abRewrite.setAction(new SetDlSrcActionCaseBuilder().setSetDlSrcAction(rewrite.build()).build());
 		abRewrite.setOrder(order);
 		abRewrite.setKey(new ActionKey(order));
 		return abRewrite.build();
