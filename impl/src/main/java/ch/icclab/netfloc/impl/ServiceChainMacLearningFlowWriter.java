@@ -153,9 +153,9 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 		// Rewrite Action Src
 		actionList.add(OpenFlowUtil.createRewriteActionSrc(chainId, connId, 0));
 		// Rewrite Action Dst
-		actionList.add(OpenFlowUtil.createRewriteAction(chainId, 0, 0));
+		actionList.add(OpenFlowUtil.createRewriteAction(chainId, 0, 1));
 		// Output Action
-		actionList.add(OpenFlowUtil.createOutputAction(beginBridge, beginBridgeEndPort, 1));
+		actionList.add(OpenFlowUtil.createOutputAction(beginBridge, beginBridgeEndPort, 2));
 
 		// Apply Actions Instruction
 		aab.setAction(actionList);
