@@ -110,7 +110,7 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 		}
 
 		Flow beginBridgeFlow = this.createBeginBridgeFlow(inPort, srcMac, dstMac);
-		Flow endBridgeFlow = this.createEndBridgeFlow(inPort, srcMac, dstMac);
+		Flow endBridgeFlow = this.createEndBridgeFlow(endBridgeBeginPort, srcMac, dstMac);
 		flowprogrammer.programFlow(beginBridgeFlow, this.beginBridge, new FutureCallback<Void>() {
 			public void onSuccess(Void result) {
 				logger.info("new service chain reactive flow programmed");
