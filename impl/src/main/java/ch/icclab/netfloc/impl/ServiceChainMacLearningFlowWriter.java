@@ -193,8 +193,8 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 		ethDestinationBuilder.setMask(new MacAddress("ff:ff:00:00:00:00"));
 
 		EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
-		ethSourceBuilder.setAddress(OpenFlowUtil.getVirtualMac(chainId, endBridgeHop));
-		ethSourceBuilder.setMask(new MacAddress("ff:ff:00:00:00:00"));		
+		ethSourceBuilder.setAddress(OpenFlowUtil.getVirtualMac(chainId, connId));
+		ethSourceBuilder.setMask(new MacAddress("ff:ff:00:00:00:00"));
 
 		ethernetMatch.setEthernetDestination(ethDestinationBuilder.build());
 		ethernetMatch.setEthernetSource(ethSourceBuilder.build());
