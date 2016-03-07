@@ -71,9 +71,9 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
             "Service Chain Input cannot have an odd number of Neutron Ports", null, null, null );
     }
 
-    private RpcError portNotFoundError() {
+    private RpcError portNotFoundError(List<String> ports) {
         return RpcResultBuilder.newError( ErrorType.APPLICATION, "graph-state",
-            "Did not find all Neutron Ports in the Network Graph", null, null, null );
+            "Did not find all Neutron Ports in the Network Graph " + ports.toString(), null, null, null );
     }
 
     private RpcError pathNotClosedError() {
@@ -102,23 +102,28 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
 
         List<INetworkPath> chainNetworkPaths = new LinkedList<INetworkPath>();
         List<IHostPort> chainPorts = new LinkedList<IHostPort>();
-
+        List<String> portsNotFound = new LinkedList<String>();
         // get the host ports based on neutron port id from the graph.getHostPorts(...)
         logger.info("createServiceChain: {}", input);
         for (String portID : Arrays.asList(input.getNeutronPorts().split(","))) {
+        	boolean found = false;
             for (IHostPort port : graph.getHostPorts()) {
                 if (portID.equals(port.getNeutronUuid())) {
                     chainPorts.add(port);
+                    found = true;
                     break;
                 }
+            }
+            if (!found) {
+            	portsNotFound.add(portID);
             }
         }
         logger.info("NetflocServiceImpl chainNetworkPorts: {}", chainPorts);
 
-        if (chainPorts.size() != Arrays.asList(input.getNeutronPorts().split(",")).size()) {
-            RpcError error = portNotFoundError();
-            logger.error("Did not find all Neutron Ports in the Network Graph");
-            return Futures.immediateFuture( RpcResultBuilder.<CreateServiceChainOutput> failed().withRpcError(portNotFoundError()).build() );
+        if (portsNotFound.size() > 0) {
+            RpcError error = portNotFoundError(portsNotFound);
+            logger.error("Did not find all Neutron Ports in the Network Graph " + portsNotFound.toString());
+            return Futures.immediateFuture( RpcResultBuilder.<CreateServiceChainOutput> failed().withRpcError(error).build() );
         }
 
         for (int i = 0; i < chainPorts.size(); i = i + 2) {
