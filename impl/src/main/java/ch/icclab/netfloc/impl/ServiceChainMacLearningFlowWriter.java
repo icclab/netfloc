@@ -169,7 +169,7 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 		flowBuilder.setMatch(matchBuilder.build());
 
 		// TODO generate flow id
-		String flowId = "ServiceChainRewrite_" + chainId + "_" connId + "_" + 0 + "_" + beginBridge.getDatapathId();
+		String flowId = "ServiceChainRewrite_" + chainId + "_" + connId + "_" + 0 + "_" + beginBridge.getDatapathId();
 		flowBuilder.setId(new FlowId(flowId));
 		FlowKey key = new FlowKey(new FlowId(flowId));
 
