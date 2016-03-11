@@ -45,6 +45,12 @@ public class ReactiveFlowListener implements PacketProcessingListener {
 		logger.info("new mac listener added {}", listener);
 		this.macLearningListeners.add(listener);
 	}
+
+	public void unregisterMacLearningListener(IMacLearningListener listener) {
+		if(this.macLearningListeners.remove(listener)) {
+			logger.info("mac listener removed", listener);
+		}
+	}
 	
 	@Override
 	public void onPacketReceived(PacketReceived notification) {
@@ -64,11 +70,12 @@ public class ReactiveFlowListener implements PacketProcessingListener {
 		byte[] dstMacRaw = Arrays.copyOfRange(notification.getPayload(), 0, 6);
 		byte[] srcMacRaw = Arrays.copyOfRange(notification.getPayload(), 6, 12);
 
-		logger.info("packet_in {}, {}, {}", ingressNodeConnectorId, dstMacRaw, srcMacRaw);
-
 		// notify listeners
 		MacAddress srcMac = ReactiveFlowListener.getMacAddress(srcMacRaw);
 		MacAddress dstMac = ReactiveFlowListener.getMacAddress(dstMacRaw);
+
+		logger.info("packet_in {}, {}, {}", ingressNodeConnectorId, srcMac, dstMac);
+
 		for (IMacLearningListener listener : this.macLearningListeners) {
 			logger.info("notification for new mac address pair");
 			listener.macAddressesLearned(ingressNodeConnectorId, srcMac, dstMac);

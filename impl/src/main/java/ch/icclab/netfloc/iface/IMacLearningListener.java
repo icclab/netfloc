@@ -12,4 +12,5 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 
 public interface IMacLearningListener {
 	public void macAddressesLearned(NodeConnectorId inPort, MacAddress srcMac, MacAddress dstMac);
+	public void shutDown();
 }

@@ -53,6 +53,8 @@ import com.google.common.util.concurrent.FutureCallback;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import org.slf4j.Logger;
@@ -71,6 +73,11 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 	private IPortOperator endBridgeEndPort;
 	private int endBridgeHop;
 	private int connId = 0;
+
+	private final List<Flow> beginBridgeFlowCache = new LinkedList<Flow>();
+	private final List<Flow> endBridgeFlowCache = new LinkedList<Flow>();
+
+	private Set<String> learnedMacs = new HashSet<String>();
 
 	static final Logger logger = LoggerFactory.getLogger(ServiceChainMacLearningFlowWriter.class);
 
@@ -100,9 +107,36 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 	}
 
 	@Override
+	public void shutDown() {
+		for (Flow flow : this.beginBridgeFlowCache) {
+			flowprogrammer.deleteFlow(flow, this.beginBridge, new FutureCallback<Void>() {
+				public void onSuccess(Void result) {
+					logger.info("reactive flow deleted");
+				}
+
+				public void onFailure(Throwable t) {
+					logger.info("new service chain reactive flow failed");
+				}
+			});
+		}
+		for (Flow flow : this.endBridgeFlowCache) {
+			flowprogrammer.deleteFlow(flow, this.endBridge, new FutureCallback<Void>() {
+				public void onSuccess(Void result) {
+					logger.info("reactive flow deleted");
+				}
+
+				public void onFailure(Throwable t) {
+					logger.info("new service chain reactive flow failed");
+				}
+			});
+		}
+		this.beginBridgeFlowCache.removeAll(this.beginBridgeFlowCache);
+		this.endBridgeFlowCache.removeAll(this.endBridgeFlowCache);
+	}
+
+	@Override
 	public void macAddressesLearned(NodeConnectorId inPort, MacAddress srcMac, MacAddress dstMac) {
 		logger.info("notified for new mac address pair");
-		connId++;
 		NodeConnectorId beginPortNcId = new NodeConnectorId("openflow:" +
 			Long.parseLong(beginBridge.getDatapathId()
 				.replace(":", ""), 16) +
@@ -111,16 +145,25 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 			return;
 		}
 
+		if (this.learnedMacs.contains(srcMac.toString() + dstMac.toString())) {
+			logger.info("mac address pair allready learned");
+			return;
+		}
+
+		this.learnedMacs.add(srcMac.toString() + dstMac.toString());
+		connId++;
+
 		NodeConnectorId endPortNcId = new NodeConnectorId("openflow:" +
 			Long.parseLong(endBridge.getDatapathId()
 				.replace(":", ""), 16) +
 			":" + endBridgeBeginPort.getOfport());
 
-		Flow beginBridgeFlow = this.createBeginBridgeFlow(inPort, srcMac, dstMac);
-		Flow endBridgeFlow = this.createEndBridgeFlow(endPortNcId, srcMac, dstMac);
+		final Flow beginBridgeFlow = this.createBeginBridgeFlow(inPort, srcMac, dstMac);
+		final Flow endBridgeFlow = this.createEndBridgeFlow(endPortNcId, srcMac, dstMac);
 		flowprogrammer.programFlow(beginBridgeFlow, this.beginBridge, new FutureCallback<Void>() {
 			public void onSuccess(Void result) {
 				logger.info("new service chain reactive flow programmed");
+				beginBridgeFlowCache.add(beginBridgeFlow);
 			}
 
 			public void onFailure(Throwable t) {
@@ -130,6 +173,7 @@ public class ServiceChainMacLearningFlowWriter implements IMacLearningListener {
 		flowprogrammer.programFlow(endBridgeFlow, this.endBridge, new FutureCallback<Void>() {
 			public void onSuccess(Void result) {
 				logger.info("new service chain reactive flow programmed");
+				endBridgeFlowCache.add(endBridgeFlow);
 			}
 
 			public void onFailure(Throwable t) {

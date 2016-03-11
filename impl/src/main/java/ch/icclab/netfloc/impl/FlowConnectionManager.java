@@ -55,6 +55,8 @@ public class FlowConnectionManager implements IBroadcastListener, INetworkPathLi
 	private final Map<IBridgeOperator, IFlowBridgePattern> programBridgeSuccess = new HashMap<IBridgeOperator, IFlowBridgePattern>();
 	private final Map<IBridgeOperator, IFlowBridgePattern> programBridgeFailure = new HashMap<IBridgeOperator, IFlowBridgePattern>();
 
+	private final Map<Integer, IMacLearningListener> macListeners = new HashMap<Integer, IMacLearningListener>();
+
 	private IFlowprogrammer flowprogrammer;
 	private ReactiveFlowListener reactiveFlowListener;
 
@@ -291,7 +293,7 @@ public class FlowConnectionManager implements IBroadcastListener, INetworkPathLi
 			this.flowprogrammer
 			);
 		this.reactiveFlowListener.registerMacLearningListener(reactiveFlowWriter);
-		
+		this.macListeners.put(sc.getChainId(), reactiveFlowWriter);
 	}
 
 	@Override
@@ -314,6 +316,13 @@ public class FlowConnectionManager implements IBroadcastListener, INetworkPathLi
 					});
 				}
 			}
+		}
+		IMacLearningListener listener = this.macListeners.get(sc.getChainId());
+		if (listener != null) {
+			// delete the listeners flows first
+			listener.shutDown();
+			this.reactiveFlowListener.unregisterMacLearningListener(listener);
+			this.macListeners.remove(sc.getChainId());
 		}
 	}
 	
