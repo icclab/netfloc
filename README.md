@@ -18,7 +18,7 @@ Currently Netfloc provides library support for OpenStack tenant-based network gr
 
 # Architecture Design
 
-[Netfloc Architecture Design](docs/architecture.md)
+[Netfloc Architecture Design](https://github.com/icclab/netfloc/blob/master/docs/architecture.md)
 
 
 ## Features
@@ -89,7 +89,7 @@ Currently Netfloc defines API Specification for the following network resources:
 - End-to-end network path 
 - Flow patterns on netowrk paths
 
-For more detailed information: [Netfloc APIs](./docs/netfloc_api_spec/)
+For more detailed information: [Netfloc APIs](http://icclab.github.io/netfloc/docs/netfloc_api_spec/netfloc.html)
 
 
 ## Roadmap
@@ -118,15 +118,21 @@ See the file LICENSE.
 
 <div align="center" >
 <a href='http://blog.zhaw.ch/icclab'>
-<img src="https://raw.githubusercontent.com/icclab/netfloc/master/docs/img/icclab-logo.png" title="icclab_logo" width=200px>
+<img src="https://raw.githubusercontent.com/icclab/netfloc/master/docs/img/se_sp_logo.jpg" title="icclab_logo" width=500px>
 </a>
 </div>
 
-# This project is part of FIWARE
+# This project is part of FIWARE, T-Nova and SESAME
 
-<div align="center" >
+<div>
 <a href='https://www.fiware.org/'>
 <img src="https://raw.githubusercontent.com/icclab/netfloc/master/docs/img/Logo-FIWARE.png" title="FIWARE_logo" width=200px>
+</a>
+<a href='https://www.fiware.org/'>
+<img src="https://raw.githubusercontent.com/icclab/netfloc/master/docs/img/logo_tnova.jpg" title="T-Nova_logo" width=300px>
+</a>
+<a href='https://www.fiware.org/'>
+<img src="https://raw.githubusercontent.com/icclab/netfloc/master/docs/img/sesame-logo.png" title="SESAME_logo" width=120px>
 </a>
 </div>
 
