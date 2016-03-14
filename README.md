@@ -1,5 +1,8 @@
-![Alt Image Text](https://raw.githubusercontent.com/icclab/netfloc/master/docs/img/netfloc.png)
-
+<div align="center">
+<a align="center" href='https://www.fiware.org/'>
+<img src="https://raw.githubusercontent.com/icclab/netfloc/master/docs/img/netfloc.png" title="SESAME_logo" width=400px>
+</a>
+</div>
 
 # What is Netfloc?
 
