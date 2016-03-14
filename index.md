@@ -67,7 +67,7 @@ Netfloc is licensed under the [Apache License version 2.0](https://www.apache.or
 
 <footer>
         <p>This project is made and maintained by <a href="https://github.com/icclab">icclab</a></p>
-        <p><img src="https://raw.githubusercontent.com/icclab/netfloc/master/docs/img/icclab-logo.png"></p>
+        <p><img src="https://raw.githubusercontent.com/icclab/netfloc/master/docs/img/se_sp_logo.jpg"></p>
         <p><small>Hosted on <a href="http://chibicode.github.io/solo/">GitHub Pages</a> &mdash; Theme by <a href="https://github.com/chibicode/solo">chibicode</a>
         </small>
         </p>
