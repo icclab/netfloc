@@ -2,7 +2,9 @@
 layout: default
 ---
 
-[What is Netfloc?](https://github.com/icclab/netfloc/) NETwork FLOws for Clouds (Netfloc) is a framework for datacenter network programming. It is comprised of set of tools and libraries packed as Java bundles that interoperate with the OpenDaylight controller. Netfloc exposes REST API abstractions and Java interfaces for network programmers to enable optimal integration in cloud datacenters and fully SDN-enabled end-to-end management of OpenFlow enabled switches.
+<p align="center"><img src="/Users/irena/Applications/netfloc/docs/img/netfloc.jpg" width="300px"></p>
+
+[What is Netfloc?](https://github.com/icclab/netfloc/) NETwork FLOws for Clouds (Netfloc) is SDN-based SDK for datacenter network programming. It is comprised of set of tools and libraries packed as Java bundles that interoperate with the OpenDaylight controller. Netfloc exposes REST API abstractions and Java interfaces for network programmers to enable optimal integration in cloud datacenters and fully SDN-enabled end-to-end management of OpenFlow enabled switches. 
  
 ## Why OpenDaylight as SDN controller?
 
@@ -10,7 +12,8 @@ OpenDaylight is hosting one of the biggest growing community for network program
 
 ## Work in progress
 
-Currently Netfloc provides library support for OpenStack tenant-based network graph management and traversal. It is based on the following OpenDaylight features: mdsal, openflowplugin and ovsdb (see Architecture and Roadmap.) It also provides a support for the northbound OpenStack Neutron ML2 plugin APIs. For upcoming milestones, check the Roadmap section.
+Currently Netfloc provides library support for OpenStack tenant-based network graph management and traversal. It is based on the following OpenDaylight features: **mdsal, openflowplugin** and **ovsdb** (see [Architecture](#architecture). It also provides a support for the northbound OpenStack Neutron ML2 plugin APIs. Check [Netfloc status](#netfloc-status) for the latest updates and the [Roadmap](#roadmap) section for upcoming milestones.
+
 
 ## Architecture Design
 
@@ -31,35 +34,40 @@ Check the <a href="https://github.com/icclab/netfloc/blob/master/docs/architectu
 
 ## See further details on:
 
-<p><a href="https://github.com/icclab/netfloc/blob/master/docs/installation_guide.md/">Netfloc instalation and adminisatrion</a></p>
-<p><a href="https://github.com/icclab/netfloc/blob/master/docs/programmers_guide.md">Netfloc programmers guide</a></p>
+<p><a href="http://netfloc.readthedocs.org/en/latest/installation_and_administration_guide">Netfloc instalation and adminisatrion</a></p>
+<p><a href="http://netfloc.readthedocs.org/en/latest/user_and_programmers_guide">Netfloc programmers guide</a></p>
 
 
 ## Netfloc APIs
 
-Currently Netfloc defines [API Specification](http://icclab.github.io/netfloc/docs/netfloc_api_spec/netfloc.html) for the following network resources:
-
+The Service Function Chain basic APIs are fully functional at the moment. Netfloc defines API Specification for the following network resources, for which development of Northbound APIs has been scheduled:
 
 - Tenant filtered network graph
 - All host ports
 - End-to-end network path 
-- Flow patterns on netowrk paths
+- Flow patterns on network paths
+- Chain patterns 
+
+For more detailed information: [Netfloc APIs](http://icclab.github.io/netfloc/docs/netfloc_api_spec/netfloc.html)
+
+## Netfloc status
+
+Currently Netfloc implements libraries to support for the following applications:
+
+- **Isolation Application**:  Ensure end-to-end tenant segregation using novel non-GRE/VxLAN tunnelling mechanism for optimized packet header.
+- **Resilience Application**: Provide direct SDN control on a physical level enabling fully SDN-managed infrastructure.
+- **Service Function Chaining**: Traffic classification and steering support for NFVs. There is a test-case application based on this library. 
+
 
 ## Roadmap
 
-Next milestone for Netfloc is to provide application examples based on the libraries to showcase efficient management of OpenFlow enabled switches in datacenters, optimize tenant traffic isolation in datacenter cloud networks, leverage novel and improve existing networking functions. Some of the application in scope are:
+Next milestone for Netfloc is to provide application examples based on the supported libraries. New libraries to be implemented:
 
-- Isolation: Ensure end-to-end tenant segregation using novel non-GRE/VxLAN tunneling mechanism for optimized packet header.
-- Resilience: Provide direct SDN control on a physical level enabling fully SDN-managed infrastructure.
-- Service Function Chaining: Traffic classification and steering support for NFVs.
-- Advanced monitoring for cloud datacenters based on OpenFlow. 
-
-In paralel, support for the following features has been scheduled:
-
-- Nefloc northbound API specification
-- Advanced flow programming library based on OpenFlow
-- Testing and monitoring tools
-
+- Service Function Chain resilience
+- Inter-datacenter SFC support
+- Advanced testing and monitoring features
+- QoS support
+- Expose all libraries via API and Java bundles
 
 ### License
 
