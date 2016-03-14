@@ -2,7 +2,8 @@
 layout: default
 ---
 
-<p align="center"><img src="https://raw.githubusercontent.com/icclab/netfloc/master/docs/img/netfloc.jpg" width="300px"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/icclab/netfloc/master/docs/img/netfloc.png" width="300px"></p>
+
 
 [What is Netfloc?](https://github.com/icclab/netfloc/) NETwork FLOws for Clouds (Netfloc) is SDN-based SDK for datacenter network programming. It is comprised of set of tools and libraries packed as Java bundles that interoperate with the OpenDaylight controller. Netfloc exposes REST API abstractions and Java interfaces for network programmers to enable optimal integration in cloud datacenters and fully SDN-enabled end-to-end management of OpenFlow enabled switches. 
  
