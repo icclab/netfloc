@@ -14,12 +14,11 @@ OpenDaylight is hosting one of the biggest growing community for network program
 
 ## Work in progress
 
-Currently Netfloc provides library support for OpenStack tenant-based network graph management and traversal. It is based on the following OpenDaylight features: **mdsal, openflowplugin** and **ovsdb** (see [Architecture](#markdown-header-architecture) and [Roadmap](#markdown-header-roadmap).) It also provides a support for the northbound OpenStack Neutron ML2 plugin APIs. Check [Netfloc status](#markdown-header-netfloc-status) for the latest updates and [Roadmap](#markdown-header-roadmap-section) for upcoming milestones.
+Currently Netfloc provides library support for OpenStack tenant-based network graph management and traversal. It is based on the following OpenDaylight features: **mdsal, openflowplugin** and **ovsdb** (see [Architecture](#architecture). It also provides a support for the northbound OpenStack Neutron ML2 plugin APIs. Check [Netfloc status](#netfloc-status) for the latest updates and the [Roadmap](#roadmap) section for upcoming milestones.
 
-# Architecture Design
+## Architecture Design
 
 [Netfloc Architecture Design](https://github.com/icclab/netfloc/blob/master/docs/architecture.md)
-
 
 ## Features
 
@@ -49,7 +48,7 @@ Installation of the following is required:
 
 
 
-# Installation and Testing
+## Installation and Testing
 
 
 Clone and install Netfloc in the sdn-control node:
@@ -70,7 +69,7 @@ rm -rf karaf/target/assembly/datarm -rf karaf/target/assembly/journalrm -rf ka
 
 Configure the OVSs of each Open Stack node to connect to ODL on port 6633. Set up ODL as manager on port 6640:
 ```
-ovs-vsctl set-manager tcp:Controller_IP:6640ovs-vsctl set-contorller tcp:Controller_IP:6633
+ovs-vsctl set-manager tcp:[Controller_IP]:6640ovs-vsctl set-contorller tcp:[Controller_IP]:6633
 ```
 After the above steps, start the SDN controller (Netfloc): 
 
@@ -89,11 +88,10 @@ If you want to use Netfloc libraries in other ODL controllers generate SDK libra
 ```
 $cd scripts
 $./compile_sdk4sdn.sh
-
 ```
 
 The zip folder contains all the necesarry **jar** files to be copied and extracted in the **deploy folder** of any ODL controller. 
-A succesul instalation can be confirmed inside the karaf console as shown below:
+A successful installation can be confirmed inside the karaf console as shown below:
 
 ```
 opendaylight-user@root>bundle:list | grep netfloc
@@ -101,7 +99,6 @@ opendaylight-user@root>bundle:list | grep netfloc
 106 | Installed |  80 | 1.0.0.SNAPSHOT         | netfloc-impl                                                       
 107 | Active    |  80 | 1.0.0.SNAPSHOT         | netfloc-karaf                                                      
 108 | Active    |  80 | 1.0.0.SNAPSHOT         | netfloc-features 
-
 ```
 ## Netfloc APIs
 
@@ -110,16 +107,16 @@ The Service Function Chain basic APIs are fully functional at the moment. Netflo
 - Tenant filtered network graph
 - All host ports
 - End-to-end network path 
-- Flow patterns on netowrk paths
+- Flow patterns on network paths
 - Chain patterns 
 
 For more detailed information: [Netfloc APIs](http://icclab.github.io/netfloc/docs/netfloc_api_spec/netfloc.html)
 
 ## Netfloc status
 
-Currenlty Netfloc implements libraries to support for the following applications:
+Currently Netfloc implements libraries to support for the following applications:
 
-- **Isolation Application**:  Ensure end-to-end tenant segregation using novel non-GRE/VxLAN tunneling mechanism for optimized packet header.
+- **Isolation Application**:  Ensure end-to-end tenant segregation using novel non-GRE/VxLAN tunnelling mechanism for optimized packet header.
 - **Resilience Application**: Provide direct SDN control on a physical level enabling fully SDN-managed infrastructure.
 - **Service Function Chaining**: Traffic classification and steering support for NFVs. There is a test-case application based on this library. 
 
