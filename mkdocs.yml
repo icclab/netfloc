@@ -1,0 +1,5 @@
+site_name: Netfloc
+theme: readthedocs
+extra_css: ["https://fiware.org/style/fiware_readthedocs.css"]
+copyright: ©2015 <a href="https://github.com/icclab">ICCLab</a> @ <a href="http://www.zhaw.ch">ZHAW</a> - Zürcher Hochschule für angewandte Wissenschaften
+repo_url: https://github.com/icclab/netfloc.git
