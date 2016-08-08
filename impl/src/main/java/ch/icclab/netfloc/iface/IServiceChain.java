@@ -13,6 +13,7 @@ import java.util.Map;
 public interface IServiceChain {
 
 	public int getChainId();
+	public int getNumberHops();
 	public INetworkPath getBegin();
 	public INetworkPath getEnd();
 	public INetworkPath getPrevious(INetworkPath np);

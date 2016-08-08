@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 public class ConfigActivator implements BundleActivator {
 
-	private static final Logger LOG = LoggerFactory.getLogger(NetflocProvider.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ConfigActivator.class);
 	private ProviderContext providerContext;
 	private List<ServiceRegistration<?>> registrations = new ArrayList<ServiceRegistration<?>>();
 
@@ -46,13 +46,16 @@ public class ConfigActivator implements BundleActivator {
 		IFlowPathPattern pathPattern = new FlowPathPattern();
 		IFlowBroadcastPattern broadcastPattern = new FlowBroadcastPattern();
 		IFlowChainPattern chainPattern = new FlowChainPattern();
+		IFlowChainPattern reactiveChainPattern = new ReactiveFlowChainPattern();
 		IFlowprogrammer flowProgrammer = new Flowprogrammer(providerContext.getSALService(DataBroker.class));
-		FlowConnectionManager flowManager = new FlowConnectionManager(flowProgrammer);
+		ReactiveFlowListener reactiveFlowListener = new ReactiveFlowListener();
+		FlowConnectionManager flowManager = new FlowConnectionManager(flowProgrammer,reactiveFlowListener);
 		NetflocServiceImpl netflocService = new NetflocServiceImpl(graph);
 		flowManager.registerBroadcastPattern(broadcastPattern);
 		flowManager.registerPathPattern(pathPattern);
 		flowManager.registerBridgePattern(bridgePattern);
 		flowManager.registerChainPattern(chainPattern);
+		flowManager.registerChainPattern(reactiveChainPattern);
 		graph.registerNetworkPathListener(flowManager);
 		netflocService.registerServiceChainListener(flowManager);
 		graph.registerBridgeListener(flowManager);
@@ -100,6 +103,8 @@ public class ConfigActivator implements BundleActivator {
 
         LinkDiscoveryListener linkDiscoveryListener = new LinkDiscoveryListener();
         notificationService.registerNotificationListener(linkDiscoveryListener);
+
+	 	notificationService.registerNotificationListener(reactiveFlowListener);       
 
         LinkDataChangeListener linkDataChangeListener = new LinkDataChangeListener(providerContext.getSALService(DataBroker.class), manager);
         registerService(context,

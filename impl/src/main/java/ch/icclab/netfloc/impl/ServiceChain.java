@@ -41,6 +41,10 @@ public class ServiceChain implements IServiceChain {
 		return this.chainId;
 	}
 
+	public int getNumberHops() {
+		return this.paths.size() - 1;
+	}
+
 	public INetworkPath getBegin() {
 		return paths.get(0);
 	}

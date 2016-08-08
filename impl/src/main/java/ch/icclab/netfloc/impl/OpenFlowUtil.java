@@ -15,6 +15,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlDstActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetDlSrcActionCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.dst.action._case.SetDlDstActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.dl.src.action._case.SetDlSrcActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
@@ -110,7 +114,7 @@ public class OpenFlowUtil {
 		return "LLDP_" + bridge.getDatapathId();
 	}
 
-	private static Action createControllerAction() {
+	public static Action createControllerAction() {
 		ActionBuilder ab = new ActionBuilder();
 		OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(0xffff);
@@ -307,8 +311,8 @@ public class OpenFlowUtil {
 	}
 
 	public static EthernetMatch ethernetMatch(MacAddress srcMac,
-                                              MacAddress dstMac,
-                                              Long etherType) {
+                                            	MacAddress dstMac,
+                                            	Long etherType) {
         EthernetMatchBuilder emb = new  EthernetMatchBuilder();
         if (srcMac != null)
             emb.setEthernetSource(new EthernetSourceBuilder()
@@ -324,4 +328,92 @@ public class OpenFlowUtil {
                 .build());
         return emb.build();
     }
+
+    public static EthernetMatch ethernetMatchMasked(MacAddress srcMac,
+												MacAddress srcMask,
+                                            	MacAddress dstMac,
+                                            	MacAddress dstMask,
+                                            	Long etherType) {
+        EthernetMatchBuilder emb = new  EthernetMatchBuilder();
+		emb.setEthernetSource(new EthernetSourceBuilder()
+		    .setAddress(srcMac)
+		    .setMask(srcMask)
+		    .build());
+
+        emb.setEthernetDestination(new EthernetDestinationBuilder()
+			.setAddress(dstMac)
+			.setMask(dstMask)
+			.build());
+
+        if (etherType != null)
+            emb.setEthernetType(new EthernetTypeBuilder()
+                .setType(new EtherType(etherType))
+                .build());
+        return emb.build();
+    }
+
+    public static Action createRewriteAction(int chainId, int hop, int order) {
+		ActionBuilder abRewrite = new ActionBuilder();
+		SetDlDstActionBuilder rewrite = new SetDlDstActionBuilder();
+		rewrite.setAddress(OpenFlowUtil.getVirtualMac(chainId, hop));
+		abRewrite.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(rewrite.build()).build());
+		abRewrite.setOrder(order);
+		abRewrite.setKey(new ActionKey(order));
+		return abRewrite.build();
+	}
+
+	public static Action createRewriteActionSrc(int chainId, int hop, int order) {
+		ActionBuilder abRewrite = new ActionBuilder();
+		SetDlSrcActionBuilder rewrite = new SetDlSrcActionBuilder();
+		rewrite.setAddress(OpenFlowUtil.getVirtualMac(chainId, hop));
+		abRewrite.setAction(new SetDlSrcActionCaseBuilder().setSetDlSrcAction(rewrite.build()).build());
+		abRewrite.setOrder(order);
+		abRewrite.setKey(new ActionKey(order));
+		return abRewrite.build();
+	}
+
+    public static Action createReactiveRewriteAction(int chainId, int hop, int connId, int order) {
+		ActionBuilder abRewrite = new ActionBuilder();
+		SetDlDstActionBuilder rewrite = new SetDlDstActionBuilder();
+		rewrite.setAddress(OpenFlowUtil.getVirtualReactiveMac(chainId, hop, connId));
+		abRewrite.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(rewrite.build()).build());
+		abRewrite.setOrder(order);
+		abRewrite.setKey(new ActionKey(order));
+		return abRewrite.build();
+	}
+
+	public static MacAddress getVirtualReactiveMac(int chainId, int hop, int connId) {
+		String chainIdHex = Integer.toHexString(chainId);
+		String hopHex = Integer.toHexString(hop);
+		String connIdHex = Integer.toHexString(connId);
+		return new MacAddress(((chainIdHex.length() == 2) ? chainIdHex : "0" + chainIdHex) +
+			":" + ((hopHex.length() == 2) ? hopHex : "0" + hopHex) +
+			":" + ((connIdHex.length() == 2) ? connIdHex : "0" + connIdHex) +
+			":ff:ff:ff");
+	}
+
+	public static MacAddress getVirtualMac(int chainId, int hop) {
+		String chainIdHex = Integer.toHexString(chainId);
+		String hopHex = Integer.toHexString(hop);
+		return new MacAddress(((chainIdHex.length() == 2) ? chainIdHex : "0" + chainIdHex) +
+			":" + ((hopHex.length() == 2) ? hopHex : "0" + hopHex) +
+			":ff:ff:ff:ff");
+	}
+
+	public static Action createOutputAction(IBridgeOperator bridge, IPortOperator outPort, int order) {
+		ActionBuilder abOutput = new ActionBuilder();
+		OutputActionBuilder output = new OutputActionBuilder();
+		NodeConnectorId ncidOut = new NodeConnectorId("openflow:" +
+			Long.parseLong(bridge.getDatapathId()
+				.replace(":", ""), 16) +
+			":" + outPort.getOfport());
+
+		output.setOutputNodeConnector(ncidOut);
+		output.setMaxLength(65535);
+
+		abOutput.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
+		abOutput.setOrder(order);
+		abOutput.setKey(new ActionKey(order));
+		return abOutput.build();
+	}
 }

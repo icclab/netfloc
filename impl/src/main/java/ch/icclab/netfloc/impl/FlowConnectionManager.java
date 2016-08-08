@@ -9,6 +9,7 @@ package ch.icclab.netfloc.impl;
 
 import ch.icclab.netfloc.iface.INetworkPath;
 import ch.icclab.netfloc.iface.IBridgeOperator;
+import ch.icclab.netfloc.iface.IPortOperator;
 import ch.icclab.netfloc.iface.IBridgeListener;
 import ch.icclab.netfloc.iface.IBroadcastListener;
 import ch.icclab.netfloc.iface.IFlowBroadcastPattern;
@@ -19,6 +20,7 @@ import ch.icclab.netfloc.iface.INetworkPathListener;
 import ch.icclab.netfloc.iface.IServiceChainListener;
 import ch.icclab.netfloc.iface.IFlowprogrammer;
 import ch.icclab.netfloc.iface.IServiceChain;
+import ch.icclab.netfloc.iface.IMacLearningListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import com.google.common.util.concurrent.FutureCallback;
 import java.util.Set;
@@ -54,10 +56,12 @@ public class FlowConnectionManager implements IBroadcastListener, INetworkPathLi
 	private final Map<IBridgeOperator, IFlowBridgePattern> programBridgeFailure = new HashMap<IBridgeOperator, IFlowBridgePattern>();
 
 	private IFlowprogrammer flowprogrammer;
+	private ReactiveFlowListener reactiveFlowListener;
 
 	// todo singleton
-	public FlowConnectionManager(IFlowprogrammer flowprogrammer) {
+	public FlowConnectionManager(IFlowprogrammer flowprogrammer, ReactiveFlowListener reactiveFlowListener) {
 		this.flowprogrammer = flowprogrammer;
+		this.reactiveFlowListener = reactiveFlowListener;
 	}
 
 	// API
@@ -247,7 +251,7 @@ public class FlowConnectionManager implements IBroadcastListener, INetworkPathLi
 	@Override
 	public void serviceChainCreated(final IServiceChain sc) {
 
-		final IFlowChainPattern pattern = this.flowChainPatterns.get(0);
+		final IFlowChainPattern pattern = this.flowChainPatterns.get(1);
 
 		LOG.info("Chain in FlowConnectionManager: {}", sc);
 		LOG.info("Pattern FlowConnectionManager: {}", pattern);
@@ -268,13 +272,32 @@ public class FlowConnectionManager implements IBroadcastListener, INetworkPathLi
 				}
 			}
 		}
+
+		// TODO: parameterize this and add a check or sth. this should be tied to the flow pattern somehow
+		// for now we just keep this here for testing purposee
+		IPortOperator beginBridgeEndPort = (sc.getBegin().getBegin().equals(sc.getBegin().getEnd())) ? sc.getBegin().getEndPort() : sc.getBegin().getNextLink(sc.getBegin().getBegin());
+		IPortOperator endBridgeBeginPort = (sc.getEnd().getBegin().equals(sc.getEnd().getEnd())) ? sc.getEnd().getBeginPort() : sc.getEnd().getPreviousLink(sc.getEnd().getEnd());
+		IMacLearningListener reactiveFlowWriter = new ServiceChainMacLearningFlowWriter(
+			sc.getChainId(),
+			sc.getBegin().getBegin(),
+			sc.getEnd().getEnd(),
+			sc.getBegin().getBeginPort(),
+			// bridge not path
+			beginBridgeEndPort,
+			// bridge not path
+			endBridgeBeginPort,
+			sc.getEnd().getEndPort(),
+			(sc.getEnd().getBegin().equals(sc.getEnd().getEnd())) ? sc.getNumberHops() - 1 : sc.getNumberHops(),
+			this.flowprogrammer
+			);
+		this.reactiveFlowListener.registerMacLearningListener(reactiveFlowWriter);
 		
 	}
 
 	@Override
 	public void serviceChainDeleted(final IServiceChain sc) {
 
-		final IFlowChainPattern pattern = this.flowChainPatterns.get(0);		
+		final IFlowChainPattern pattern = this.flowChainPatterns.get(1);		
 
 		for (Map<IBridgeOperator, List<Flow>> map : pattern.apply(sc)) {
 
