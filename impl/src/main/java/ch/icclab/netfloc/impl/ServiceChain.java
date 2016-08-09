@@ -34,7 +34,7 @@ public class ServiceChain implements IServiceChain {
 		this.paths = paths;
 		this.chainId = chainId;
 		logger.info("ServiceChain chainID: {}", chainId);
-		logger.info("ServiceChain paths: {}", paths);
+		logger.info("ServiceChain chainPath: {}", paths);
 	}
 
 	public int getChainId() {

@@ -51,4 +51,15 @@ module netfloc {
 			}
 		}
 	}
+
+    rpc list-service-chains {
+        description "ID List of existing Service Chains";
+
+        output {
+            leaf service-chain-ids {
+                type string;
+            }
+        }
+
+    }
 }
