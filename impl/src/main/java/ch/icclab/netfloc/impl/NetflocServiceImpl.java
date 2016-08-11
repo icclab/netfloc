@@ -16,6 +16,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.ListServiceChainsOutputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+
 import ch.icclab.netfloc.iface.IBridgeOperator;
 import ch.icclab.netfloc.iface.ILinkPort;
 import ch.icclab.netfloc.iface.INetworkPath;
@@ -31,6 +37,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import java.util.List;
 import java.util.LinkedList;
@@ -47,12 +54,14 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
     private Map<String,IServiceChain> activeChains = new HashMap<String, IServiceChain>();
     private List<IServiceChainListener> serviceChainListeners = new LinkedList<IServiceChainListener>();
     private NetworkGraph graph;
-    private int chainID = 0;
-
+    private int chainNumber = 0;
+    private String chainID;
+    private DataBroker dataBroker;
 
 	public NetflocServiceImpl(NetworkGraph graph) {
         this.graph = graph;
 		this.executor = Executors.newFixedThreadPool(1);
+        //this.dataBroker = dataBroker;
 	}
 
 	public void close() {
@@ -83,21 +92,14 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
             "Path is not closed in the Network Graph", null, null, null );
     }
 
-	/*
-    * RestConf RPC call implemented from the NetflocService interface. Creates a service chain.
-    * In Postman: to get the current SFC config: 
-    * GET http://localhost:8181/restconf/config/netfloc:netfloc [not yet implemented]
-    */
-
     /*
     * Create service chain:
     * POST http://localhost:8181/restconf/operations/netfloc:create-service-chain
     * Headers: Content-Type: application/json
     * { "input" : { "neutron-ports" : "2a6f9ea7-dd2f-4ce1-8030-d999856fb558","5ec846bb-faf3-4f4e-83c1-fe253ff75ccb" } }
-    * Response: 201 (application/json)
+    * Response: 200 OK (application/json)
     * Body: {"output“: { "service-chain-id":$chain_id }
     */
-
 	@Override
     public Future<RpcResult<CreateServiceChainOutput>> createServiceChain(CreateServiceChainInput input) {
 
@@ -106,12 +108,12 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
             RpcError error = wrongAmoutOfPortsError();
             return null;
         }
-
         List<INetworkPath> chainNetworkPaths = new LinkedList<INetworkPath>();
         List<IHostPort> chainPorts = new LinkedList<IHostPort>();
         List<String> portsNotFound = new LinkedList<String>();
         List<String> chainPortIDs = new LinkedList<String>();
-
+        List<String> neutronPortIDs = new LinkedList<String>();
+        
         logger.info("createServiceChain: {}", input);
         for (String portID : Arrays.asList(input.getNeutronPorts().split(","))) {
         	boolean found = false;
@@ -119,6 +121,7 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
                 if (portID.equals(port.getNeutronUuid())) {
                     chainPorts.add(port);
                     chainPortIDs.add(port.getNeutronUuid());
+                    neutronPortIDs.add(port.getNeutronUuid());
                     found = true;
                     break;
                 }
@@ -127,7 +130,6 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
             	portsNotFound.add(portID);
             }
         }
-
         logger.info("NetflocServiceImpl chainNetworkPorts: {}", chainPortIDs);
 
         if (portsNotFound.size() > 0) {
@@ -139,30 +141,29 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
         for (int i = 0; i < chainPorts.size(); i = i + 2) {
             INetworkPath path = this.graph.getNetworkPath(chainPorts.get(i), chainPorts.get(i+1));
             if (path == null) {
-                logger.error("NetflocServiceImpl Path is not closed between {} and {}", chainPorts.get(i), chainPorts.get(i+1));
+                logger.error("NetflocServiceImpl Path is not closed between {} and {}", chainPorts.get(i).getMacAddress(), chainPorts.get(i+1).getMacAddress());
                 return Futures.immediateFuture( RpcResultBuilder.<CreateServiceChainOutput> failed().withRpcError(pathNotClosedError()).build() );
             }
-            logger.info("NetflocServiceImpl Found path between {} and {}", chainPorts.get(i), chainPorts.get(i+1));
+            logger.info("NetflocServiceImpl Found path1 between {} and {}", chainPorts.get(i).getMacAddress(), chainPorts.get(i+1) );
+            logger.info("NetflocServiceImpl Found path1 between {} and {}", chainPorts.get(i).getNeutronUuid(), chainPorts.get(i+1).getNeutronUuid() );
             chainNetworkPaths.add(path);
         }
 
         // instantiate ServiceChain
-        chainID = chainID+1;
-        ServiceChain chainInstance = new ServiceChain(chainNetworkPaths, chainID);
-        logger.info("NetflocServiceImpl chainID: {}", chainID);
+        chainNumber = chainNumber+1;
+        ServiceChain chainInstance = new ServiceChain(chainNetworkPaths, chainNumber);
+        logger.info("NetflocServiceImpl chainNumber: {}", chainNumber);
+
+        chainInstance.setNeutronPortsList(neutronPortIDs);
+        logger.info("NetflocServiceImpl Neutron ports list: {} ", chainInstance.getNeutronPortsList());
 
         for (IServiceChainListener scl : this.serviceChainListeners) {
             scl.serviceChainCreated(chainInstance);
         }
-        this.activeChains.put("" + chainID, chainInstance);
-
-        for (String chainID : activeChains.keySet()){
-            IServiceChain chainInst = activeChains.get(chainID);
-            logger.info("NetflocServiceImpl chainInstance: {}", chainInst);
-        } 
-
-        //return chainID;
-        return Futures.immediateFuture(RpcResultBuilder.<CreateServiceChainOutput> success(new CreateServiceChainOutputBuilder().setServiceChainId("" + chainID).build()).build());
+        this.activeChains.put("" + chainNumber, chainInstance);
+        chainID = "Chain_" + chainNumber + ": " + neutronPortIDs;
+        logger.info("NetflocServiceImpl Created chain: {}", chainID);
+        return Futures.immediateFuture(RpcResultBuilder.<CreateServiceChainOutput> success(new CreateServiceChainOutputBuilder().setServiceChainId("" + chainNumber).build()).build());
     }
 
     /**
@@ -178,32 +179,35 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
         if (sc == null) {
             return Futures.immediateFuture( RpcResultBuilder.<Void> failed().withRpcError(idNotFoundError()).build() );
         }
-
         for (IServiceChainListener scl : this.serviceChainListeners) {
             scl.serviceChainDeleted(sc);
         }
-
         activeChains.remove(id);
-
+        logger.info("NetflocServiceImpl Deleted chain number: {}", id);
     	return Futures.immediateFuture(RpcResultBuilder.<Void> success().build());
     }
-
     /**
      * List Service Chain
-     * GET http://localhost/restconf/operations/netfloc:list-service-chains
+     * POST http://localhost/restconf/operations/netfloc:list-service-chains
      * Headers: Content-Type: application/json
-     * 
+     * Response: 200 OK (application/json)
+     * {output": {
+     * "service-chains": "Chain_2: [3194c1ba-d264-4a1d-a4f1-272aec9a4d4c, f707e65d-51b9-4c9f-b9cf-a6ed616dec1c, 5900d654-ca89-47c9-81cd-7fc808b2a141, 55560526-1b65-4e41-9e60-25374e58a282], Chain_1: [88cf9740-b029-4542-85de-c28535769023, 34079251-5787-47cc-9dba-c1952dd2863d, 3bf7e97f-8cf9-448c-a815-6ac6dcbe3a0b, 2e89343b-2f08-4d1f-9467-80fc97174f31], "}}
      */
     @Override
     public Future<RpcResult<ListServiceChainsOutput>> listServiceChains() {
-        String chainIDs = "";
+        int chainNumber = 0;
+        String chainID = "";
+        String chainsList = "";
+        List<String> neutronPortIDs;
 
-        for (String key : activeChains.keySet()) {
-            chainIDs += key+", ";            
+        for (Map.Entry<String, IServiceChain> chain : activeChains.entrySet()) {
+            chainNumber = chain.getValue().getChainId();
+            neutronPortIDs = chain.getValue().getNeutronPortsList();
+            chainID = "Chain_" + chainNumber + ": " + neutronPortIDs;
+            chainsList += chainID+", ";
         }
-
-        logger.info("NetflocServiceImpl chainID from list: {}", chainIDs);
-
-        return Futures.immediateFuture(RpcResultBuilder.<ListServiceChainsOutput> success(new ListServiceChainsOutputBuilder().setServiceChainIds("" + chainIDs).build()).build());
+        logger.info("NetflocServiceImpl chainID from list: {}", chainsList);
+        return Futures.immediateFuture(RpcResultBuilder.<ListServiceChainsOutput> success(new ListServiceChainsOutputBuilder().setServiceChains("" + chainsList).build()).build());
     }
 }

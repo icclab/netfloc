@@ -13,7 +13,7 @@ import ch.icclab.netfloc.iface.IFlowBridgePattern;
 import ch.icclab.netfloc.iface.IFlowprogrammer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.NetflocService;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import java.util.Dictionary;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -42,6 +42,7 @@ public class ConfigActivator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
 		LOG.info("ConfigActivator start");
 		NetworkGraph graph = new NetworkGraph();
+		//DataBroker dataBroker = new DataBroker();
 		IFlowBridgePattern bridgePattern = new FlowBridgePattern();
 		IFlowPathPattern pathPattern = new FlowPathPattern();
 		IFlowBroadcastPattern broadcastPattern = new FlowBroadcastPattern();
@@ -51,6 +52,7 @@ public class ConfigActivator implements BundleActivator {
 		ReactiveFlowListener reactiveFlowListener = new ReactiveFlowListener();
 		FlowConnectionManager flowManager = new FlowConnectionManager(flowProgrammer,reactiveFlowListener);
 		NetflocServiceImpl netflocService = new NetflocServiceImpl(graph);
+		//NetflocServiceImpl netflocService = new NetflocServiceImpl(graph, dataBroker);
 		flowManager.registerBroadcastPattern(broadcastPattern);
 		flowManager.registerPathPattern(pathPattern);
 		flowManager.registerBridgePattern(bridgePattern);

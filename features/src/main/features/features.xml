@@ -26,6 +26,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   </feature>
   <feature name='odl-netfloc' version='${project.version}' description='OpenDaylight :: netfloc'>
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+    <feature version='${mdsal.version}'>odl-mdsal-clustering</feature>
     <feature version='${project.version}'>odl-netfloc-api</feature>
     <bundle>mvn:ch.icclab.netfloc/netfloc-impl/${project.version}</bundle>
     <configfile finalname="${configfile.directory}/netfloc.xml">mvn:ch.icclab.netfloc/netfloc-impl/${project.version}/xml/config</configfile>

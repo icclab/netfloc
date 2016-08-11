@@ -12,6 +12,7 @@ import java.util.Map;
 
 public interface IServiceChain {
 
+	//public int getChainNumber();
 	public int getChainId();
 	public int getNumberHops();
 	public INetworkPath getBegin();
@@ -19,6 +20,8 @@ public interface IServiceChain {
 	public INetworkPath getPrevious(INetworkPath np);
 	public INetworkPath getNext(INetworkPath np);
 	public void append(INetworkPath np);
+	public void setNeutronPortsList(List<String> neutronPortIDs);
+	public List<String> getNeutronPortsList();
 	public void addPaths(List<INetworkPath> nps);
 	public boolean isEqualConnectionChain(IServiceChain sc);
 	public IHostPort getNext(IHostPort np);

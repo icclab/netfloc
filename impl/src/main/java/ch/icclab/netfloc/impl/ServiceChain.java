@@ -23,22 +23,23 @@ public class ServiceChain implements IServiceChain {
 
 	private List<INetworkPath> paths;
 	private List<IHostPort> ports;
-	private int chainId;
+	private int chainNumber;
+	private List<String> neutronPortIDs;
 	private static final Logger logger = LoggerFactory.getLogger(ServiceChain.class);
 
-	public ServiceChain(List<INetworkPath> paths, int chainId) {
+	public ServiceChain(List<INetworkPath> paths, int chainNumber) {
 		if (paths == null || paths.isEmpty()) {
 			throw new IllegalStateException("ServiceChain paths cannot be null or empty.");
 		}
 
 		this.paths = paths;
-		this.chainId = chainId;
-		logger.info("ServiceChain chainID: {}", chainId);
+		this.chainNumber = chainNumber;
+		logger.info("ServiceChain chainNumber: {}", chainNumber);
 		logger.info("ServiceChain chainPath: {}", paths);
 	}
 
 	public int getChainId() {
-		return this.chainId;
+		return this.chainNumber;
 	}
 
 	public int getNumberHops() {
@@ -71,6 +72,14 @@ public class ServiceChain implements IServiceChain {
 
 	public void append(INetworkPath np) {
 		this.paths.add(np);
+	}
+
+	public void setNeutronPortsList(List<String> neutronPortIDs) {
+		this.neutronPortIDs = neutronPortIDs;
+	}
+
+	public List<String> getNeutronPortsList(){
+		return neutronPortIDs;
 	}
 
 	public void addPaths(List<INetworkPath> nps) {
