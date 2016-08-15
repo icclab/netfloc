@@ -1,6 +1,6 @@
 # Netfloc Installation guide
 
-## Prerequisites
+## System Requirements
 
 JAVA 7 JDK, Maven 3.1.1, Vagrant and VirtualBox.
 To run tests you will need OpenFlow 1.3 enabled network devices or Mininet and OpenvSwitch.
@@ -94,9 +94,22 @@ lsof -i | grep 6640
 
 ```
 
+### Databases
+The ODL controller uses an internal (MDSAL) datastore which is automatically installed in the feature installation procedure.
+
 ## Diagnosis Procedures
 ### Resource Availability
 For compilation the following is needed:
+
 ```
 export MAVEN_OPTS="-Xmx1028m -XX:MaxPermSize=256m"
 ```
+
+### Remote Service Access
+N/A
+
+### Resource consumption
+N/A
+
+### I/O flows
+N/A
