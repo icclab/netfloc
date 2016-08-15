@@ -1,4 +1,53 @@
-module netfloc {    yang-version 1;    namespace "urn:opendaylight:params:xml:ns:yang:netfloc";    prefix "netfloc";    revision "2015-01-05" {        description "Initial revision of netfloc model";    }    grouping service-chain {    	leaf service-chain-id {    		type string;    	}    	leaf-list neutron-ports {    		type string;    	}    }    /* Example: For leaf-list definition    * leaf-list neutron-ports {    *   type string;    * }    * the following is a valid JSON-encoded instance:    * "neutron-ports": [5ec846bb-faf3-4f4e-83c1-fe253ff75ccb, 2a6f9ea7-dd2f-4ce1-8030-d999856fb558]    */    rpc create-service-chain {    	description "Create a Service Chain";    	input {    		leaf neutron-ports {    			type string;    			description "Neutron Port IDs";    		}    	}    	output {    		leaf service-chain-id {    			type string;    		}    	}    }	rpc delete-service-chain {		description "Delete a Service Chain";		input {			leaf service-chain-id {				type string;
+module netfloc {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:netfloc";
+    prefix "netfloc";
+
+    revision "2015-01-05" {
+        description "Initial revision of netfloc model";
+    }
+
+    grouping service-chain {
+    	leaf service-chain-id {
+    		type string;
+    	}
+
+    	leaf-list neutron-ports {
+    		type string;
+    	}
+    }
+
+    /* Example: For leaf-list definition
+    * leaf-list neutron-ports {
+    *   type string;
+    * }
+    * the following is a valid JSON-encoded instance:
+    * "neutron-ports": [5ec846bb-faf3-4f4e-83c1-fe253ff75ccb, 2a6f9ea7-dd2f-4ce1-8030-d999856fb558]
+    */
+
+    rpc create-service-chain {
+    	description "Create a Service Chain";
+
+    	input {
+    		leaf neutron-ports {
+    			type string;
+    			description "Neutron Port IDs";
+    		}
+    	}
+
+    	output {
+    		leaf service-chain-id {
+    			type string;
+    		}
+    	}
+    }
+
+	rpc delete-service-chain {
+		description "Delete a Service Chain";
+
+		input {
+			leaf service-chain-id {
+				type string;
 			}
 		}
 	}
@@ -7,7 +56,7 @@ module netfloc {    yang-version 1;    namespace "urn:opendaylight:params:xml:
         description "ID List of existing Service Chains";
 
         output {
-            leaf service-chains {
+            leaf-list service-chains {
                 type string;
             }
         }

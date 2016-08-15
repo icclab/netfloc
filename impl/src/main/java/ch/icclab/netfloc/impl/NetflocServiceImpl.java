@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 
 public class NetflocServiceImpl implements NetflocService, AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(NetflocServiceImpl.class);
-	private final ExecutorService executor;
+    private final ExecutorService executor;
     private Map<String,IServiceChain> activeChains = new HashMap<String, IServiceChain>();
     private List<IServiceChainListener> serviceChainListeners = new LinkedList<IServiceChainListener>();
     private NetworkGraph graph;
@@ -58,15 +58,15 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
     private String chainID;
     private DataBroker dataBroker;
 
-	public NetflocServiceImpl(NetworkGraph graph) {
+    public NetflocServiceImpl(NetworkGraph graph) {
         this.graph = graph;
-		this.executor = Executors.newFixedThreadPool(1);
+        this.executor = Executors.newFixedThreadPool(1);
         //this.dataBroker = dataBroker;
-	}
+    }
 
-	public void close() {
-		this.executor.shutdown();
-	}
+    public void close() {
+        this.executor.shutdown();
+    }
 
     public void registerServiceChainListener(IServiceChainListener nsl) {
         this.serviceChainListeners.add(nsl);
@@ -100,7 +100,7 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
     * Response: 200 OK (application/json)
     * Body: {"output“: { "service-chain-id":$chain_id }
     */
-	@Override
+    @Override
     public Future<RpcResult<CreateServiceChainOutput>> createServiceChain(CreateServiceChainInput input) {
 
         if (Arrays.asList(input.getNeutronPorts().split(",")).size() % 2 != 0) {
@@ -116,7 +116,7 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
         
         logger.info("createServiceChain: {}", input);
         for (String portID : Arrays.asList(input.getNeutronPorts().split(","))) {
-        	boolean found = false;
+            boolean found = false;
             for (IHostPort port : graph.getHostPorts()) {
                 if (portID.equals(port.getNeutronUuid())) {
                     chainPorts.add(port);
@@ -127,7 +127,7 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
                 }
             }
             if (!found) {
-            	portsNotFound.add(portID);
+                portsNotFound.add(portID);
             }
         }
         logger.info("NetflocServiceImpl chainNetworkPorts: {}", chainPortIDs);
@@ -161,6 +161,20 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
             scl.serviceChainCreated(chainInstance);
         }
         this.activeChains.put("" + chainNumber, chainInstance);
+
+        // WriteTransaction wt = this.dataBroker.newWriteOnlyTransaction();
+        // InstanceIdentifier<Chain> chainId = buildFlowId(flow, bridge.getDatapathId());
+        // wt.merge(LogicalDatastoreType.CONFIGURATION, chainID, this.activeChains, true);
+        // commitWriteTransaction(wt, new FutureCallback<Void>{
+        //     public void onSuccess(Void result) {
+        //         logger.info("new service chain stored in data store");
+        //         endBridgeFlowCache.add(endBridgeFlow);
+        //     }
+        //     public void onFailure(Throwable t) {
+        //         logger.info("new service chain failed to store");
+        //     }
+        // }), 3, 3);
+
         chainID = "Chain_" + chainNumber + ": " + neutronPortIDs;
         logger.info("NetflocServiceImpl Created chain: {}", chainID);
         return Futures.immediateFuture(RpcResultBuilder.<CreateServiceChainOutput> success(new CreateServiceChainOutputBuilder().setServiceChainId("" + chainNumber).build()).build());
@@ -184,7 +198,7 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
         }
         activeChains.remove(id);
         logger.info("NetflocServiceImpl Deleted chain number: {}", id);
-    	return Futures.immediateFuture(RpcResultBuilder.<Void> success().build());
+        return Futures.immediateFuture(RpcResultBuilder.<Void> success().build());
     }
     /**
      * List Service Chain
@@ -198,16 +212,46 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
     public Future<RpcResult<ListServiceChainsOutput>> listServiceChains() {
         int chainNumber = 0;
         String chainID = "";
-        String chainsList = "";
+        //String chainsList = "";
+        List<String> chainsList = new LinkedList<String>();
         List<String> neutronPortIDs;
 
         for (Map.Entry<String, IServiceChain> chain : activeChains.entrySet()) {
             chainNumber = chain.getValue().getChainId();
             neutronPortIDs = chain.getValue().getNeutronPortsList();
             chainID = "Chain_" + chainNumber + ": " + neutronPortIDs;
-            chainsList += chainID+", ";
+            chainsList.add(chainID);
+            //chainsList += chainID+", ";
         }
         logger.info("NetflocServiceImpl chainID from list: {}", chainsList);
-        return Futures.immediateFuture(RpcResultBuilder.<ListServiceChainsOutput> success(new ListServiceChainsOutputBuilder().setServiceChains("" + chainsList).build()).build());
+        return Futures.immediateFuture(RpcResultBuilder.<ListServiceChainsOutput> success(new ListServiceChainsOutputBuilder().setServiceChains(chainsList).build()).build());
     }
+
+    // private void commitWriteTransaction(final WriteTransaction wt, final FutureCallback<Void> cb, final int totalTries, final int tries) {
+    //     Futures.addCallback(wt.submit(), new FutureCallback<Void>() {
+    //         public void onSuccess(Void result) {
+    //             logger.info("Transaction success after {} tries for {}", totalTries - tries + 1, wt);
+    //             cb.onSuccess(result);
+    //         }
+
+    //         public void onFailure(Throwable t) {
+    //             if (t instanceof OptimisticLockFailedException) {
+    //                 if((tries - 1) > 0) {
+    //                     logger.warn("Transaction retry {} for {}", totalTries - tries + 1, wt);
+    //                     commitWriteTransaction(wt, cb, totalTries, tries - 1);
+    //                 } else {
+    //                     logger.error("Transaction out of retries: ", wt);
+    //                     cb.onFailure(t);
+    //                 }
+    //             } else {
+    //                 if (t instanceof DataValidationFailedException) {
+    //                     logger.error("Transaction validation failed {}", t.getMessage());
+    //                 } else {
+    //                     logger.error("Transaction failed {}", t.getMessage());
+    //                 }
+    //                 cb.onFailure(t);
+    //             }
+    //         }
+    //     });
+    // }
 }
