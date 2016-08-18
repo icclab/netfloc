@@ -14,11 +14,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.DeleteServiceChainInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.ListServiceChainsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.ListServiceChainsOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.Chains;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.ChainsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.chains.Chain;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.chains.ChainBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 
@@ -33,6 +39,11 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+
+import org.opendaylight.controller.md.sal.common.api.data.DataValidationFailedException;
+import org.opendaylight.controller.md.sal.common.api.data.OptimisticLockFailedException;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,11 +68,13 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
     private int chainNumber = 0;
     private String chainID;
     private DataBroker dataBroker;
+    //static for the moment
+    private String CHAIN_OWNER = "ZHAW";
 
-    public NetflocServiceImpl(NetworkGraph graph) {
+    public NetflocServiceImpl(NetworkGraph graph, DataBroker dataBroker) {
         this.graph = graph;
         this.executor = Executors.newFixedThreadPool(1);
-        //this.dataBroker = dataBroker;
+        this.dataBroker = dataBroker;
     }
 
     public void close() {
@@ -91,7 +104,6 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
         return RpcResultBuilder.newError( ErrorType.APPLICATION, "graph-state",
             "Path is not closed in the Network Graph", null, null, null );
     }
-
     /*
     * Create service chain:
     * POST http://localhost:8181/restconf/operations/netfloc:create-service-chain
@@ -144,16 +156,12 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
                 logger.error("NetflocServiceImpl Path is not closed between {} and {}", chainPorts.get(i).getMacAddress(), chainPorts.get(i+1).getMacAddress());
                 return Futures.immediateFuture( RpcResultBuilder.<CreateServiceChainOutput> failed().withRpcError(pathNotClosedError()).build() );
             }
-            logger.info("NetflocServiceImpl Found path1 between {} and {}", chainPorts.get(i).getMacAddress(), chainPorts.get(i+1) );
-            logger.info("NetflocServiceImpl Found path1 between {} and {}", chainPorts.get(i).getNeutronUuid(), chainPorts.get(i+1).getNeutronUuid() );
             chainNetworkPaths.add(path);
         }
 
-        // instantiate ServiceChain
         chainNumber = chainNumber+1;
-        ServiceChain chainInstance = new ServiceChain(chainNetworkPaths, chainNumber);
-        logger.info("NetflocServiceImpl chainNumber: {}", chainNumber);
-
+        // instantiate ServiceChain
+        ServiceChain chainInstance = new ServiceChain(chainNetworkPaths, chainNumber);        
         chainInstance.setNeutronPortsList(neutronPortIDs);
         logger.info("NetflocServiceImpl Neutron ports list: {} ", chainInstance.getNeutronPortsList());
 
@@ -161,25 +169,62 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
             scl.serviceChainCreated(chainInstance);
         }
         this.activeChains.put("" + chainNumber, chainInstance);
-
-        // WriteTransaction wt = this.dataBroker.newWriteOnlyTransaction();
-        // InstanceIdentifier<Chain> chainId = buildFlowId(flow, bridge.getDatapathId());
-        // wt.merge(LogicalDatastoreType.CONFIGURATION, chainID, this.activeChains, true);
-        // commitWriteTransaction(wt, new FutureCallback<Void>{
-        //     public void onSuccess(Void result) {
-        //         logger.info("new service chain stored in data store");
-        //         endBridgeFlowCache.add(endBridgeFlow);
-        //     }
-        //     public void onFailure(Throwable t) {
-        //         logger.info("new service chain failed to store");
-        //     }
-        // }), 3, 3);
-
+        // add chain data to OPERATIONAL datastore
+        this.addChainData(new FutureCallback<Void>() {
+            public void onSuccess(Void result) {
+                logger.info("new service chain stored in CONFIG data store");
+            }
+            public void onFailure(Throwable t) {
+                logger.info("new service chain failed to store");
+            }
+        });        
         chainID = "Chain_" + chainNumber + ": " + neutronPortIDs;
         logger.info("NetflocServiceImpl Created chain: {}", chainID);
         return Futures.immediateFuture(RpcResultBuilder.<CreateServiceChainOutput> success(new CreateServiceChainOutputBuilder().setServiceChainId("" + chainNumber).build()).build());
     }
 
+    private void addChainData(FutureCallback<Void> cb) {
+        ReadWriteTransaction wt = this.dataBroker.newReadWriteTransaction();
+        InstanceIdentifier<Chains> CHAIN_IID = InstanceIdentifier.builder(Chains.class).build();
+        List<Chain> listChain = new LinkedList<Chain>();
+
+        for (Map.Entry<String, IServiceChain> chain : activeChains.entrySet() )  {
+            String chainID = Integer.toString(chain.getValue().getChainId());
+            List<String> neutronPortIDs = chain.getValue().getNeutronPortsList();
+            Chain chainBuilder = new ChainBuilder().setOwnerId(CHAIN_OWNER).setId(chainID).setChainConnectionPoint(neutronPortIDs).build();
+            listChain.add(chainBuilder);
+        }        
+        Chains chain = new ChainsBuilder().setChain(listChain).build();
+        wt.merge(LogicalDatastoreType.OPERATIONAL, CHAIN_IID, chain);
+        this.commitWriteTransaction(wt, cb, 3, 3);
+    }  
+
+    private void commitWriteTransaction(final ReadWriteTransaction wt, final FutureCallback<Void> cb, final int totalTries, final int tries) {
+        Futures.addCallback(wt.submit(), new FutureCallback<Void>() {
+            public void onSuccess(Void result) {
+                logger.info("Transaction success after {} tries for {}", totalTries - tries + 1, wt);
+                cb.onSuccess(result);
+            }
+            public void onFailure(Throwable t) {
+                if (t instanceof OptimisticLockFailedException) {
+                    if((tries - 1) > 0) {
+                        logger.warn("Transaction retry {} for {}", totalTries - tries + 1, wt);
+                        commitWriteTransaction(wt, cb, totalTries, tries - 1);
+                    } else {
+                        logger.error("Transaction out of retries: ", wt);
+                        cb.onFailure(t);
+                    }
+                } else {
+                    if (t instanceof DataValidationFailedException) {
+                        logger.error("Transaction validation failed {}", t.getMessage());
+                    } else {
+                        logger.error("Transaction failed {}", t.getMessage());
+                    }
+                    cb.onFailure(t);
+                }
+            }
+        });
+    }
     /**
      * Delete Service Chain
      * POST http://localhost/restconf/operations/netfloc:delete-service-chain
@@ -212,7 +257,6 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
     public Future<RpcResult<ListServiceChainsOutput>> listServiceChains() {
         int chainNumber = 0;
         String chainID = "";
-        //String chainsList = "";
         List<String> chainsList = new LinkedList<String>();
         List<String> neutronPortIDs;
 
@@ -221,37 +265,8 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
             neutronPortIDs = chain.getValue().getNeutronPortsList();
             chainID = "Chain_" + chainNumber + ": " + neutronPortIDs;
             chainsList.add(chainID);
-            //chainsList += chainID+", ";
         }
         logger.info("NetflocServiceImpl chainID from list: {}", chainsList);
         return Futures.immediateFuture(RpcResultBuilder.<ListServiceChainsOutput> success(new ListServiceChainsOutputBuilder().setServiceChains(chainsList).build()).build());
     }
-
-    // private void commitWriteTransaction(final WriteTransaction wt, final FutureCallback<Void> cb, final int totalTries, final int tries) {
-    //     Futures.addCallback(wt.submit(), new FutureCallback<Void>() {
-    //         public void onSuccess(Void result) {
-    //             logger.info("Transaction success after {} tries for {}", totalTries - tries + 1, wt);
-    //             cb.onSuccess(result);
-    //         }
-
-    //         public void onFailure(Throwable t) {
-    //             if (t instanceof OptimisticLockFailedException) {
-    //                 if((tries - 1) > 0) {
-    //                     logger.warn("Transaction retry {} for {}", totalTries - tries + 1, wt);
-    //                     commitWriteTransaction(wt, cb, totalTries, tries - 1);
-    //                 } else {
-    //                     logger.error("Transaction out of retries: ", wt);
-    //                     cb.onFailure(t);
-    //                 }
-    //             } else {
-    //                 if (t instanceof DataValidationFailedException) {
-    //                     logger.error("Transaction validation failed {}", t.getMessage());
-    //                 } else {
-    //                     logger.error("Transaction failed {}", t.getMessage());
-    //                 }
-    //                 cb.onFailure(t);
-    //             }
-    //         }
-    //     });
-    // }
 }

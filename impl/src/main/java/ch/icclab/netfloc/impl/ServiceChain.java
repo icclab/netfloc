@@ -23,23 +23,21 @@ public class ServiceChain implements IServiceChain {
 
 	private List<INetworkPath> paths;
 	private List<IHostPort> ports;
-	private int chainNumber;
+	private int chainID;
 	private List<String> neutronPortIDs;
 	private static final Logger logger = LoggerFactory.getLogger(ServiceChain.class);
 
-	public ServiceChain(List<INetworkPath> paths, int chainNumber) {
+	public ServiceChain(List<INetworkPath> paths, int chainID) {
 		if (paths == null || paths.isEmpty()) {
 			throw new IllegalStateException("ServiceChain paths cannot be null or empty.");
 		}
-
+		this.chainID = chainID;
 		this.paths = paths;
-		this.chainNumber = chainNumber;
-		logger.info("ServiceChain chainNumber: {}", chainNumber);
 		logger.info("ServiceChain chainPath: {}", paths);
 	}
 
 	public int getChainId() {
-		return this.chainNumber;
+		return this.chainID;
 	}
 
 	public int getNumberHops() {

@@ -21,7 +21,6 @@ import java.util.List;
 import org.opendaylight.neutron.spi.*;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -42,7 +41,6 @@ public class ConfigActivator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
 		LOG.info("ConfigActivator start");
 		NetworkGraph graph = new NetworkGraph();
-		//DataBroker dataBroker = new DataBroker();
 		IFlowBridgePattern bridgePattern = new FlowBridgePattern();
 		IFlowPathPattern pathPattern = new FlowPathPattern();
 		IFlowBroadcastPattern broadcastPattern = new FlowBroadcastPattern();
@@ -51,8 +49,7 @@ public class ConfigActivator implements BundleActivator {
 		IFlowprogrammer flowProgrammer = new Flowprogrammer(providerContext.getSALService(DataBroker.class));
 		ReactiveFlowListener reactiveFlowListener = new ReactiveFlowListener();
 		FlowConnectionManager flowManager = new FlowConnectionManager(flowProgrammer,reactiveFlowListener);
-		NetflocServiceImpl netflocService = new NetflocServiceImpl(graph);
-		//NetflocServiceImpl netflocService = new NetflocServiceImpl(graph, dataBroker);
+		NetflocServiceImpl netflocService = new NetflocServiceImpl(graph, providerContext.getSALService(DataBroker.class));
 		flowManager.registerBroadcastPattern(broadcastPattern);
 		flowManager.registerPathPattern(pathPattern);
 		flowManager.registerBridgePattern(bridgePattern);

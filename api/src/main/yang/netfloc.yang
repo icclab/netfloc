@@ -7,23 +7,42 @@ module netfloc {
         description "Initial revision of netfloc model";
     }
 
-    grouping service-chain {
-    	leaf service-chain-id {
-    		type string;
-    	}
-
-    	leaf-list neutron-ports {
-    		type string;
-    	}
+    identity service-chain-type {
+        description "Base for all chains types supported by netfloc.";
     }
 
-    /* Example: For leaf-list definition
-    * leaf-list neutron-ports {
-    *   type string;
-    * }
-    * the following is a valid JSON-encoded instance:
-    * "neutron-ports": [5ec846bb-faf3-4f4e-83c1-fe253ff75ccb, 2a6f9ea7-dd2f-4ce1-8030-d999856fb558]
-    */
+    identity vnf-chain {
+        base service-chain-type;
+        description "Chain composed of virtual network functions (VNFs).";
+    }
+
+    identity pnf-chain {
+        base service-chain-type;
+        description "Chain composed of physical network functions (PNFs).";
+    }
+
+    container chains {
+        description 
+            "Top-level containr for all service chains database objects";
+
+        list chain {
+            description
+            "The name of the chains creator and owner (network operator).";
+            key "id";
+
+            leaf owner-id {
+                type string;
+            }
+
+            leaf id {
+                type string;
+            }
+
+            leaf-list chain-connection-point {
+                type string;
+            }     
+        }        
+    }
 
     rpc create-service-chain {
     	description "Create a Service Chain";

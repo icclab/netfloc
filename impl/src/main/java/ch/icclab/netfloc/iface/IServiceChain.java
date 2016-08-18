@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface IServiceChain {
-
-	//public int getChainNumber();
 	public int getChainId();
 	public int getNumberHops();
 	public INetworkPath getBegin();
