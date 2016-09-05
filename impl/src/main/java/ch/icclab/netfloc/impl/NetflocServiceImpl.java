@@ -18,6 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.ChainsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.chains.Chain;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.chains.ChainBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netfloc.rev150105.chains.ChainKey;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
@@ -172,10 +173,10 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
         // add chain data to OPERATIONAL datastore
         this.addChainData(new FutureCallback<Void>() {
             public void onSuccess(Void result) {
-                logger.info("new service chain stored in CONFIG data store");
+                logger.info("New service chain stored in OPERATIONAL data store");
             }
             public void onFailure(Throwable t) {
-                logger.info("new service chain failed to store");
+                logger.info("New service chain failed to store");
             }
         });        
         chainID = "Chain_" + chainNumber + ": " + neutronPortIDs;
@@ -196,6 +197,13 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
         }        
         Chains chain = new ChainsBuilder().setChain(listChain).build();
         wt.merge(LogicalDatastoreType.OPERATIONAL, CHAIN_IID, chain);
+        this.commitWriteTransaction(wt, cb, 3, 3);
+    }
+
+    private void removeChainData(String chainID, FutureCallback<Void> cb) {
+        ReadWriteTransaction wt = this.dataBroker.newReadWriteTransaction();
+        InstanceIdentifier<Chain> CHAIN_IID = InstanceIdentifier.builder(Chains.class).child(Chain.class, new ChainKey(chainID)).toInstance();
+        wt.delete(LogicalDatastoreType.OPERATIONAL, CHAIN_IID);
         this.commitWriteTransaction(wt, cb, 3, 3);
     }  
 
@@ -241,7 +249,15 @@ public class NetflocServiceImpl implements NetflocService, AutoCloseable {
         for (IServiceChainListener scl : this.serviceChainListeners) {
             scl.serviceChainDeleted(sc);
         }
-        activeChains.remove(id);
+        this.activeChains.remove(id);
+        this.removeChainData(id, new FutureCallback<Void>() {
+            public void onSuccess(Void result) {
+                logger.info("Service chain was removed from the OPERATIONAL data store");
+            }
+            public void onFailure(Throwable t) {
+                logger.info("Service chain failed to remove form data store");
+            }
+        });
         logger.info("NetflocServiceImpl Deleted chain number: {}", id);
         return Futures.immediateFuture(RpcResultBuilder.<Void> success().build());
     }
